@@ -17,13 +17,13 @@
 package com.ginsberg.gatherers4j;
 
 import com.ginsberg.gatherers4j.dto.Pair;
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.zipWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -32,39 +32,39 @@ class ZipWithGathererTest {
     @Test
     void argumentIterableMustNotBeNull() {
         assertThatThrownBy(() -> Stream.of("A")
-                .gather(Gatherers4j.zipWith((Iterable<String>) null)).toList()
+                .gather(zipWith((Iterable<String>) null)).toList()
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void argumentIteratorMustNotBeNull() {
         assertThatThrownBy(() -> Stream.of("A")
-                .gather(Gatherers4j.zipWith((Iterator<String>) null)).toList()
+                .gather(zipWith((Iterator<String>) null)).toList()
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void argumentStreamMustNotBeNull() {
-        assertThatThrownBy(() -> Gatherers4j.zipWith((Stream<String>) null))
+        assertThatThrownBy(() -> zipWith((Stream<String>) null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void argumentVarargsMustNotBeNull() {
-        assertThatThrownBy(() -> Gatherers4j.zipWith((String[]) null))
+        assertThatThrownBy(() -> zipWith((String[]) null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void argumentWhenSourceLongerFunctionMustNotBeNull() {
-        final var gatherer = Gatherers4j.zipWith(List.of("A"));
+        final var gatherer = zipWith(List.of("A"));
         assertThatThrownBy(() -> gatherer.argumentWhenSourceLonger(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void sourceWhenArgumentLongerFunctionMustNotBeNull() {
-        final var gatherer = Gatherers4j.zipWith(List.of("A"));
+        final var gatherer = zipWith(List.of("A"));
         assertThatThrownBy(() -> gatherer.sourceWhenArgumentLonger(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -77,8 +77,8 @@ class ZipWithGathererTest {
         final Stream<Integer> right = Stream.of(1, 2, 3, 4);
 
         // Act
-        final List<Pair<String, Integer>> output = left
-                .gather(Gatherers4j.<String, Integer>zipWith(right).sourceWhenArgumentLonger(String::valueOf))
+        final var output = left
+                .gather(zipWith(right).sourceWhenArgumentLonger(String::valueOf))
                 .toList();
 
         // Assert
@@ -122,7 +122,7 @@ class ZipWithGathererTest {
 
         // Act
         final List<Pair<String, Integer>> output = left
-                .gather(Gatherers4j.zipWith(right))
+                .gather(zipWith(right))
                 .toList();
 
         // Assert
@@ -136,7 +136,7 @@ class ZipWithGathererTest {
         final Stream<Integer> right = Stream.of(4);
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(Gatherers4j.<String, Integer>zipWith(right).argumentWhenSourceLonger(String::length))
                 .toList();
 
@@ -158,7 +158,7 @@ class ZipWithGathererTest {
         final Stream<Integer> right = Stream.of(1);
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(Gatherers4j.<String, Integer>zipWith(right).nullArgumentWhenSourceLonger())
                 .toList();
 
@@ -181,7 +181,7 @@ class ZipWithGathererTest {
 
         // Act
         final List<Pair<String, Integer>> output = left
-                .gather(Gatherers4j.zipWith(right))
+                .gather(zipWith(right))
                 .toList();
 
         // Assert
@@ -192,11 +192,11 @@ class ZipWithGathererTest {
     void zipWithIterableGatherer() {
         // Arrange
         final Stream<String> left = Stream.of("A", "B", "C");
-        final Iterable<Integer> right = List.of(1, 2, 3);
+        final Iterable<Integer> right = List.of(1, 2, 3, 4);
 
         // Act
         final List<Pair<String, Integer>> output = left
-                .gather(Gatherers4j.zipWith(right))
+                .gather(zipWith(right))
                 .toList();
 
         // Assert
@@ -209,6 +209,26 @@ class ZipWithGathererTest {
     }
 
     @Test
+    void zipWithIterableGathererSourceLonger() {
+        // Arrange
+        final Stream<String> left = Stream.of("A", "B", "C");
+        final Iterable<Integer> right = List.of(1, 2);
+
+        // Act
+        final List<Pair<String, Integer>> output = left
+                .gather(zipWith(right))
+                .toList();
+
+        // Assert
+        assertThat(output)
+                .containsExactly(
+                        new Pair<>("A", 1),
+                        new Pair<>("B", 2)
+                );
+    }
+
+
+    @Test
     void zipWithIteratorGatherer() {
         // Arrange
         final Stream<String> left = Stream.of("A", "B", "C");
@@ -216,7 +236,7 @@ class ZipWithGathererTest {
 
         // Act
         final List<Pair<String, Integer>> output = left
-                .gather(Gatherers4j.zipWith(right))
+                .gather(zipWith(right))
                 .toList();
 
         // Assert
@@ -226,6 +246,21 @@ class ZipWithGathererTest {
                         new Pair<>("B", 2),
                         new Pair<>("C", 3)
                 );
+    }
+
+    @Test
+    void zipWithTransform() {
+        // Arrange
+        final var left = Stream.of("A", "B", "C");
+        final var right = List.of(1, 2, 3);
+
+        // Act
+        final var output = left
+                .gather(zipWith(right, (s, n) -> s + n))
+                .toList();
+
+        // Assert
+        assertThat(output).containsExactly("A1", "B2", "C3");
     }
 
     @Test
@@ -236,7 +271,7 @@ class ZipWithGathererTest {
 
         // Act
         final List<Pair<String, Integer>> output = left
-                .gather(Gatherers4j.zipWith(right))
+                .gather(zipWith(right))
                 .toList();
 
         // Assert
@@ -255,7 +290,7 @@ class ZipWithGathererTest {
 
         // Act
         final List<Pair<String, Integer>> output = left
-                .gather(Gatherers4j.zipWith(1, 2, 3))
+                .gather(zipWith(1, 2, 3))
                 .toList();
 
         // Assert

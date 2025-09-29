@@ -835,10 +835,17 @@ public final class Gatherers4j {
     /// @param <FIRST>  Type of object in the source stream
     /// @param <SECOND> Type of object in the argument `Iterable`
     /// @return A non-null `ZipWithGatherer`
-    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND> zipWith(
+    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND, Pair<FIRST, SECOND>> zipWith(
             final Iterable<SECOND> other
     ) {
-        return new ZipWithGatherer<>(other);
+        return zipWith(other, Pair::new);
+    }
+
+    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object, OUTPUT extends @Nullable Object> ZipWithGatherer<FIRST, SECOND, OUTPUT> zipWith(
+            final Iterable<SECOND> other,
+            final BiFunction<? super FIRST, ? super SECOND, ? extends OUTPUT> mapper
+    ) {
+        return new ZipWithGatherer<>(other, mapper);
     }
 
     /// Creates a stream of `Pair<FIRST,SECOND>` objects whose values come from the stream this is called on
@@ -848,10 +855,11 @@ public final class Gatherers4j {
     /// @param <FIRST>  Type of object in the source stream
     /// @param <SECOND> Type of object in the argument `Iterator`
     /// @return A non-null `ZipWithGatherer`
-    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND> zipWith(
+    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND, Pair<FIRST, SECOND>> zipWith(
             final Iterator<SECOND> other
     ) {
-        return new ZipWithGatherer<>(other);
+        mustNotBeNull(other, "Other iterator must not be null");
+        return new ZipWithGatherer<>(() -> other, Pair::new);
     }
 
     /// Creates a stream of `Pair<FIRST,SECOND>` objects whose values come from the stream this is called on
@@ -861,10 +869,17 @@ public final class Gatherers4j {
     /// @param <FIRST>  Type of object in the source stream
     /// @param <SECOND> Type of object in the argument `Stream`
     /// @return A non-null `ZipWithGatherer`
-    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND> zipWith(
+    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND, Pair<FIRST, SECOND>> zipWith(
             final Stream<SECOND> other
     ) {
-        return new ZipWithGatherer<>(other);
+        return new ZipWithGatherer<>(other, Pair::new);
+    }
+
+    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object, OUTPUT extends @Nullable Object> ZipWithGatherer<FIRST, SECOND, OUTPUT> zipWith(
+            final Stream<SECOND> other,
+            final BiFunction<? super FIRST, ? super SECOND, ? extends OUTPUT> mapper
+    ) {
+        return new ZipWithGatherer<>(other, mapper);
     }
 
     /// Creates a stream of `Pair<FIRST,SECOND>` objects whose values come from the stream this is called on
@@ -875,10 +890,11 @@ public final class Gatherers4j {
     /// @param <SECOND> Type of object in the argument `Stream`
     /// @return A non-null `ZipWithGatherer`
     @SafeVarargs
-    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND> zipWith(
+    public static <FIRST extends @Nullable Object, SECOND extends @Nullable Object> ZipWithGatherer<FIRST, SECOND, Pair<FIRST, SECOND>> zipWith(
             final SECOND... other
     ) {
-        return new ZipWithGatherer<>(other);
+        mustNotBeNull(other, "Other must not be null");
+        return new ZipWithGatherer<>(Arrays.stream(other), Pair::new);
     }
 
     /// Creates a stream of `List` objects which contain each two adjacent elements in the input stream.
