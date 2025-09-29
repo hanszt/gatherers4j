@@ -645,7 +645,21 @@ public final class Gatherers4j {
     /// @param <INPUT>    Type of elements in the input and output stream
     /// @return A non-null Gatherer
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> samplePercentage(final double percentage) {
-        return SamplePercentageGatherers.poisson(percentage);
+        if (percentage <= 0.0) {
+            throw new IllegalArgumentException("percentage must be greater than 0");
+        }
+        if (percentage > 1.0) {
+            throw new IllegalArgumentException("percentage must be less than 1.0");
+        }
+        final RandomGenerator randomGenerator = RandomGenerator.getDefault();
+        return Gatherer.ofSequential(
+                Gatherer.Integrator.ofGreedy((_, element, downstream) -> {
+                    if (randomGenerator.nextDouble() < percentage) {
+                        return downstream.push(element);
+                    }
+                    return !downstream.isRejecting();
+                })
+        );
     }
 
     ///  Perform a scan over every element in the input stream along with its index
