@@ -19,36 +19,36 @@ package com.ginsberg.gatherers4j;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.pushAll;
 
-public class UniquelyOccurringGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, UniquelyOccurringGatherer.State<INPUT>, INPUT> {
-
-    UniquelyOccurringGatherer() {
-        // Nothing to do
-    }
+record UniquelyOccurringGatherer<INPUT extends @Nullable Object, SELECTED extends @Nullable Object>(
+        Function<? super INPUT, ? extends SELECTED> selector
+) implements Gatherer<INPUT, UniquelyOccurringGatherer.State<INPUT, SELECTED>, INPUT> {
 
     @Override
-    public Supplier<State<INPUT>> initializer() {
+    public Supplier<State<INPUT, SELECTED>> initializer() {
         return State::new;
     }
 
     @Override
-    public Integrator<State<INPUT>, INPUT, INPUT> integrator() {
+    public Integrator<State<INPUT, SELECTED>, INPUT, INPUT> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
-            if (!state.duplicates.contains(element)) {
-                if (state.found.contains(element)) {
-                    state.duplicates.add(element);
-                    state.found.remove(element);
+            final SELECTED selected = selector.apply(element);
+            if (!state.duplicates.contains(selected)) {
+                if (state.found.containsKey(selected)) {
+                    state.duplicates.add(selected);
+                    state.found.remove(selected);
                 } else {
-                    state.found.add(element);
+                    state.found.put(selected, element);
                 }
             }
             return !downstream.isRejecting();
@@ -56,20 +56,21 @@ public class UniquelyOccurringGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public BinaryOperator<State<INPUT>> combiner() {
+    public BinaryOperator<State<INPUT, SELECTED>> combiner() {
         return (left, right) -> {
-            for (INPUT element : right.duplicates) {
+            for (final var element : right.duplicates) {
                 left.duplicates.add(element);
                 left.found.remove(element);
             }
 
-            for (INPUT element : right.found) {
-                if (!left.duplicates.contains(element)) {
-                    if (left.found.contains(element)) {
-                        left.found.remove(element);
-                        left.duplicates.add(element);
+            for (final var e : right.found.entrySet()) {
+                final var selected = e.getKey();
+                if (!left.duplicates.contains(selected)) {
+                    if (left.found.containsKey(selected)) {
+                        left.found.remove(selected);
+                        left.duplicates.add(selected);
                     } else {
-                        left.found.add(element);
+                        left.found.put(selected, e.getValue());
                     }
                 }
             }
@@ -78,12 +79,12 @@ public class UniquelyOccurringGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public BiConsumer<State<INPUT>, Downstream<? super INPUT>> finisher() {
-        return (inputState, downstream) -> pushAll(inputState.found, downstream);
+    public BiConsumer<State<INPUT, SELECTED>, Downstream<? super INPUT>> finisher() {
+        return (inputState, downstream) -> pushAll(inputState.found.values(), downstream);
     }
 
-    public static class State<INPUT extends @Nullable Object> {
-        final Set<INPUT> duplicates = new HashSet<>();
-        final Set<INPUT> found = new LinkedHashSet<>();
+    public static class State<INPUT extends @Nullable Object, SELECTED extends @Nullable Object> {
+        final Set<SELECTED> duplicates = new HashSet<>();
+        final Map<SELECTED, INPUT> found = new LinkedHashMap<>();
     }
 }

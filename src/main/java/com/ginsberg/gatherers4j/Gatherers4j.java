@@ -45,7 +45,7 @@ import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
 /// This is the main entry-point for the Gatherers4j library. All available gatherers
 /// are created from static methods on this class.
-public abstract class Gatherers4j {
+public final class Gatherers4j {
 
     private Gatherers4j() {
         // No
@@ -779,7 +779,17 @@ public abstract class Gatherers4j {
     /// @param <INPUT> Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> uniquelyOccurring() {
-        return new UniquelyOccurringGatherer<>();
+        return new UniquelyOccurringGatherer<>(e -> e);
+    }
+
+    /// Emit only those elements that occur in the input stream a single time.
+    ///
+    /// @param <INPUT> Type of elements in the input stream
+    /// @return A non-null `Gatherer`
+    public static <INPUT extends @Nullable Object, SELECTED extends @Nullable Object> Gatherer<INPUT, ?, INPUT> uniquelyOccurringBy(
+            Function<? super INPUT, ? extends SELECTED> selector
+    ) {
+        return new UniquelyOccurringGatherer<>(selector);
     }
 
     /// Create windows over the elements of the input stream that are `windowSize` in length, sliding over `stepping` number of elements

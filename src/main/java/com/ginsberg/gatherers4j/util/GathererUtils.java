@@ -26,7 +26,10 @@ import java.util.function.Function;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
-abstract public class GathererUtils {
+public final class GathererUtils {
+
+    private GathererUtils() {
+    }
 
     public static final long NANOS_PER_MILLISECOND = Duration.ofMillis(1).toNanos();
 

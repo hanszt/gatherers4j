@@ -115,6 +115,19 @@ class UniquelyOccurringGathererTest {
         assertThat(output).containsExactly("A", "C", "D");
     }
 
+    @ParallelAndSequentialTest(values = {"AA", "BBB", "BB", "CCCC", "D", "E", "E"})
+    void mixtureWithSeveralUniquesIncludingNullSelected(final Stream<String> input) {
+        // Act
+        //noinspection DataFlowIssue
+        final List<String> output = input
+                .gather(Gatherers4j.uniquelyOccurringBy(String::length))
+                .toList();
+
+        // Assert
+        assertThat(output).containsExactly("BBB", "CCCC");
+    }
+
+
     @ParallelAndSequentialTest(values = "A")
     void singleElementIsUnique(final Stream<String> input) {
         // Act
