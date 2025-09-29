@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -119,7 +120,7 @@ class SampleGathererTest {
 
             // Act
             for (int i = 0; i < samples; i++) {
-                input.stream().gather(Gatherers4j.samplePercentage(samplePercentage)).forEach(it -> counts[it]++);
+                input.stream().gather(Gatherers4j.samplePercentage(samplePercentage, RandomGenerator.getDefault())).forEach(it -> counts[it]++);
             }
 
             // Assert
@@ -132,7 +133,7 @@ class SampleGathererTest {
         @ValueSource(doubles = {0.0, 1.01, -0.1})
         void sampleSizeMustBeAtLeast1(final double percentage) {
             assertThatThrownBy(() ->
-                    Gatherers4j.samplePercentage(percentage)
+                    Gatherers4j.samplePercentage(percentage, RandomGenerator.getDefault())
             ).isExactlyInstanceOf(IllegalArgumentException.class);
         }
     }

@@ -20,7 +20,10 @@ import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-abstract class TypeFilteringGatherer {
+final class TypeFilteringGatherer {
+
+    private TypeFilteringGatherer() {
+    }
 
     @SafeVarargs
     public static <INPUT, OUTPUT> Gatherer<INPUT, ?, OUTPUT> of(final Class<? extends OUTPUT>... validTypes) {

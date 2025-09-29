@@ -199,14 +199,14 @@ class CrossGathererTest {
 
             // Act
             final var output = input
-                    .gather(crossWith(cross))
+                    .gather(crossWith(cross, (s, n) -> s + n))
                     .toList();
 
             // Assert
             assertThat(output).containsExactly(
-                    new Pair<>("A", 1), new Pair<>("A", 2), new Pair<>("A", 3),
-                    new Pair<>("B", 1), new Pair<>("B", 2), new Pair<>("B", 3),
-                    new Pair<>("C", 1), new Pair<>("C", 2), new Pair<>("C", 3)
+                    "A1", "A2", "A3",
+                    "B1", "B2", "B3",
+                    "C1", "C2", "C3"
             );
         }
 

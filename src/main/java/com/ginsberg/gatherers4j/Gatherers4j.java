@@ -227,8 +227,7 @@ public final class Gatherers4j {
     /// via a `mappingFunction` and using the given `alpha`.
     ///
     /// @param alpha           The alpha value to use in the EMA calculation.
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the exponential average calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the exponential average calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalExponentialMovingAverageGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<INPUT> exponentialMovingAverageWithAlphaBy(
@@ -250,8 +249,7 @@ public final class Gatherers4j {
     /// via a `mappingFunction` over the given number of `periods`.
     ///
     /// @param periods         The number of periods to use in the EMA calculation.
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the exponential average calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the exponential average calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalExponentialMovingAverageGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<INPUT> exponentialMovingAverageWithPeriodBy(
@@ -264,8 +262,7 @@ public final class Gatherers4j {
     /// Filter a stream according to the given `predicate`, which takes both the item being examined,
     /// and its index.
     ///
-    /// @param predicate A non-null `BiPredicate<Integer,INPUT>` where the `Integer` is the zero-based index of the element
-    ///                                                                                      being filtered, and the `INPUT` is the element itself.
+    /// @param predicate A non-null `BiPredicate<Integer,INPUT>` where the `Integer` is the zero-based index of the element being filtered, and the `INPUT` is the element itself.
     /// @param <INPUT>   Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> filterIndexed(
@@ -435,8 +432,7 @@ public final class Gatherers4j {
     /// via a `mappingFunction` and looking back `windowSize` number of elements.
     ///
     /// @param windowSize      The trailing number of elements to multiply, must be greater than 1.
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the moving product calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the moving product calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalMovingProductGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalMovingProductGatherer<INPUT> movingProductBy(
@@ -459,8 +455,7 @@ public final class Gatherers4j {
     /// via a `mappingFunction` and looking back `windowSize` number of elements.
     ///
     /// @param windowSize      The trailing number of elements to multiply, must be greater than 1.
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the moving sum calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the moving sum calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalMovingSumGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalMovingSumGatherer<INPUT> movingSumBy(
@@ -546,8 +541,7 @@ public final class Gatherers4j {
     /// Create a `Stream<BigDecimal>` that represents the running population standard deviation of a `BigDecimal`
     /// objects mapped from a `Stream<BigDecimal>` via a `mappingFunction`.
     ///
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the standard deviation calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the standard deviation calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalStandardDeviationGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalStandardDeviationGatherer<INPUT> runningPopulationStandardDeviationBy(
@@ -569,8 +563,7 @@ public final class Gatherers4j {
     /// Create a `Stream<BigDecimal>` that represents the running product of `BigDecimal` objects mapped
     /// from a `Stream<INPUT>` via a `mappingFunction`.
     ///
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the product calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the product calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalProductGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalProductGatherer<INPUT> runningProductBy(
@@ -592,8 +585,7 @@ public final class Gatherers4j {
     /// Create a `Stream<BigDecimal>` that represents the running sample standard deviation of `BigDecimal` objects mapped
     /// from a `Stream<INPUT>` via a `mappingFunction`.
     ///
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the standard deviation calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the standard deviation calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalStandardDeviationGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalStandardDeviationGatherer<INPUT> runningSampleStandardDeviationBy(
@@ -615,8 +607,7 @@ public final class Gatherers4j {
     /// Create a `Stream<BigDecimal>` that represents the running sum of `BigDecimal` objects mapped
     /// from a `Stream<INPUT>` via a `mappingFunction`.
     ///
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the running sum calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the running sum calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalSumGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalSumGatherer<INPUT> runningSumBy(
@@ -641,17 +632,17 @@ public final class Gatherers4j {
     /// the number of elements emitted to the downstream may not be strictly in line with the given `percentage`.
     /// Elements will be emitted in the order in which they are encountered.
     ///
-    /// @param percentage Percentage of elements that should be sampled, on average.
-    /// @param <INPUT>    Type of elements in the input and output stream
+    /// @param percentage      Percentage of elements that should be sampled, on average.
+    /// @param randomGenerator the random generator to use for sampling
+    /// @param <INPUT>         Type of elements in the input and output stream
     /// @return A non-null Gatherer
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> samplePercentage(final double percentage) {
+    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> samplePercentage(final double percentage, final RandomGenerator randomGenerator) {
         if (percentage <= 0.0) {
             throw new IllegalArgumentException("percentage must be greater than 0");
         }
         if (percentage > 1.0) {
             throw new IllegalArgumentException("percentage must be less than 1.0");
         }
-        final RandomGenerator randomGenerator = RandomGenerator.getDefault();
         return Gatherer.ofSequential(
                 Gatherer.Integrator.ofGreedy((_, element, downstream) -> {
                     if (randomGenerator.nextDouble() < percentage) {
@@ -712,8 +703,7 @@ public final class Gatherers4j {
     /// via a `mappingFunction` and looking back `windowSize` number of elements.
     ///
     /// @param windowSize      The number of elements to average, must be greater than 1.
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the moving average calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the moving average calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalSimpleMovingAverageGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalSimpleMovingAverageGatherer<INPUT> simpleMovingAverageBy(
@@ -733,8 +723,7 @@ public final class Gatherers4j {
     /// Create a Stream that is the running average of `BigDecimal` objects as mapped by
     /// the given function. This is useful when paired with the `withOriginal` function.
     ///
-    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used
-    ///                                                                                                                    in the running average calculation
+    /// @param mappingFunction A function to map `<INPUT>` objects to `BigDecimal`, the results of which will be used in the running average calculation
     /// @param <INPUT>         Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalSimpleAverageGatherer`
     public static <INPUT extends @Nullable Object> BigDecimalSimpleAverageGatherer<INPUT> simpleRunningAverageBy(
@@ -773,7 +762,17 @@ public final class Gatherers4j {
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> takeUntil(
             final Predicate<INPUT> predicate
     ) {
-        return new TakeUntilGatherer<>(predicate);
+        mustNotBeNull(predicate, "Predicate must not be null");
+        return Gatherer.ofSequential(
+                () -> new Object() {
+                    boolean done = false;
+                },
+                (state, item, downstream) -> {
+                    if (state.done) return false;
+                    state.done = predicate.test(item);
+                    return !downstream.isRejecting() && downstream.push(item);
+                }
+        );
     }
 
     /// Limit the number of elements in the stream to some number per period. When the limit is reached,
