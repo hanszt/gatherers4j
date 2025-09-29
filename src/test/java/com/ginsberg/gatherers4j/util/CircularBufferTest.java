@@ -48,7 +48,7 @@ class CircularBufferTest {
         final List<String> output = cb.asList();
 
         // Assert
-        assertThat(output).containsExactly("A" ,"B" ,"C", "D");
+        assertThat(output).containsExactly("A", "B", "C", "D");
     }
 
     @Test
@@ -70,7 +70,7 @@ class CircularBufferTest {
 
         // Assert
         assertThat(cb.isEmpty()).isTrue();
-        assertThat(cb.size()).isEqualTo(0);
+        assertThat(cb.size()).isZero();
     }
 
     @Test
@@ -97,7 +97,7 @@ class CircularBufferTest {
         cb.drop(6);
 
         // Assert
-        assertThat(cb.size()).isEqualTo(0);
+        assertThat(cb.size()).isZero();
         assertThat(cb.isEmpty()).isTrue();
     }
 
@@ -130,12 +130,12 @@ class CircularBufferTest {
 
     @Test
     void iteratorDoesNotSupportRemove() {
-        assertThatThrownBy(() -> {
-                    final CircularBuffer<String> cb = new CircularBuffer<>(5);
-                    Stream.of("A", "B", "C", "D").forEach(cb::add);
-                    cb.iterator().remove();
-                }
-        ).isExactlyInstanceOf(UnsupportedOperationException.class);
+        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        Stream.of("A", "B", "C", "D").forEach(cb::add);
+        final var iterator = cb.iterator();
+
+        assertThatThrownBy(iterator::remove)
+                .isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
@@ -152,9 +152,9 @@ class CircularBufferTest {
 
     @Test
     void iteratorEmptyWhenNext() {
-        assertThatThrownBy(() ->
-            new CircularBuffer<>(1).iterator().next()
-        ).isExactlyInstanceOf(NoSuchElementException.class);
+        final var iterator = new CircularBuffer<>(1).iterator();
+        assertThatThrownBy(iterator::next)
+                .isExactlyInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -173,16 +173,15 @@ class CircularBufferTest {
 
     @Test
     void removeFirstWhenEmpty() {
-        assertThatThrownBy(() ->
-                new CircularBuffer<>(1).removeFirst()
-        ).isExactlyInstanceOf(NoSuchElementException.class);
+        final var buffer = new CircularBuffer<>(1);
+        assertThatThrownBy(buffer::removeFirst)
+                .isExactlyInstanceOf(NoSuchElementException.class);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
     void sizeMustBeGreaterThanZero(final int value) {
-        assertThatThrownBy(() ->
-                new CircularBuffer<>(value)
-        ).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new CircularBuffer<>(value))
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

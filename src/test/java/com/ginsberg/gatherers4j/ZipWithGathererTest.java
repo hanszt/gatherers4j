@@ -17,6 +17,7 @@
 package com.ginsberg.gatherers4j;
 
 import com.ginsberg.gatherers4j.dto.Pair;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
@@ -44,30 +45,28 @@ class ZipWithGathererTest {
 
     @Test
     void argumentStreamMustNotBeNull() {
-        assertThatThrownBy(() -> Stream.of("A")
-                .gather(Gatherers4j.zipWith((Stream<String>) null)).toList()
-        ).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Gatherers4j.zipWith((Stream<String>) null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void argumentVarargsMustNotBeNull() {
-        assertThatThrownBy(() -> Stream.of("A")
-                .gather(Gatherers4j.zipWith((String[]) null)).toList()
-        ).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Gatherers4j.zipWith((String[]) null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void argumentWhenSourceLongerFunctionMustNotBeNull() {
-        assertThatThrownBy(() -> Stream.of("A")
-                .gather(Gatherers4j.zipWith(List.of("A")).argumentWhenSourceLonger(null)).toList()
-        ).isInstanceOf(IllegalArgumentException.class);
+        final var gatherer = Gatherers4j.zipWith(List.of("A"));
+        assertThatThrownBy(() -> gatherer.argumentWhenSourceLonger(null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void sourceWhenArgumentLongerFunctionMustNotBeNull() {
-        assertThatThrownBy(() -> Stream.of("A")
-                .gather(Gatherers4j.zipWith(List.of("A")).sourceWhenArgumentLonger(null)).toList()
-        ).isInstanceOf(IllegalArgumentException.class);
+        final var gatherer = Gatherers4j.zipWith(List.of("A"));
+        assertThatThrownBy(() -> gatherer.sourceWhenArgumentLonger(null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 
@@ -134,7 +133,7 @@ class ZipWithGathererTest {
     void zipWhenSourceIsLongerFromFunction() {
         // Arrange
         final Stream<String> left = Stream.of("A", "Bb", "Ccc", "Dddd");
-        final Stream<Integer> right = Stream.of(1);
+        final Stream<Integer> right = Stream.of(4);
 
         // Act
         final List<Pair<String, Integer>> output = left
@@ -145,7 +144,7 @@ class ZipWithGathererTest {
         assertThat(output)
                 .hasSize(4)
                 .containsExactly(
-                        new Pair<>("A", 1),
+                        new Pair<>("A", 4),
                         new Pair<>("Bb", 2),
                         new Pair<>("Ccc", 3),
                         new Pair<>("Dddd", 4)

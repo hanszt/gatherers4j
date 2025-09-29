@@ -52,8 +52,10 @@ class BigDecimalSimpleAverageGathererTest {
 
     @Test
     void mathContextCannotBeNull() {
+        final var runningAverage = Gatherers4j.simpleRunningAverage();
+
         assertThatThrownBy(() ->
-                Stream.of(BigDecimal.ONE).gather(Gatherers4j.simpleRunningAverage().withMathContext(null))
+                runningAverage.withMathContext(null)
         ).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
