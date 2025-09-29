@@ -24,8 +24,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-public class WindowGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, WindowGatherer.State<INPUT>, List<INPUT>> {
+final class WindowGatherer<INPUT extends @Nullable Object> implements Gatherer<INPUT, WindowGatherer.State<INPUT>, List<INPUT>> {
 
     private final boolean includePartials;
     private final int stepping;

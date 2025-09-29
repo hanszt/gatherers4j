@@ -22,18 +22,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.zipWithNext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ZipWithNextGathererTest {
 
     @Test
-    void zipWithNext() {
+    void testZipWithNext() {
         // Arrange
         final Stream<String> input = Stream.of("A", "B", "C", "D", "E");
 
         // Act
         final List<List<String>> output = input
-                .gather(Gatherers4j.zipWithNext())
+                .gather(zipWithNext())
                 .toList();
 
         // Assert
@@ -46,6 +47,21 @@ class ZipWithNextGathererTest {
                 );
     }
 
+    @Test
+    void zipWithNextUsingZipperFunction() {
+        // Arrange
+        final var input = Stream.of("A", "B", "C", "D", "E");
+
+        // Act
+        final var output = input
+                .gather(zipWithNext((s, next) -> s + next))
+                .toList();
+
+        // Assert
+        assertThat(output).containsExactly("AB", "BC", "CD", "DE");
+    }
+
+
 
     @Test
     void zipWithNextIncludingNulls() {
@@ -54,7 +70,7 @@ class ZipWithNextGathererTest {
 
         // Act
         final List<List<String>> output = input
-                .gather(Gatherers4j.zipWithNext())
+                .gather(zipWithNext())
                 .toList();
 
         // Assert
@@ -73,7 +89,7 @@ class ZipWithNextGathererTest {
 
         // Act
         final List<List<String>> output = input
-                .gather(Gatherers4j.zipWithNext())
+                .gather(zipWithNext())
                 .toList();
 
         // Assert
