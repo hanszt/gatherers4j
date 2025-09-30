@@ -26,7 +26,8 @@ replay_pid*
 # Gradle
 .gradle/
 build/
-.idea/
+**/.idea/*
+!/.idea/icon.*
 
 # Hugo
 /docs/hugo/
