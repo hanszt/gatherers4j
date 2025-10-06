@@ -26,7 +26,7 @@ public class BigDecimalExponentialMovingAverageGatherer<INPUT extends @Nullable 
         if (periods <= 1) {
             throw new IllegalArgumentException("periods must be greater than 1");
         }
-        final double alpha = 2.0 / (((long) periods) + 1);
+        final var alpha = 2.0 / (((long) periods) + 1);
         return new BigDecimalExponentialMovingAverageGatherer<>(alpha, mappingFunction);
     }
 

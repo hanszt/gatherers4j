@@ -31,7 +31,7 @@ class FlattenSingleOrFailTest {
     @Test
     void doesNotEmitAnythingDuringFailureCase() {
         // Arrange
-        final Stream<List<String>> input = Stream.of(List.of("A"), List.of("B"));
+        final var input = Stream.of(List.of("A"), List.of("B"));
         final Set<Object> emitted = new HashSet<>();
 
         // Act
@@ -48,10 +48,10 @@ class FlattenSingleOrFailTest {
     @Test
     void emitsListWhenSinglePresent() {
         // Arrange
-        final Stream<List<String>> input = Stream.of(List.of("A", "B"));
+        final var input = Stream.of(List.of("A", "B"));
 
         // Act
-        final List<String> output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
+        final var output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
 
         // Assert
         assertThat(output).containsExactly("A", "B");
@@ -63,7 +63,7 @@ class FlattenSingleOrFailTest {
         final Stream<List<String>> input = Stream.empty();
 
         // Act
-        final List<String> output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
+        final var output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -82,10 +82,10 @@ class FlattenSingleOrFailTest {
     @Test
     void singleElementNull() {
         // Arrange
-        final Stream<List<String>> input = Stream.of((List<String>) null);
+        final var input = Stream.of((List<String>) null);
 
         // Act
-        final List<String> output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
+        final var output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
 
         // Assert
         assertThat(output).isEmpty();

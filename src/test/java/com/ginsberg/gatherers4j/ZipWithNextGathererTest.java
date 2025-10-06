@@ -30,10 +30,10 @@ class ZipWithNextGathererTest {
     @Test
     void testZipWithNext() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E");
+        final var input = Stream.of("A", "B", "C", "D", "E");
 
         // Act
-        final List<List<String>> output = input
+        final var output = input
                 .gather(zipWithNext())
                 .toList();
 
@@ -66,10 +66,10 @@ class ZipWithNextGathererTest {
     @Test
     void zipWithNextIncludingNulls() {
         // Arrange
-        final Stream<String> input = Stream.of("A", null, "C", null);
+        final var input = Stream.of("A", null, "C", null);
 
         // Act
-        final List<List<String>> output = input
+        final var output = input
                 .gather(zipWithNext())
                 .toList();
 
@@ -85,10 +85,10 @@ class ZipWithNextGathererTest {
     @Test
     void zipWithNextSingleElementProducesNothing() {
         // Arrange
-        final Stream<String> input = Stream.of("A");
+        final var input = Stream.of("A");
 
         // Act
-        final List<List<String>> output = input
+        final var output = input
                 .gather(zipWithNext())
                 .toList();
 

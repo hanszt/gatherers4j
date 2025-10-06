@@ -64,7 +64,7 @@ public class FrequencyGatherer<INPUT extends @Nullable Object>
     @Override
     public BiConsumer<State<INPUT>, Downstream<? super WithCount<INPUT>>> finisher() {
         return (inputState, downstream) -> {
-            var counts = inputState.counts
+            final var counts = inputState.counts
                     .entrySet()
                     .stream().map(it -> new WithCount<>(it.getKey(), it.getValue()))
                     .sorted(comparator());

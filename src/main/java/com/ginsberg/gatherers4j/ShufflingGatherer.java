@@ -53,8 +53,8 @@ public class ShufflingGatherer<INPUT extends @Nullable Object> implements
     public BiConsumer<ShufflingGatherer.State<INPUT>, Downstream<? super INPUT>> finisher() {
         return (state, downstream) -> {
             while (!state.inputs.isEmpty() && !downstream.isRejecting()) {
-                int randomSlot = randomGenerator.nextInt(state.inputs.size());
-                INPUT last = state.inputs.removeLast();
+                final var randomSlot = randomGenerator.nextInt(state.inputs.size());
+                final var last = state.inputs.removeLast();
                 if (randomSlot < state.inputs.size()) {
                     downstream.push(state.inputs.set(randomSlot, last));
                 } else {

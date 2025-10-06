@@ -51,7 +51,7 @@ public final class Gatherers4j {
         mustNotBeNull(source, "source must not be null");
         mustNotBeNull(crossFunction, "crossFunction must not be null");
         return Gatherer.of((_, element, downstream) -> {
-            for (final CROSS cross : source) {
+            for (final var cross : source) {
                 downstream.push(crossFunction.apply(element, cross));
             }
             return !downstream.isRejecting();
@@ -802,7 +802,7 @@ public final class Gatherers4j {
     /// @param <INPUT> Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object, SELECTED extends @Nullable Object> Gatherer<INPUT, ?, INPUT> uniquelyOccurringBy(
-            Function<? super INPUT, ? extends SELECTED> selector
+            final Function<? super INPUT, ? extends SELECTED> selector
     ) {
         return new UniquelyOccurringGatherer<>(selector);
     }
@@ -815,7 +815,7 @@ public final class Gatherers4j {
     /// @param stepping        Number of elements to slide over each time a window has filled, must be greater than 0
     /// @param includePartials To include left-over partial windows at the end of the stream or not
     /// @return A non-null `Gatherer`
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, List<INPUT>> window(int windowSize, int stepping, boolean includePartials) {
+    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, List<INPUT>> window(final int windowSize, final int stepping, final boolean includePartials) {
         return new WindowGatherer<>(windowSize, stepping, includePartials);
     }
 
@@ -911,7 +911,7 @@ public final class Gatherers4j {
     /// @param zipper    A function that takes two adjacent elements from the input stream and returns a single element
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object, OUTPUT extends @Nullable Object> Gatherer<INPUT, ?, OUTPUT> zipWithNext(
-            BiFunction<? super INPUT, ? super INPUT, ? extends OUTPUT> zipper
+            final BiFunction<? super INPUT, ? super INPUT, ? extends OUTPUT> zipper
     ) {
         mustNotBeNull(zipper, "Zipper must not be null");
         class State {

@@ -70,7 +70,7 @@ public class SampleFixedSizeGatherer<INPUT extends @Nullable Object> implements 
             if (index < sampleSize) {
                 elements.add(element);
             } else {
-                int n = random.nextInt(0, index);
+                final var n = random.nextInt(0, index);
                 if (n < sampleSize) {
                     // Not replacing element at n because we want to keep iteration order.
                     elements.remove(n);

@@ -30,10 +30,10 @@ class DistinctGathererTest {
     @Test
     void distinctBy() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "a", "b", "B", "C", "c");
+        final var input = Stream.of("A", "a", "b", "B", "C", "c");
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.distinctBy(String::toUpperCase))
                 .toList();
 
@@ -44,10 +44,10 @@ class DistinctGathererTest {
     @Test
     void distinctByWithNull() {
         // Arrange
-        final Stream<String> input = Stream.of(null, "a", null);
+        final var input = Stream.of(null, "a", null);
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.distinctBy(it -> it == null ? null : it.toUpperCase(Locale.getDefault())))
                 .toList();
 
@@ -58,7 +58,7 @@ class DistinctGathererTest {
     @Test
     void distinctByWithNullMappingFunction() {
         // Arrange
-        final Stream<String> input = Stream.of("A");
+        final var input = Stream.of("A");
 
         // Act/Assert
         assertThatThrownBy(() -> input.gather(Gatherers4j.distinctBy(null)).toList())

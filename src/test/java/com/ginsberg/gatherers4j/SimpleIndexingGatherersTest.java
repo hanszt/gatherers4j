@@ -35,10 +35,10 @@ class SimpleIndexingGatherersTest {
         @Test
         void filterWithIndex() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C", "D");
+            final var input = Stream.of("A", "B", "C", "D");
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.filterIndexed((index, element) ->
                             index % 2 == 0 || element.equals("D"))
                     )
@@ -72,7 +72,7 @@ class SimpleIndexingGatherersTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.mapIndexed((_, element) -> element)).toList();
+            final var output = input.gather(Gatherers4j.mapIndexed((_, element) -> element)).toList();
 
             // Assert
             assertThat(output).isEmpty();
@@ -81,10 +81,10 @@ class SimpleIndexingGatherersTest {
         @Test
         void mapIndexed() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.mapIndexed((index, element) -> element + index)).toList();
+            final var output = input.gather(Gatherers4j.mapIndexed((index, element) -> element + index)).toList();
 
             // Assert
             assertThat(output).containsExactly("A0", "B1", "C2");
@@ -109,7 +109,7 @@ class SimpleIndexingGatherersTest {
             final List<String> peeked = new ArrayList<>();
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.peekIndexed((index, element) -> peeked.add(element + index))).toList();
+            final var output = input.gather(Gatherers4j.peekIndexed((index, element) -> peeked.add(element + index))).toList();
 
             // Assert
             assertThat(output).isEmpty();
@@ -119,11 +119,11 @@ class SimpleIndexingGatherersTest {
         @Test
         void peekIndexed() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
             final List<String> peeked = new ArrayList<>();
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.peekIndexed((index, element) -> peeked.add(element + index))).toList();
+            final var output = input.gather(Gatherers4j.peekIndexed((index, element) -> peeked.add(element + index))).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B", "C");
@@ -137,10 +137,10 @@ class SimpleIndexingGatherersTest {
         @Test
         void objectWithIndex() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<WithIndex<String>> output = input
+            final var output = input
                     .gather(Gatherers4j.withIndex())
                     .toList();
 
@@ -156,10 +156,10 @@ class SimpleIndexingGatherersTest {
         @Test
         void integerWithIndex() {
             // Arrange
-            final Stream<Integer> input = Stream.of(1, 2, 3);
+            final var input = Stream.of(1, 2, 3);
 
             // Act
-            final List<WithIndex<Integer>> output = input
+            final var output = input
                     .gather(Gatherers4j.withIndex())
                     .toList();
 

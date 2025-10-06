@@ -95,7 +95,7 @@ public class InterleavingGatherer<INPUT extends @Nullable Object>
     @Override
     public BiConsumer<Void, Downstream<? super INPUT>> finisher() {
         return (_, downstream) -> {
-            boolean downstreamRejecting = downstream.isRejecting();
+            var downstreamRejecting = downstream.isRejecting();
             while (appendArgumentIfLonger && !downstreamRejecting) {
                 downstreamRejecting = !otherSpliterator.tryAdvance(downstream::push);
             }

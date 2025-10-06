@@ -36,10 +36,10 @@ class DropLastGathererTest {
     @Test
     void dropLast() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
+        final var input = Stream.of("A", "B", "C");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.dropLast(2)).toList();
+        final var output = input.gather(Gatherers4j.dropLast(2)).toList();
 
         // Assert
         assertThat(output).containsExactly("A");
@@ -48,10 +48,10 @@ class DropLastGathererTest {
     @Test
     void dropLastNulls() {
         // Arrange
-        final Stream<String> input = Stream.of("A", null, null);
+        final var input = Stream.of("A", null, null);
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.dropLast(2)).toList();
+        final var output = input.gather(Gatherers4j.dropLast(2)).toList();
 
         // Assert
         assertThat(output).containsExactly("A");
@@ -60,10 +60,10 @@ class DropLastGathererTest {
     @Test
     void dropLastLongerThanStreamReturnsEmpty() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
+        final var input = Stream.of("A", "B", "C");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.dropLast(4)).toList();
+        final var output = input.gather(Gatherers4j.dropLast(4)).toList();
 
         // Assert
         assertThat(output).isEmpty();

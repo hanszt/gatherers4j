@@ -33,10 +33,10 @@ class SizeGathererTest {
         @Test
         void canReplaceStreamEmpty() {
             // Arrange
-            final Stream<String> input = Stream.of("A");
+            final var input = Stream.of("A");
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.<String>ensureSize(Size.Equals, 2).orElseEmpty())
                     .toList();
 
@@ -47,10 +47,10 @@ class SizeGathererTest {
         @Test
         void canReplaceStreamNonempty() {
             // Arrange
-            final Stream<String> input = Stream.of("A");
+            final var input = Stream.of("A");
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.<String>ensureSize(Size.Equals, 2).orElse(() -> Stream.of("A", "B")))
                     .toList();
 
@@ -95,10 +95,10 @@ class SizeGathererTest {
         @Test
         void emitsAtTarget() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.ensureSize(Size.Equals, 3)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.Equals, 3)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B", "C");
@@ -125,10 +125,10 @@ class SizeGathererTest {
         @Test
         void emitsOverTarget() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.ensureSize(Size.GreaterThan, 2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.GreaterThan, 2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B", "C");
@@ -148,10 +148,10 @@ class SizeGathererTest {
         @Test
         void emitsAtTarget() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B");
+            final var input = Stream.of("A", "B");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.ensureSize(Size.GreaterThanOrEqualTo, 2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.GreaterThanOrEqualTo, 2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B");
@@ -160,10 +160,10 @@ class SizeGathererTest {
         @Test
         void emitsOverTarget() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.ensureSize(Size.GreaterThanOrEqualTo, 2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.GreaterThanOrEqualTo, 2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B", "C");
@@ -191,10 +191,10 @@ class SizeGathererTest {
         @Test
         void emitsUnderTarget() {
             // Arrange
-            final Stream<String> input = Stream.of("A");
+            final var input = Stream.of("A");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.ensureSize(Size.LessThan,  2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThan,  2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A");
@@ -215,10 +215,10 @@ class SizeGathererTest {
         @Test
         void emitsAtTarget() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B");
+            final var input = Stream.of("A", "B");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo,  2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo,  2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B");
@@ -227,10 +227,10 @@ class SizeGathererTest {
         @Test
         void emitsUnderTarget() {
             // Arrange
-            final Stream<String> input = Stream.of("A");
+            final var input = Stream.of("A");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo,  2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo,  2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A");

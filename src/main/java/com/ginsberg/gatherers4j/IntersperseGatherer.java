@@ -26,7 +26,7 @@ public class IntersperseGatherer<INPUT extends @Nullable Object>
 
     private final INPUT interspersed;
 
-    IntersperseGatherer(INPUT interspersed) {
+    IntersperseGatherer(final INPUT interspersed) {
         this.interspersed = interspersed;
     }
 

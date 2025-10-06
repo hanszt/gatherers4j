@@ -32,7 +32,7 @@ class BigDecimalSumGathererTest {
     @Test
     void ignoresNull() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 new BigDecimal("2"),
                 new BigDecimal("3"),
                 null,
@@ -40,7 +40,7 @@ class BigDecimalSumGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.runningSum())
                 .toList();
 
@@ -64,10 +64,10 @@ class BigDecimalSumGathererTest {
     @Test
     void runningSum() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input.gather(Gatherers4j.runningSum()).toList();
+        final var output = input.gather(Gatherers4j.runningSum()).toList();
 
         // Assert
         assertThat(output)
@@ -82,7 +82,7 @@ class BigDecimalSumGathererTest {
     @Test
     void runningSumBy() {
         // Arrange
-        final Stream<TestValueHolder> input = Stream.of(
+        final var input = Stream.of(
                 new TestValueHolder(1, new BigDecimal("1.0")),
                 new TestValueHolder(2, new BigDecimal("2.0")),
                 new TestValueHolder(3, new BigDecimal("10.0")),
@@ -91,7 +91,7 @@ class BigDecimalSumGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input.gather(Gatherers4j.runningSumBy(TestValueHolder::value)).toList();
+        final var output = input.gather(Gatherers4j.runningSumBy(TestValueHolder::value)).toList();
 
         // Assert
         assertThat(output)
@@ -109,10 +109,10 @@ class BigDecimalSumGathererTest {
     @Test
     void withOriginalBigDecimal() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3").map(BigDecimal::new);
 
         // Act
-        final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+        final var output = input
                 .gather(Gatherers4j.runningSum().withOriginal())
                 .toList();
 

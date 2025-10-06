@@ -33,7 +33,7 @@ class BigDecimalProductGathererTest {
     @Test
     void ignoresNull() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 new BigDecimal("2"),
                 new BigDecimal("3"),
                 null,
@@ -41,7 +41,7 @@ class BigDecimalProductGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.runningProduct())
                 .toList();
 
@@ -66,10 +66,10 @@ class BigDecimalProductGathererTest {
     @Test
     void runningProduct() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.runningProduct())
                 .toList();
 
@@ -86,7 +86,7 @@ class BigDecimalProductGathererTest {
     @Test
     void runningProductBy() {
         // Arrange
-        final Stream<TestValueHolder> input = Stream.of(
+        final var input = Stream.of(
                 new TestValueHolder(1, new BigDecimal("1.0")),
                 new TestValueHolder(2, new BigDecimal("2.0")),
                 new TestValueHolder(3, new BigDecimal("10.0")),
@@ -95,7 +95,7 @@ class BigDecimalProductGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input.gather(Gatherers4j.runningProductBy(TestValueHolder::value)).toList();
+        final var output = input.gather(Gatherers4j.runningProductBy(TestValueHolder::value)).toList();
 
         // Assert
         assertThat(output)
@@ -112,7 +112,7 @@ class BigDecimalProductGathererTest {
     @Test
     void treatNullAsOne() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 new BigDecimal("2"),
                 new BigDecimal("3"),
                 null,
@@ -120,7 +120,7 @@ class BigDecimalProductGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.runningProduct().treatNullAsOne())
                 .toList();
 
@@ -138,10 +138,10 @@ class BigDecimalProductGathererTest {
     @Test
     void withOriginalBigDecimal() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3").map(BigDecimal::new);
 
         // Act
-        final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+        final var output = input
                 .gather(Gatherers4j.runningProduct().withOriginal())
                 .toList();
 

@@ -86,12 +86,12 @@ class ThrottlingGathererTest {
     @Test
     void testThrottlingCrossesPeriod() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
-        final Duration duration = Duration.ofMillis(100);
+        final var input = Stream.of("A", "B", "C");
+        final var duration = Duration.ofMillis(100);
         final Clock clock = new PredictableClock(0, 0, 0, 101, 0, 0);
 
         // Act
-        final List<Long> output = input
+        final var output = input
                 .gather(Gatherers4j.throttle(2, duration).withClock(clock))
                 .map(_ -> System.currentTimeMillis())
                 .toList();
@@ -104,11 +104,11 @@ class ThrottlingGathererTest {
     @Test
     void testThrottlingWithDrop() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
-        final Duration duration = Duration.ofMillis(100);
+        final var input = Stream.of("A", "B", "C");
+        final var duration = Duration.ofMillis(100);
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.debounce(2, duration))
                 .toList();
 
@@ -119,12 +119,12 @@ class ThrottlingGathererTest {
     @Test
     void testThrottlingWithPause() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
-        final Duration duration = Duration.ofMillis(100);
+        final var input = Stream.of("A", "B", "C");
+        final var duration = Duration.ofMillis(100);
         final long offset = 3;
 
         // Act
-        final List<Long> output = input
+        final var output = input
                 .gather(Gatherers4j.throttle(2, duration))
                 .map(_ -> System.currentTimeMillis())
                 .toList();
@@ -150,7 +150,7 @@ class ThrottlingGathererTest {
 
         @Override
         public Instant instant() {
-            int when = pauses[invocation];
+            final var when = pauses[invocation];
             if (when > 0) {
                 LockSupport.parkNanos(when * GathererUtils.NANOS_PER_MILLISECOND);
             }
@@ -159,7 +159,7 @@ class ThrottlingGathererTest {
         }
 
         @Override
-        public Clock withZone(ZoneId zone) {
+        public Clock withZone(final ZoneId zone) {
             return Clock.system(ZoneId.systemDefault());
         }
     }

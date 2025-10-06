@@ -37,10 +37,10 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void exponentialMovingAverageWithAlpha() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8").map(BigDecimal::new);
+        final var input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithAlpha(0.3))
                 .toList();
 
@@ -59,12 +59,12 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void exponentialMovingAverageWithAlphaBy() {
         // Arrange
-        final Stream<TestValueHolder> input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8")
+        final var input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8")
                 .map(BigDecimal::new)
                 .map(it -> new TestValueHolder(0, it));
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithAlphaBy(0.3, TestValueHolder::value))
                 .map(it -> it.setScale(4, RoundingMode.HALF_UP).stripTrailingZeros())
                 .toList();
@@ -84,10 +84,10 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void exponentialMovingAverageWithOriginal() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8").map(BigDecimal::new);
+        final var input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8").map(BigDecimal::new);
 
         // Act
-        final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithAlpha(0.3).withOriginal())
                 .toList();
 
@@ -106,10 +106,10 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void exponentialMovingAverageWithPeriod() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8").map(BigDecimal::new);
+        final var input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithPeriod(3))
                 .toList();
 
@@ -128,12 +128,12 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void exponentialMovingAverageWithPeriodBy() {
         // Arrange
-        final Stream<TestValueHolder> input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8")
+        final var input = Stream.of("10.5", "15.2", "8.7", "12.0", "9.8")
                 .map(BigDecimal::new)
                 .gather(Gatherers4j.mapIndexed(TestValueHolder::new));
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithPeriodBy(3, TestValueHolder::value))
                 .map(it -> it.setScale(4, RoundingMode.HALF_UP).stripTrailingZeros())
                 .toList();
@@ -177,11 +177,11 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void replaceNullWithOne() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("10.5", null, "15.2", null, "8.7", null, "12.0", null, "9.8")
+        final var input = Stream.of("10.5", null, "15.2", null, "8.7", null, "12.0", null, "9.8")
                 .map(it -> it == null ? null : new BigDecimal(it));
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithAlpha(0.3).treatNullAs(BigDecimal.ONE))
                 .map(it -> it.setScale(4, RoundingMode.HALF_UP).stripTrailingZeros())
                 .toList();
@@ -205,11 +205,11 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void replaceNullWithZero() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("10.5", null, "15.2", null, "8.7", null, "12.0", null, "9.8")
+        final var input = Stream.of("10.5", null, "15.2", null, "8.7", null, "12.0", null, "9.8")
                 .map(it -> it == null ? null : new BigDecimal(it));
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithAlpha(0.3).treatNullAsZero())
                 .map(it -> it.setScale(4, RoundingMode.HALF_UP).stripTrailingZeros())
                 .toList();
@@ -233,11 +233,11 @@ class BigDecimalExponentialMovingAverageGathererTest {
     @Test
     void skipsNulls() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("10.5", null, "15.2", null, "8.7", null, "12.0", null, "9.8")
+        final var input = Stream.of("10.5", null, "15.2", null, "8.7", null, "12.0", null, "9.8")
                 .map(it -> it == null ? null : new BigDecimal(it));
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.exponentialMovingAverageWithAlpha(0.3))
                 .map(it -> it.setScale(4, RoundingMode.HALF_UP).stripTrailingZeros())
                 .toList();

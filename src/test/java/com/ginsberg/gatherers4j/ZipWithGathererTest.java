@@ -73,8 +73,8 @@ class ZipWithGathererTest {
     @Test
     void zipWhenArgumentIsLongerFromFunction() {
         // Arrange
-        final Stream<String> left = Stream.of("A");
-        final Stream<Integer> right = Stream.of(1, 2, 3, 4);
+        final var left = Stream.of("A");
+        final var right = Stream.of(1, 2, 3, 4);
 
         // Act
         final var output = left
@@ -95,11 +95,11 @@ class ZipWithGathererTest {
     @Test
     void zipWhenArgumentIsLongerNull() {
         // Arrange
-        final Stream<String> left = Stream.of("A");
-        final Stream<Integer> right = Stream.of(1, 2, 3, 4);
+        final var left = Stream.of("A");
+        final var right = Stream.of(1, 2, 3, 4);
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(Gatherers4j.<String, Integer>zipWith(right).nullSourceWhenArgumentLonger())
                 .toList();
 
@@ -117,11 +117,11 @@ class ZipWithGathererTest {
     @Test
     void zipWhenOtherIsEmpty() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "B", "C");
+        final var left = Stream.of("A", "B", "C");
         final Stream<Integer> right = Stream.empty();
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(zipWith(right))
                 .toList();
 
@@ -132,8 +132,8 @@ class ZipWithGathererTest {
     @Test
     void zipWhenSourceIsLongerFromFunction() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "Bb", "Ccc", "Dddd");
-        final Stream<Integer> right = Stream.of(4);
+        final var left = Stream.of("A", "Bb", "Ccc", "Dddd");
+        final var right = Stream.of(4);
 
         // Act
         final var output = left
@@ -154,8 +154,8 @@ class ZipWithGathererTest {
     @Test
     void zipWhenSourceIsLongerNull() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "B", "C", "D");
-        final Stream<Integer> right = Stream.of(1);
+        final var left = Stream.of("A", "B", "C", "D");
+        final var right = Stream.of(1);
 
         // Act
         final var output = left
@@ -177,10 +177,10 @@ class ZipWithGathererTest {
     void zipWhenThisIsEmpty() {
         // Arrange
         final Stream<String> left = Stream.empty();
-        final Stream<Integer> right = Stream.of(1, 2, 3);
+        final var right = Stream.of(1, 2, 3);
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(zipWith(right))
                 .toList();
 
@@ -191,11 +191,11 @@ class ZipWithGathererTest {
     @Test
     void zipWithIterableGatherer() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "B", "C");
+        final var left = Stream.of("A", "B", "C");
         final Iterable<Integer> right = List.of(1, 2, 3, 4);
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(zipWith(right))
                 .toList();
 
@@ -211,11 +211,11 @@ class ZipWithGathererTest {
     @Test
     void zipWithIterableGathererSourceLonger() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "B", "C");
+        final var left = Stream.of("A", "B", "C");
         final Iterable<Integer> right = List.of(1, 2);
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(zipWith(right))
                 .toList();
 
@@ -231,11 +231,11 @@ class ZipWithGathererTest {
     @Test
     void zipWithIteratorGatherer() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "B", "C");
-        final Iterator<Integer> right = List.of(1, 2, 3).iterator();
+        final var left = Stream.of("A", "B", "C");
+        final var right = List.of(1, 2, 3).iterator();
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(zipWith(right))
                 .toList();
 
@@ -266,11 +266,11 @@ class ZipWithGathererTest {
     @Test
     void zipWithStreamGatherer() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "B", "C");
-        final Stream<Integer> right = Stream.of(1, 2, 3);
+        final var left = Stream.of("A", "B", "C");
+        final var right = Stream.of(1, 2, 3);
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(zipWith(right))
                 .toList();
 
@@ -286,10 +286,10 @@ class ZipWithGathererTest {
     @Test
     void zipWithVarargs() {
         // Arrange
-        final Stream<String> left = Stream.of("A", "B", "C");
+        final var left = Stream.of("A", "B", "C");
 
         // Act
-        final List<Pair<String, Integer>> output = left
+        final var output = left
                 .gather(zipWith(1, 2, 3))
                 .toList();
 

@@ -42,7 +42,7 @@ record UniquelyOccurringGatherer<INPUT extends @Nullable Object, SELECTED extend
     @Override
     public Integrator<State<INPUT, SELECTED>, INPUT, INPUT> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
-            final SELECTED selected = selector.apply(element);
+            final var selected = selector.apply(element);
             if (!state.duplicates.contains(selected)) {
                 if (state.found.containsKey(selected)) {
                     state.duplicates.add(selected);

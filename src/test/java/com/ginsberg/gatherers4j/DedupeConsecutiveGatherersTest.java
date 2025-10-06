@@ -28,10 +28,10 @@ class DedupeConsecutiveGatherersTest {
     @Test
     void dedupeConsecutive() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "A", "A", "B", "B", "C", "C", "D", "A", "B", "C");
+        final var input = Stream.of("A", "A", "A", "B", "B", "C", "C", "D", "A", "B", "C");
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.dedupeConsecutive())
                 .toList();
 
@@ -42,10 +42,10 @@ class DedupeConsecutiveGatherersTest {
     @Test
     void dedupeConsecutiveWithNulls() {
         // Arrange
-        final Stream<String> input = Stream.of(null, null, "A", "A", null);
+        final var input = Stream.of(null, null, "A", "A", null);
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.dedupeConsecutive())
                 .toList();
 
@@ -56,7 +56,7 @@ class DedupeConsecutiveGatherersTest {
     @Test
     void dedupeConsecutiveEmpty() {
         // Act
-        final List<Object> output = Stream.empty()
+        final var output = Stream.empty()
                 .gather(Gatherers4j.dedupeConsecutive())
                 .toList();
 
@@ -70,7 +70,7 @@ class DedupeConsecutiveGatherersTest {
         }
 
         // Arrange
-        final Stream<TestConsecutive> input = Stream.of(
+        final var input = Stream.of(
                 new TestConsecutive(1, "A"),
                 new TestConsecutive(2, "A"),
                 new TestConsecutive(3, "A"),
@@ -80,7 +80,7 @@ class DedupeConsecutiveGatherersTest {
         );
 
         // Act
-        final List<TestConsecutive> output = input
+        final var output = input
                 .gather(Gatherers4j.dedupeConsecutiveBy(TestConsecutive::right))
                 .toList();
 
@@ -96,7 +96,7 @@ class DedupeConsecutiveGatherersTest {
     @Test
     void dedupeConsecutiveByWithNullMappingFunction() {
         // Arrange
-        final Stream<String> input = Stream.of("A");
+        final var input = Stream.of("A");
 
         // Act/Assert
         assertThatThrownBy(() -> input.gather(Gatherers4j.dedupeConsecutiveBy(null)).toList())

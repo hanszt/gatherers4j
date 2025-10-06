@@ -48,10 +48,10 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void ignoresNulls() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, BigDecimal.TWO);
+            final var input = Stream.of(null, BigDecimal.ONE, BigDecimal.TWO);
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningPopulationStandardDeviation())
                     .toList();
 
@@ -67,14 +67,14 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void mathContextChange() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(
+            final var input = Stream.of(
                     new BigDecimal("1.0"),
                     new BigDecimal("2.0"),
                     new BigDecimal("10.0")
             );
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningPopulationStandardDeviation().withMathContext(new MathContext(3)))
                     .toList();
 
@@ -91,14 +91,14 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void standardDeviation() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(
+            final var input = Stream.of(
                     new BigDecimal("1.0"),
                     new BigDecimal("2.0"),
                     new BigDecimal("10.0")
             );
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningPopulationStandardDeviation())
                     .toList();
 
@@ -115,7 +115,7 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void standardDeviationBy() {
             // Arrange
-            final List<TestValueHolder> input = List.of(
+            final var input = List.of(
                     new TestValueHolder(1, new BigDecimal("1.0")),
                     new TestValueHolder(2, new BigDecimal("2.0")),
                     new TestValueHolder(3, new BigDecimal("10.0")),
@@ -124,7 +124,7 @@ class BigDecimalStandardDeviationGathererTest {
             );
 
             // Act
-            final List<BigDecimal> output = input.stream()
+            final var output = input.stream()
                     .gather(Gatherers4j.runningPopulationStandardDeviationBy(TestValueHolder::value))
                     .toList();
 
@@ -143,10 +143,10 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void treatNullAsNonZero() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
+            final var input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningPopulationStandardDeviation().treatNullAs(BigDecimal.TEN))
                     .toList();
 
@@ -164,10 +164,10 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void treatNullAsZero() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
+            final var input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningPopulationStandardDeviation().treatNullAsZero())
                     .toList();
 
@@ -185,7 +185,7 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void withOriginalBigDecimal() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(
+            final var input = Stream.of(
                     new BigDecimal("1.0"),
                     new BigDecimal("2.0"),
                     new BigDecimal("10.0"),
@@ -194,7 +194,7 @@ class BigDecimalStandardDeviationGathererTest {
             );
 
             // Act
-            final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+            final var output = input
                     .gather(Gatherers4j.runningPopulationStandardDeviation().withOriginal())
                     .toList();
 
@@ -225,7 +225,7 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void withOriginalRecordByMappedField() {
             // Arrange
-            final List<TestValueHolder> input = List.of(
+            final var input = List.of(
                     new TestValueHolder(1, new BigDecimal("1.0")),
                     new TestValueHolder(2, new BigDecimal("2.0")),
                     new TestValueHolder(3, new BigDecimal("10.0")),
@@ -234,7 +234,7 @@ class BigDecimalStandardDeviationGathererTest {
             );
 
             // Act
-            final List<WithOriginal<TestValueHolder, BigDecimal>> output = input.stream()
+            final var output = input.stream()
                     .gather(Gatherers4j.runningPopulationStandardDeviationBy(TestValueHolder::value).withOriginal())
                     .toList();
 
@@ -262,10 +262,10 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void ignoresNulls() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, BigDecimal.TWO);
+            final var input = Stream.of(null, BigDecimal.ONE, BigDecimal.TWO);
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningSampleStandardDeviation())
                     .toList();
 
@@ -281,14 +281,14 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void mathContextChange() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(
+            final var input = Stream.of(
                     new BigDecimal("1.0"),
                     new BigDecimal("2.0"),
                     new BigDecimal("10.0")
             );
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningSampleStandardDeviation().withMathContext(new MathContext(3)))
                     .toList();
 
@@ -305,14 +305,14 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void standardDeviation() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(
+            final var input = Stream.of(
                     new BigDecimal("1.0"),
                     new BigDecimal("2.0"),
                     new BigDecimal("10.0")
             );
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningSampleStandardDeviation())
                     .toList();
 
@@ -329,7 +329,7 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void standardDeviationBy() {
             // Arrange
-            final List<TestValueHolder> input = List.of(
+            final var input = List.of(
                     new TestValueHolder(1, new BigDecimal("1.0")),
                     new TestValueHolder(2, new BigDecimal("2.0")),
                     new TestValueHolder(3, new BigDecimal("10.0")),
@@ -338,7 +338,7 @@ class BigDecimalStandardDeviationGathererTest {
             );
 
             // Act
-            final List<BigDecimal> output = input.stream()
+            final var output = input.stream()
                     .gather(Gatherers4j.runningSampleStandardDeviationBy(TestValueHolder::value))
                     .toList();
 
@@ -357,10 +357,10 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void treatNullAsNonZero() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
+            final var input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningSampleStandardDeviation().treatNullAs(BigDecimal.TEN))
                     .toList();
 
@@ -378,10 +378,10 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void treatNullAsZero() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
+            final var input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
 
             // Act
-            final List<BigDecimal> output = input
+            final var output = input
                     .gather(Gatherers4j.runningSampleStandardDeviation().treatNullAsZero())
                     .toList();
 
@@ -399,7 +399,7 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void withOriginalBigDecimal() {
             // Arrange
-            final Stream<BigDecimal> input = Stream.of(
+            final var input = Stream.of(
                     new BigDecimal("1.0"),
                     new BigDecimal("2.0"),
                     new BigDecimal("10.0"),
@@ -408,7 +408,7 @@ class BigDecimalStandardDeviationGathererTest {
             );
 
             // Act
-            final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+            final var output = input
                     .gather(Gatherers4j.runningSampleStandardDeviation().withOriginal())
                     .toList();
 
@@ -439,7 +439,7 @@ class BigDecimalStandardDeviationGathererTest {
         @Test
         void withOriginalRecordByMappedField() {
             // Arrange
-            final List<TestValueHolder> input = List.of(
+            final var input = List.of(
                     new TestValueHolder(1, new BigDecimal("1.0")),
                     new TestValueHolder(2, new BigDecimal("2.0")),
                     new TestValueHolder(3, new BigDecimal("10.0")),
@@ -448,7 +448,7 @@ class BigDecimalStandardDeviationGathererTest {
             );
 
             // Act
-            final List<WithOriginal<TestValueHolder, BigDecimal>> output = input.stream()
+            final var output = input.stream()
                     .gather(Gatherers4j.runningSampleStandardDeviationBy(TestValueHolder::value).withOriginal())
                     .toList();
 

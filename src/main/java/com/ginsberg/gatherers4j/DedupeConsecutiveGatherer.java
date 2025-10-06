@@ -44,7 +44,7 @@ public class DedupeConsecutiveGatherer<INPUT extends @Nullable Object>
     @Override
     public Integrator<DedupeConsecutiveGatherer.State, INPUT, INPUT> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
-            final Object mapped = mappingFunction == null ? element : mappingFunction.apply(element);
+            final var mapped = mappingFunction == null ? element : mappingFunction.apply(element);
             if (!state.hasValue) {
                 state.hasValue = true;
                 state.value = mapped;

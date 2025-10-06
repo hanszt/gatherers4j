@@ -111,7 +111,7 @@ public class ZipWithGatherer<FIRST extends @Nullable Object, SECOND extends @Nul
     @Override
     public Integrator<Void, FIRST, OUTPUT> integrator() {
         return (_, element, downstream) -> {
-            boolean advanced = otherSpliterator.tryAdvance(it -> downstream.push(mapper.apply(element, it)));
+            final var advanced = otherSpliterator.tryAdvance(it -> downstream.push(mapper.apply(element, it)));
             if (!advanced && argumentWhenSourceLonger != null) {
                 return downstream.push(mapper.apply(element, argumentWhenSourceLonger.apply(element)));
             }
@@ -124,7 +124,7 @@ public class ZipWithGatherer<FIRST extends @Nullable Object, SECOND extends @Nul
     public BiConsumer<Void, Downstream<? super OUTPUT>> finisher() {
         return (_, downstream) -> {
             if(sourceWhenArgumentLonger != null) {
-                boolean downstreamIsRejecting = downstream.isRejecting();
+                var downstreamIsRejecting = downstream.isRejecting();
                 while (!downstreamIsRejecting) {
                     downstreamIsRejecting = !otherSpliterator.tryAdvance(arg ->
                             downstream.push(mapper.apply(sourceWhenArgumentLonger.apply(arg), arg))

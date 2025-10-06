@@ -54,7 +54,7 @@ public class CircularBuffer<T extends @Nullable Object> implements Iterable<T>{
             throw new NoSuchElementException();
         }
 
-        final T element = buffer[head];
+        final var element = buffer[head];
         head = (head + 1) % buffer.length;
         size--;
         return element;
@@ -75,14 +75,13 @@ public class CircularBuffer<T extends @Nullable Object> implements Iterable<T>{
     }
 
     public List<T> asList() {
-        @SuppressWarnings("unchecked")
-        T[] result = (T[]) new Object[size];
+        @SuppressWarnings("unchecked") final var result = (T[]) new Object[size];
 
         if (head + size <= buffer.length) {
             // Elements are contiguous
             System.arraycopy(buffer, head, result, 0, size);
         } else {
-            int firstPart = buffer.length - head;
+            final var firstPart = buffer.length - head;
             System.arraycopy(buffer, head, result, 0, firstPart);
             System.arraycopy(buffer, 0, result, firstPart, size - firstPart);
         }
@@ -116,7 +115,7 @@ public class CircularBuffer<T extends @Nullable Object> implements Iterable<T>{
                     throw new NoSuchElementException();
                 }
 
-                final T element = buffer[(head + index++) % buffer.length];
+                final var element = buffer[(head + index++) % buffer.length];
                 remaining--;
                 return element;
             }

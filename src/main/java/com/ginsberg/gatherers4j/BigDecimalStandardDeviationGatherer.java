@@ -51,13 +51,13 @@ public final class BigDecimalStandardDeviationGatherer<INPUT extends @Nullable O
         private BigDecimal dSquared = BigDecimal.ZERO;
         private BigDecimal stdDev = BigDecimal.ZERO;
 
-        State(Mode mode) {
+        State(final Mode mode) {
             this.mode = mode;
         }
 
         @Override
         public void add(final BigDecimal element, final MathContext mathContext) {
-            final BigDecimal previousAverage = average;
+            final var previousAverage = average;
             super.add(element, mathContext);
             dSquared = dSquared.add( element.subtract(average).multiply( element.subtract(previousAverage)));
             if (mode == Mode.Sample) {

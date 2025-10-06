@@ -31,7 +31,7 @@ class ReversingGathererTest {
         final Stream<String> input = Stream.empty();
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.reverse()).toList();
+        final var output = input.gather(Gatherers4j.reverse()).toList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -40,10 +40,10 @@ class ReversingGathererTest {
     @Test
     void simpleReverse() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F", "G");
+        final var input = Stream.of("A", "B", "C", "D", "E", "F", "G");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.reverse()).toList();
+        final var output = input.gather(Gatherers4j.reverse()).toList();
 
         // Assert
         assertThat(output).containsExactly("G", "F", "E", "D", "C", "B", "A");

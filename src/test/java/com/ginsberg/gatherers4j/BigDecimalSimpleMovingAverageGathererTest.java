@@ -36,10 +36,10 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void ignoresNulls() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN);
+        final var input = Stream.of(null, BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.simpleMovingAverage(2))
                 .toList();
 
@@ -62,14 +62,14 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void mathContextChange() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 BigDecimal.ONE,
                 BigDecimal.TWO,
                 BigDecimal.TEN
         );
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.simpleMovingAverage(3).withMathContext(new MathContext(3)))
                 .toList();
 
@@ -84,7 +84,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void movingAverageBy() {
         // Arrange
-        final List<TestValueHolder> input = List.of(
+        final var input = List.of(
                 new TestValueHolder(1, new BigDecimal("1.0")),
                 new TestValueHolder(2, new BigDecimal("2.0")),
                 new TestValueHolder(3, new BigDecimal("10.0")),
@@ -93,7 +93,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input.stream()
+        final var output = input.stream()
                 .gather(Gatherers4j.simpleMovingAverageBy(2, TestValueHolder::value))
                 .toList();
 
@@ -111,7 +111,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void movingAverageOfBigDecimals() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 new BigDecimal("1.0"),
                 new BigDecimal("2.0"),
                 new BigDecimal("10.0"),
@@ -119,7 +119,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.simpleMovingAverage(3))
                 .toList();
 
@@ -135,10 +135,10 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void movingAverageOfZero() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        final var input = Stream.of(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.simpleMovingAverage(2))
                 .toList();
 
@@ -154,10 +154,10 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void treatNullAsNonZero() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
+        final var input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.simpleMovingAverage(2).treatNullAs(BigDecimal.TEN))
                 .toList();
 
@@ -174,10 +174,10 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void treatNullAsZero() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
+        final var input = Stream.of(null, BigDecimal.ONE, null, BigDecimal.ONE);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.simpleMovingAverage(2).treatNullAsZero())
                 .toList();
 
@@ -202,7 +202,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void withOriginalBigDecimal() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 new BigDecimal("1.0"),
                 new BigDecimal("2.0"),
                 new BigDecimal("10.0"),
@@ -211,7 +211,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
         );
 
         // Act
-        final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+        final var output = input
                 .gather(Gatherers4j
                         .simpleMovingAverage(2)
                         .includePartialValues()
@@ -245,7 +245,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
     @Test
     void withOriginalRecordByMappedField() {
         // Arrange
-        final List<TestValueHolder> input = List.of(
+        final var input = List.of(
                 new TestValueHolder(1, new BigDecimal("1.0")),
                 new TestValueHolder(2, new BigDecimal("2.0")),
                 new TestValueHolder(3, new BigDecimal("10.0")),
@@ -254,7 +254,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
         );
 
         // Act
-        final List<WithOriginal<TestValueHolder, BigDecimal>> output = input.stream()
+        final var output = input.stream()
                 .gather(Gatherers4j.simpleMovingAverageBy(2, TestValueHolder::value).withOriginal())
                 .toList();
 

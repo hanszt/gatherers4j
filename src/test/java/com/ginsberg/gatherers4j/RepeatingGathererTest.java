@@ -32,14 +32,14 @@ class RepeatingGathererTest {
     @ValueSource(ints = {2, 30, 100})
     void finiteRepeat(final int repeats) {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
+        final var input = Stream.of("A", "B", "C");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.repeat(repeats)).toList();
+        final var output = input.gather(Gatherers4j.repeat(repeats)).toList();
 
         // Assert
         assertThat(output).hasSize(3 * repeats);
-        for (int i = 0; i < output.size(); i = i + 3) {
+        for (var i = 0; i < output.size(); i = i + 3) {
             assertThat(output.get(i)).isEqualTo("A");
             assertThat(output.get(i + 1)).isEqualTo("B");
             assertThat(output.get(i + 2)).isEqualTo("C");
@@ -49,10 +49,10 @@ class RepeatingGathererTest {
     @Test
     void flatMapIntegration() {
         // Arrange
-        final Stream<Integer> input = Stream.of(0, 1, 2, 3);
+        final var input = Stream.of(0, 1, 2, 3);
 
         // Act
-        final List<Integer> output = input
+        final var output = input
                 .flatMap(n -> Stream.of(n).gather(Gatherers4j.repeat(n)))
                 .toList();
 
@@ -63,14 +63,14 @@ class RepeatingGathererTest {
     @Test
     void infiniteRepeats() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
+        final var input = Stream.of("A", "B", "C");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.repeatInfinitely()).limit(1_000).toList();
+        final var output = input.gather(Gatherers4j.repeatInfinitely()).limit(1_000).toList();
 
         // Assert
         assertThat(output).hasSize(1_000);
-        for (int i = 0; i < output.size() - 3; i = i + 3) {
+        for (var i = 0; i < output.size() - 3; i = i + 3) {
             assertThat(output.get(i)).isEqualTo("A");
             assertThat(output.get(i + 1)).isEqualTo("B");
             assertThat(output.get(i + 2)).isEqualTo("C");
@@ -79,7 +79,7 @@ class RepeatingGathererTest {
 
     @ParameterizedTest(name = "With {0} repeats")
     @ValueSource(ints = {Integer.MIN_VALUE, -1})
-    void numberOfRepeatsMustBeNegative(int repeats) {
+    void numberOfRepeatsMustBeNegative(final int repeats) {
         assertThatThrownBy(() ->
                 RepeatingGatherer.ofFinite(repeats)
         ).isExactlyInstanceOf(IllegalArgumentException.class);

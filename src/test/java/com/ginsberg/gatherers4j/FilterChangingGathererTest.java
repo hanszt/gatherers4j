@@ -37,10 +37,10 @@ class FilterChangingGathererTest {
             @Test
             void descending() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(3, 2, 2, 1);
+                final var input = Stream.of(3, 2, 2, 1);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.Descending))
                         .toList();
 
@@ -54,7 +54,7 @@ class FilterChangingGathererTest {
                 final Stream<Integer> input = Stream.empty();
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.Descending))
                         .toList();
 
@@ -65,10 +65,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1);
+                final var input = Stream.of(1);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.Descending))
                         .toList();
 
@@ -85,7 +85,7 @@ class FilterChangingGathererTest {
                 final Stream<Integer> input = Stream.empty();
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.Ascending))
                         .toList();
 
@@ -96,10 +96,10 @@ class FilterChangingGathererTest {
             @Test
             void ascending() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1, 2, 2, 3);
+                final var input = Stream.of(1, 2, 2, 3);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.Ascending))
                         .toList();
 
@@ -110,10 +110,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1);
+                final var input = Stream.of(1);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.Ascending))
                         .toList();
 
@@ -130,7 +130,7 @@ class FilterChangingGathererTest {
                 final Stream<Integer> input = Stream.empty();
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.AscendingOrEqual))
                         .toList();
 
@@ -141,10 +141,10 @@ class FilterChangingGathererTest {
             @Test
             void ascendingOrEqual() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1, 2, 2, 3, 2);
+                final var input = Stream.of(1, 2, 2, 3, 2);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.AscendingOrEqual))
                         .toList();
 
@@ -155,10 +155,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1);
+                final var input = Stream.of(1);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.AscendingOrEqual))
                         .toList();
 
@@ -175,7 +175,7 @@ class FilterChangingGathererTest {
                 final Stream<Integer> input = Stream.empty();
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.DescendingOrEqual))
                         .toList();
 
@@ -186,10 +186,10 @@ class FilterChangingGathererTest {
             @Test
             void descendingOrEqual() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(3, 2, 2, 1, 2);
+                final var input = Stream.of(3, 2, 2, 1, 2);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.DescendingOrEqual))
                         .toList();
 
@@ -200,10 +200,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1);
+                final var input = Stream.of(1);
 
                 // Act
-                final List<Integer> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrdered(Order.DescendingOrEqual))
                         .toList();
 
@@ -241,10 +241,10 @@ class FilterChangingGathererTest {
             @Test
             void descending() {
                 // Arrange
-                final Stream<String> input = Stream.of("AAA", "AA", "AA", "A");
+                final var input = Stream.of("AAA", "AA", "AA", "A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -258,7 +258,7 @@ class FilterChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -269,10 +269,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -289,7 +289,7 @@ class FilterChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -300,10 +300,10 @@ class FilterChangingGathererTest {
             @Test
             void ascending() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "AA", "AA", "AAA");
+                final var input = Stream.of("A", "AA", "AA", "AAA");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -314,10 +314,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -334,7 +334,7 @@ class FilterChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -345,10 +345,10 @@ class FilterChangingGathererTest {
             @Test
             void ascendingOrEqual() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "AA", "AA", "AAA", "AA");
+                final var input = Stream.of("A", "AA", "AA", "AAA", "AA");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -359,10 +359,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -379,7 +379,7 @@ class FilterChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -390,10 +390,10 @@ class FilterChangingGathererTest {
             @Test
             void descendingOrEqual() {
                 // Arrange
-                final Stream<String> input = Stream.of("AAA", "AA", "AA", "A", "AA");
+                final var input = Stream.of("AAA", "AA", "AA", "A", "AA");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -404,10 +404,10 @@ class FilterChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.filterOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 

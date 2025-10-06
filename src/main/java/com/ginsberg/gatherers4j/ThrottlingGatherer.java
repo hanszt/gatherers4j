@@ -96,7 +96,7 @@ public class ThrottlingGatherer<INPUT extends @Nullable Object>
 
         // Assuming this is not run in parallel. Gate with a lock if that assumption fails/changes.
         boolean attempt() {
-            final long now = clock.millis();
+            final var now = clock.millis();
             if(now < thisPeriodEnd) {
                 // The current period has not ended
                 if(remainingPermits == 0) {

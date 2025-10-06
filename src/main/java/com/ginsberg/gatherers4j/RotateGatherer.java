@@ -63,12 +63,12 @@ public class RotateGatherer<INPUT extends @Nullable Object>
     @Override
     public BiConsumer<State<INPUT>, Downstream<? super INPUT>> finisher() {
         return (inputState, downstream) -> {
-            final int size = inputState.fullStream.size();
+            final var size = inputState.fullStream.size();
             if (size == 0) {
                 return;
             }
-            final int rotateDistance = distance % size;
-            for (int i = 0; i < size; i++) {
+            final var rotateDistance = distance % size;
+            for (var i = 0; i < size; i++) {
                 if (direction == Rotate.Left) {
                     downstream.push(inputState.fullStream.get((i + rotateDistance) % size));
                 } else {

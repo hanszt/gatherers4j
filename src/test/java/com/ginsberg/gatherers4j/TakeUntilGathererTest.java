@@ -35,10 +35,10 @@ class TakeUntilGathererTest {
     @Test
     void takeUntilIncludesTriggeringElement() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "BB", "CCC", "DDDD", "EEEEE");
+        final var input = Stream.of("A", "BB", "CCC", "DDDD", "EEEEE");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.takeUntil(it -> it.equals("CCC"))).toList();
+        final var output = input.gather(Gatherers4j.takeUntil(it -> it.equals("CCC"))).toList();
 
         // Assert
         assertThat(output).containsExactly("A", "BB", "CCC");

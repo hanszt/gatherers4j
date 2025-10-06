@@ -36,10 +36,10 @@ class BigDecimalMovingSumGathererTest {
     @Test
     void ignoresNulls() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(null, BigDecimal.TWO, BigDecimal.TWO, BigDecimal.TEN);
+        final var input = Stream.of(null, BigDecimal.TWO, BigDecimal.TWO, BigDecimal.TEN);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.movingSum(2))
                 .toList();
 
@@ -63,10 +63,10 @@ class BigDecimalMovingSumGathererTest {
     @Test
     void movingSum() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input.gather(Gatherers4j.movingSum(2)).toList();
+        final var output = input.gather(Gatherers4j.movingSum(2)).toList();
 
         // Assert
         assertThat(output)
@@ -82,7 +82,7 @@ class BigDecimalMovingSumGathererTest {
     @Test
     void movingSumBy() {
         // Arrange
-        final List<TestValueHolder> input = List.of(
+        final var input = List.of(
                 new TestValueHolder(1, new BigDecimal("1")),
                 new TestValueHolder(2, new BigDecimal("2")),
                 new TestValueHolder(3, new BigDecimal("10")),
@@ -91,7 +91,7 @@ class BigDecimalMovingSumGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input.stream()
+        final var output = input.stream()
                 .gather(Gatherers4j.movingSumBy(2, TestValueHolder::value))
                 .toList();
 
@@ -110,10 +110,10 @@ class BigDecimalMovingSumGathererTest {
     @Test
     void movingSumWithPartials() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.movingSum(2).includePartialValues())
                 .toList();
 
@@ -131,10 +131,10 @@ class BigDecimalMovingSumGathererTest {
     @Test
     void movingSumWithPartialsWithOriginal() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
 
         // Act
-        final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+        final var output = input
                 .gather(Gatherers4j.movingSum(2)
                         .includePartialValues()
                         .withOriginal())
@@ -154,7 +154,7 @@ class BigDecimalMovingSumGathererTest {
     @Test
     void treatNullAsOne() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 new BigDecimal("2"),
                 new BigDecimal("3"),
                 null,
@@ -162,7 +162,7 @@ class BigDecimalMovingSumGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.movingSum(2).treatNullAsZero())
                 .toList();
 

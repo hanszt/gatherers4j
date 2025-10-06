@@ -38,7 +38,7 @@ abstract public class BigDecimalGatherer<INPUT extends @Nullable Object>
     @Override
     public Integrator<BigDecimalGatherer.State, INPUT, BigDecimal> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
-            final BigDecimal mappedElement = getMappedElement(element);
+            final var mappedElement = getMappedElement(element);
             if (mappedElement != null) {
                 state.add(mappedElement, mathContext);
                 if (state.canCalculate()) {
@@ -53,7 +53,7 @@ abstract public class BigDecimalGatherer<INPUT extends @Nullable Object>
         if(element == null) {
             return nullReplacement;
         }
-        var mapped = mappingFunction.apply(element);
+        final var mapped = mappingFunction.apply(element);
         return mapped == null ? nullReplacement : mapped;
     }
 

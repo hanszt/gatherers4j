@@ -40,7 +40,7 @@ class RotateGathererTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.rotate(Rotate.Left, 1))
                     .toList();
 
@@ -52,10 +52,10 @@ class RotateGathererTest {
         @MethodSource(value = "rotateLeftArguments")
         void rotateLeft(final int rotateSize, final List<String> expected) {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C", "D", "E");
+            final var input = Stream.of("A", "B", "C", "D", "E");
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.rotate(Rotate.Left,rotateSize))
                     .toList();
 
@@ -83,10 +83,10 @@ class RotateGathererTest {
         @Test
         void rotateZero() {
             // Arrange
-            final List<String> input = List.of("A", "B", "C", "D", "E");
+            final var input = List.of("A", "B", "C", "D", "E");
 
             // Act
-            final List<String> output = input.stream()
+            final var output = input.stream()
                     .gather(Gatherers4j.rotate(Rotate.Left,0))
                     .toList();
 
@@ -119,7 +119,7 @@ class RotateGathererTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.rotate(Rotate.Right, 1))
                     .toList();
 
@@ -132,10 +132,10 @@ class RotateGathererTest {
         @DisplayName("Rotate Right")
         void rotateRight(final int rotateSize, final List<String> expected) {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C", "D", "E");
+            final var input = Stream.of("A", "B", "C", "D", "E");
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.rotate(Rotate.Right, rotateSize))
                     .toList();
 
@@ -146,10 +146,10 @@ class RotateGathererTest {
         @Test
         void rotateZero() {
             // Arrange
-            final List<String> input = List.of("A", "B", "C", "D", "E");
+            final var input = List.of("A", "B", "C", "D", "E");
 
             // Act
-            final List<String> output = input.stream()
+            final var output = input.stream()
                     .gather(Gatherers4j.rotate(Rotate.Right, 0))
                     .toList();
 

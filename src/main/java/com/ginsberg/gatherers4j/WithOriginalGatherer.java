@@ -40,11 +40,11 @@ public class WithOriginalGatherer<INPUT extends @Nullable Object, STATE, OUTPUT 
 
     @Override
     public Integrator<STATE, INPUT, WithOriginal<INPUT, OUTPUT>> integrator() {
-        final CapturingDownstream<OUTPUT> capturingDownstream = new CapturingDownstream<>();
-        final Integrator<STATE, INPUT, OUTPUT> delegateIntegrator = delegate.integrator();
+        final var capturingDownstream = new CapturingDownstream<OUTPUT>();
+        final var delegateIntegrator = delegate.integrator();
 
         return (state, element, downstream) -> {
-            final boolean response = delegateIntegrator.integrate(state, element, capturingDownstream);
+            final var response = delegateIntegrator.integrate(state, element, capturingDownstream);
             while (!capturingDownstream.captured.isEmpty()) {
                 downstream.push(new WithOriginal<>(element, capturingDownstream.captured.poll()));
             }

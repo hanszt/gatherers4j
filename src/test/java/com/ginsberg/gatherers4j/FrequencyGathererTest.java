@@ -32,7 +32,7 @@ class FrequencyGathererTest {
     @ParallelAndSequentialTest(values = {"A", "A", "A", "B", "B", "B", "B", "C", "C"})
     void ascending(final Stream<String> input) {
         // Act
-        final List<WithCount<String>> output = input.gather(Gatherers4j.orderByFrequency(Frequency.Ascending)).toList();
+        final var output = input.gather(Gatherers4j.orderByFrequency(Frequency.Ascending)).toList();
 
         // Assert
         assertThat(output)
@@ -48,7 +48,7 @@ class FrequencyGathererTest {
     void descending(final Stream<String> input) {
 
         // Act
-        final List<WithCount<String>> output = input.gather(Gatherers4j.orderByFrequency(Frequency.Descending)).toList();
+        final var output = input.gather(Gatherers4j.orderByFrequency(Frequency.Descending)).toList();
 
         // Assert
         assertThat(output)

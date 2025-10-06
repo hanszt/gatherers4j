@@ -41,7 +41,7 @@ class GathererUtilsTest {
             final String right = null;
 
             // Act
-            final List<String> output = Arrays.asList(left, right);
+            final var output = Arrays.asList(left, right);
 
             // Assert
             assertThat(output).isNotNull().hasSize(2).containsExactly(left, right);
@@ -50,11 +50,11 @@ class GathererUtilsTest {
         @Test
         void containsNonNulls() {
             // Arrange
-            final String left = "A";
-            final String right = "B";
+            final var left = "A";
+            final var right = "B";
 
             // Act
-            final List<String> output = Arrays.asList(left, right);
+            final var output = Arrays.asList(left, right);
 
             // Assert
             assertThat(output).isNotNull().hasSize(2).containsExactly(left, right);
@@ -80,10 +80,10 @@ class GathererUtilsTest {
         @Test
         void returnsValueWhenNotNull() {
             // Arrange
-            final String input = "A";
+            final var input = "A";
 
             // Act
-            final String output = mustNotBeNull(input, "Error");
+            final var output = mustNotBeNull(input, "Error");
 
             // Assert
             assertThat(input).isEqualTo(output);
@@ -116,8 +116,8 @@ class GathererUtilsTest {
         @Test
         void pushAllCollectionStopsWhenDownstreamRejects() {
             // Arrange
-            final List<String> elements = List.of("A", "B", "C", "D");
-            final CountingDownstream<String> downstream = new CountingDownstream<>(2);
+            final var elements = List.of("A", "B", "C", "D");
+            final var downstream = new CountingDownstream<String>(2);
 
             // Act
             GathererUtils.pushAll(elements, downstream);
@@ -129,8 +129,8 @@ class GathererUtilsTest {
         @Test
         void pushAllIteratorStopsWhenDownstreamRejects() {
             // Arrange
-            final List<String> elements = List.of("A", "B", "C", "D");
-            final CountingDownstream<String> downstream = new CountingDownstream<>(2);
+            final var elements = List.of("A", "B", "C", "D");
+            final var downstream = new CountingDownstream<String>(2);
 
             // Act
             GathererUtils.pushAll(elements.iterator(), downstream);
@@ -142,8 +142,8 @@ class GathererUtilsTest {
         @Test
         void pushAllStreamStopsWhenDownstreamRejects() {
             // Arrange
-            final Stream<String> elements = Stream.of("A", "B", "C", "D");
-            final CountingDownstream<String> downstream = new CountingDownstream<>(2);
+            final var elements = Stream.of("A", "B", "C", "D");
+            final var downstream = new CountingDownstream<String>(2);
 
             // Act
             GathererUtils.pushAll(elements, downstream);

@@ -28,10 +28,10 @@ class IntersperseGathererTest {
     @Test
     void intersperse() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
+        final var input = Stream.of("A", "B", "C");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.intersperse("::")).toList();
+        final var output = input.gather(Gatherers4j.intersperse("::")).toList();
 
         // Assert
         assertThat(output).containsExactly("A", "::", "B", "::", "C");
@@ -43,7 +43,7 @@ class IntersperseGathererTest {
         final Stream<String> input = Stream.empty();
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.intersperse("-")).toList();
+        final var output = input.gather(Gatherers4j.intersperse("-")).toList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -52,10 +52,10 @@ class IntersperseGathererTest {
     @Test
     void intersperseNull() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C");
+        final var input = Stream.of("A", "B", "C");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.intersperse(null)).toList();
+        final var output = input.gather(Gatherers4j.intersperse(null)).toList();
 
         // Assert
         assertThat(output).containsExactly("A", null, "B", null, "C");
@@ -64,10 +64,10 @@ class IntersperseGathererTest {
     @Test
     void intersperseSingle() {
         // Arrange
-        final Stream<String> input = Stream.of("A");
+        final var input = Stream.of("A");
 
         // Act
-        final List<String> output = input.gather(Gatherers4j.intersperse("-")).toList();
+        final var output = input.gather(Gatherers4j.intersperse("-")).toList();
 
         // Assert
         assertThat(output).containsExactly("A");

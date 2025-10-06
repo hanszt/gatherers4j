@@ -79,7 +79,7 @@ final class WindowGatherer<INPUT extends @Nullable Object> implements Gatherer<I
     public static class State<INPUT> {
         int stepDelta = 0;
         final CircularBuffer<INPUT> window;
-        State(int capacity) {
+        State(final int capacity) {
             this.window = new CircularBuffer<>(capacity);
         }
     }

@@ -38,10 +38,10 @@ class SampleGathererTest {
         @Test
         void includesAllElementsWhenSampleSizeNotMet() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.sampleFixedSize(4)).toList();
+            final var output = input.gather(Gatherers4j.sampleFixedSize(4)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B", "C");
@@ -50,27 +50,27 @@ class SampleGathererTest {
         @Test
         void inclusionProbability() {
             // Arrange
-            final List<Integer> input = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-            final int samples = 100_000;
-            final int sampleSize = 4;
-            final int[] counts = new int[10];
-            final double expectedProbability = (double) sampleSize / samples;
-            final BinomialTest binomialTest = BinomialTest.withDefaults().with(AlternativeHypothesis.TWO_SIDED);
+            final var input = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+            final var samples = 100_000;
+            final var sampleSize = 4;
+            final var counts = new int[10];
+            final var expectedProbability = (double) sampleSize / samples;
+            final var binomialTest = BinomialTest.withDefaults().with(AlternativeHypothesis.TWO_SIDED);
 
             // Act
-            for (int i = 0; i < samples; i++) {
+            for (var i = 0; i < samples; i++) {
                 input.stream().gather(Gatherers4j.sampleFixedSize(sampleSize)).forEach(it -> counts[it]++);
             }
 
             // Assert
-            for (int count : counts) {
+            for (final var count : counts) {
                 assertThat(binomialTest.test(samples, count, expectedProbability).getPValue()).isLessThan(0.05);
             }
         }
 
         @ParameterizedTest(name = "sampleSize of {0}")
         @ValueSource(ints = {-1, 0})
-        void sampleSizeMustBeAtLeast1(int size) {
+        void sampleSizeMustBeAtLeast1(final int size) {
             assertThatThrownBy(() ->
                     Gatherers4j.sampleFixedSize(size)
             ).isExactlyInstanceOf(IllegalArgumentException.class);
@@ -79,10 +79,10 @@ class SampleGathererTest {
         @Test
         void samplesWhenSizeLessThanStreamLength() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.sampleFixedSize(2)).toList();
+            final var output = input.gather(Gatherers4j.sampleFixedSize(2)).toList();
 
             // Assert
             assertThat(output).hasSize(2);
@@ -91,11 +91,11 @@ class SampleGathererTest {
         @Test
         void uniformSelection() {
             // Arrange
-            final List<Integer> input = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-            final long[] counts = new long[10];
+            final var input = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+            final var counts = new long[10];
 
             // Act
-            for (int i = 0; i < 100_000; i++) {
+            for (var i = 0; i < 100_000; i++) {
                 input.stream().gather(Gatherers4j.sampleFixedSize(4)).forEach(it -> counts[it]++);
             }
 
@@ -111,20 +111,20 @@ class SampleGathererTest {
         @Test
         void inclusionProbability() {
             // Arrange
-            final List<Integer> input = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-            final int samples = 100_000;
-            final double samplePercentage = 0.4;
-            final int[] counts = new int[10];
-            final double expectedProbability = samplePercentage / samples;
-            final BinomialTest binomialTest = BinomialTest.withDefaults().with(AlternativeHypothesis.TWO_SIDED);
+            final var input = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+            final var samples = 100_000;
+            final var samplePercentage = 0.4;
+            final var counts = new int[10];
+            final var expectedProbability = samplePercentage / samples;
+            final var binomialTest = BinomialTest.withDefaults().with(AlternativeHypothesis.TWO_SIDED);
 
             // Act
-            for (int i = 0; i < samples; i++) {
+            for (var i = 0; i < samples; i++) {
                 input.stream().gather(Gatherers4j.samplePercentage(samplePercentage, RandomGenerator.getDefault())).forEach(it -> counts[it]++);
             }
 
             // Assert
-            for (int count : counts) {
+            for (final var count : counts) {
                 assertThat(binomialTest.test(samples, count, expectedProbability).getPValue()).isLessThan(0.05);
             }
         }

@@ -43,7 +43,7 @@ public class ReversingGatherer<INPUT extends @Nullable Object>
     @Override
     public BiConsumer<ReversingGatherer.State<INPUT>, Downstream<? super INPUT>> finisher() {
         return (state, downstream) -> {
-            for (int i = state.inputs.size() - 1; i >= 0 && !downstream.isRejecting(); i--) {
+            for (var i = state.inputs.size() - 1; i >= 0 && !downstream.isRejecting(); i--) {
                 downstream.push(state.inputs.get(i));
             }
         };

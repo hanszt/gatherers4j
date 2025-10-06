@@ -33,10 +33,10 @@ class EveryNthTest {
         @Test
         void everyNthElement() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F", "G");
+            final var input = Stream.of("A", "B", "C", "D", "E", "F", "G");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.dropEveryNth(3)).toList();
+            final var output = input.gather(Gatherers4j.dropEveryNth(3)).toList();
 
             // Assert
             assertThat(output).containsExactly("B", "C", "E", "F");
@@ -60,10 +60,10 @@ class EveryNthTest {
         @Test
         void everyNthElement() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F", "G");
+            final var input = Stream.of("A", "B", "C", "D", "E", "F", "G");
 
             // Act
-            final List<String> output = input.gather(Gatherers4j.takeEveryNth(3)).toList();
+            final var output = input.gather(Gatherers4j.takeEveryNth(3)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "D", "G");

@@ -19,45 +19,45 @@ package com.ginsberg.gatherers4j.enums;
 public enum Size {
     Equals {
         @Override
-        public boolean tryAccept(long length, long target) {
+        public boolean tryAccept(final long length, final long target) {
             return length <= target;
         }
 
         @Override
-        public boolean accept(long length, long target) {
+        public boolean accept(final long length, final long target) {
             return length == target;
         }
     },
     GreaterThan {
         @Override
-        public boolean accept(long length, long target) {
+        public boolean accept(final long length, final long target) {
             return length > target;
         }
     },
     GreaterThanOrEqualTo {
         @Override
-        public boolean accept(long length, long target) {
+        public boolean accept(final long length, final long target) {
             return length >= target;
         }
     },
     LessThan {
         @Override
-        public boolean tryAccept(long length, long target) {
+        public boolean tryAccept(final long length, final long target) {
             return length < target;
         }
     },
     LessThanOrEqualTo {
         @Override
-        public boolean tryAccept(long length, long target) {
+        public boolean tryAccept(final long length, final long target) {
             return length <= target;
         }
     };
 
-    public boolean accept(long length, long target) {
+    public boolean accept(final long length, final long target) {
         return true;
     }
 
-    public boolean tryAccept(long length, long target) {
+    public boolean tryAccept(final long length, final long target) {
         return true;
     }
 }

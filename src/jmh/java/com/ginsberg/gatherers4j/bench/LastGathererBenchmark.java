@@ -31,7 +31,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.List;
 import java.util.SplittableRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -56,7 +55,7 @@ public class LastGathererBenchmark {
         @Setup(Level.Trial)
         public void setUp() {
             // Fill with pseudo-random data to avoid constant-folding
-            final SplittableRandom rnd = new SplittableRandom(42);
+            final var rnd = new SplittableRandom(42);
             data = IntStream.generate(rnd::nextInt)
                     .limit(streamSize)
                     .toArray();
@@ -65,7 +64,7 @@ public class LastGathererBenchmark {
 
     @Benchmark
     public void lastGatherer_toList(final DataState s, final Blackhole bh) {
-        final List<Integer> out = IntStream.of(s.data)
+        final var out = IntStream.of(s.data)
                 .boxed()
                 .gather(Gatherers4j.takeLast(s.lastCount))
                 .toList();

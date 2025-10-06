@@ -41,7 +41,7 @@ public class AccumulatingGathererTest {
         @Test
         void foldWithIndex() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C", "D");
+            final var input = Stream.of("A", "B", "C", "D");
 
             // Act
             final List<WithIndex<String>> output = input
@@ -93,10 +93,10 @@ public class AccumulatingGathererTest {
         @Test
         void scanWithIndex() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "C");
+            final var input = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.scanIndexed(
                             () -> "",
                             (index, carry, next) -> carry + next + index
@@ -113,7 +113,7 @@ public class AccumulatingGathererTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final List<String> output = input
+            final var output = input
                     .gather(Gatherers4j.scanIndexed(
                             () -> "",
                             (index, carry, next) -> carry + next + index

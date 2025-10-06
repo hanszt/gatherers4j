@@ -33,10 +33,10 @@ class ShufflingGathererTest {
     @Test
     void testKnownShuffle() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F", "G");
+        final var input = Stream.of("A", "B", "C", "D", "E", "F", "G");
 
         // Act
-        final String output = input
+        final var output = input
                 .gather(Gatherers4j.shuffle(new Random(42)))
                 .collect(Collectors.joining());
 
@@ -47,7 +47,7 @@ class ShufflingGathererTest {
     @Test
     void testRandomShuffles() {
         // Arrange
-        final List<String> input = List.of("A", "B", "C", "D", "E");
+        final var input = List.of("A", "B", "C", "D", "E");
 
         // Act
         final Set<String> output = new HashSet<>(
@@ -67,7 +67,7 @@ class ShufflingGathererTest {
     @Test
     void withNullRandomGenerator() {
         // Arrange
-        final Stream<String> input = Stream.of("A");
+        final var input = Stream.of("A");
 
         // Act/Assert
         assertThatThrownBy(() -> input.gather(Gatherers4j.shuffle(null)).toList())

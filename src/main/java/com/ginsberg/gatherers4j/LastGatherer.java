@@ -29,7 +29,7 @@ public class LastGatherer<INPUT extends @Nullable Object>
 
     private final int lastCount;
 
-    LastGatherer(int lastCount) {
+    LastGatherer(final int lastCount) {
         if (lastCount < 0) {
             throw new IllegalArgumentException("Last count must not be negative");
         }
@@ -39,7 +39,7 @@ public class LastGatherer<INPUT extends @Nullable Object>
     @Override
     public BiConsumer<State<INPUT>, Downstream<? super INPUT>> finisher() {
         return (state, downstream) -> {
-            final Iterator<INPUT> iterator = state.elements.iterator();
+            final var iterator = state.elements.iterator();
             while (iterator.hasNext() && !downstream.isRejecting()) {
                 downstream.push(iterator.next());
             }
@@ -61,7 +61,7 @@ public class LastGatherer<INPUT extends @Nullable Object>
 
     public static class State<INPUT extends @Nullable Object> {
         final CircularBuffer<INPUT> elements;
-        State(int capacity) {
+        State(final int capacity) {
             elements = new CircularBuffer<>(capacity);
         }
     }

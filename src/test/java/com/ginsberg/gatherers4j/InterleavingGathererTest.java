@@ -42,11 +42,11 @@ class InterleavingGathererTest {
         @Test
         void interleavingGathererIterable() {
             // Arrange
-            final Stream<String> left = Stream.of("A", "B", "C");
+            final var left = Stream.of("A", "B", "C");
             final Iterable<String> right = List.of("D", "E", "F");
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right))
                     .toList();
 
@@ -71,11 +71,11 @@ class InterleavingGathererTest {
         @Test
         void interleavingGathererIterator() {
             // Arrange
-            final Stream<String> left = Stream.of("A", "B", "C");
-            final Iterator<String> right = List.of("D", "E", "F").iterator();
+            final var left = Stream.of("A", "B", "C");
+            final var right = List.of("D", "E", "F").iterator();
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right))
                     .toList();
 
@@ -98,11 +98,11 @@ class InterleavingGathererTest {
 
         @Test
         void interleaveArgumentLongerSpecifyingArgument() {
-            final Stream<String> left = Stream.of("A", "B", "C");
-            final Stream<String> right = Stream.of("D", "E", "F", "G", "H");
+            final var left = Stream.of("A", "B", "C");
+            final var right = Stream.of("D", "E", "F", "G", "H");
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right).appendArgumentIfLonger())
                     .toList();
 
@@ -113,11 +113,11 @@ class InterleavingGathererTest {
 
         @Test
         void interleaveOtherLongerSpecifyingEither() {
-            final Stream<String> left = Stream.of("A", "B", "C");
-            final Stream<String> right = Stream.of("D", "E", "F", "G", "H");
+            final var left = Stream.of("A", "B", "C");
+            final var right = Stream.of("D", "E", "F", "G", "H");
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right).appendLonger())
                     .toList();
 
@@ -128,11 +128,11 @@ class InterleavingGathererTest {
 
         @Test
         void interleaveSourceLongerSpecifyingSourceEither() {
-            final Stream<String> left = Stream.of("A", "B", "C", "D", "E");
-            final Stream<String> right = Stream.of("F", "G", "H");
+            final var left = Stream.of("A", "B", "C", "D", "E");
+            final var right = Stream.of("F", "G", "H");
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right).appendSourceIfLonger())
                     .toList();
 
@@ -144,11 +144,11 @@ class InterleavingGathererTest {
         @Test
         void interleavingGathererOtherEmpty() {
             // Arrange
-            final Stream<String> left = Stream.of("A", "B", "C");
+            final var left = Stream.of("A", "B", "C");
             final Stream<String> right = Stream.empty();
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right))
                     .toList();
 
@@ -160,11 +160,11 @@ class InterleavingGathererTest {
         @Test
         void interleavingGathererStream() {
             // Arrange
-            final Stream<String> left = Stream.of("A", "B", "C");
-            final Stream<String> right = Stream.of("D", "E", "F");
+            final var left = Stream.of("A", "B", "C");
+            final var right = Stream.of("D", "E", "F");
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right))
                     .toList();
 
@@ -177,10 +177,10 @@ class InterleavingGathererTest {
         void interleavingGathererThisEmpty() {
             // Arrange
             final Stream<String> left = Stream.empty();
-            final Stream<String> right = Stream.of("A", "B", "C");
+            final var right = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith(right))
                     .toList();
 
@@ -204,10 +204,10 @@ class InterleavingGathererTest {
         @Test
         void interleavingGathererVarargs() {
             // Arrange
-            final Stream<String> left = Stream.of("A", "B", "C");
+            final var left = Stream.of("A", "B", "C");
 
             // Act
-            final List<String> output = left
+            final var output = left
                     .gather(Gatherers4j.interleaveWith("D", "E", "F"))
                     .toList();
 

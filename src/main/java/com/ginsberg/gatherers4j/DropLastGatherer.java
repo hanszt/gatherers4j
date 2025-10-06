@@ -52,7 +52,7 @@ public class DropLastGatherer<INPUT extends @Nullable Object> implements Gathere
     public static class State<INPUT extends @Nullable Object> {
         final CircularBuffer<INPUT> elements;
 
-        State(int capacity) {
+        State(final int capacity) {
             elements = new CircularBuffer<>(capacity);
         }
     }

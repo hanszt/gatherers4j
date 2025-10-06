@@ -30,11 +30,11 @@ class LastGathererTest {
     @Test
     void lastElements() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F");
-        final int last = 3;
+        final var input = Stream.of("A", "B", "C", "D", "E", "F");
+        final var last = 3;
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.takeLast(last))
                 .toList();
         
@@ -45,11 +45,11 @@ class LastGathererTest {
     @Test
     void lastElementsNull() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", null, null);
-        final int last = 3;
+        final var input = Stream.of("A", "B", "C", "D", null, null);
+        final var last = 3;
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.takeLast(last))
                 .toList();
 
@@ -61,11 +61,11 @@ class LastGathererTest {
     @Test
     void lastElementsUnderflow() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F");
-        final int last = 30;
+        final var input = Stream.of("A", "B", "C", "D", "E", "F");
+        final var last = 30;
 
         // Act
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.takeLast(last))
                 .toList();
 
@@ -76,8 +76,8 @@ class LastGathererTest {
     @Test
     void lastNegativeCount() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F");
-        final int last = -1;
+        final var input = Stream.of("A", "B", "C", "D", "E", "F");
+        final var last = -1;
 
         // Act/Assert
         assertThatThrownBy(() ->
@@ -88,11 +88,11 @@ class LastGathererTest {
     @Test
     void downstreamRejection() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F");
-        final int last = 2;
+        final var input = Stream.of("A", "B", "C", "D", "E", "F");
+        final var last = 2;
 
         // Act/Assert
-        final List<String> output = input
+        final var output = input
                 .gather(Gatherers4j.takeLast(last))
                 .limit(1)
                 .toList();

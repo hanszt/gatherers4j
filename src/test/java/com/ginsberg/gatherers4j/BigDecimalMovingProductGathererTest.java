@@ -35,10 +35,10 @@ class BigDecimalMovingProductGathererTest {
     @Test
     void ignoresNulls() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(null, BigDecimal.TWO, BigDecimal.TWO, BigDecimal.TEN);
+        final var input = Stream.of(null, BigDecimal.TWO, BigDecimal.TWO, BigDecimal.TEN);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.movingProduct(2))
                 .toList();
 
@@ -62,10 +62,10 @@ class BigDecimalMovingProductGathererTest {
     @Test
     void movingProduct() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.movingProduct(2))
                 .toList();
 
@@ -82,7 +82,7 @@ class BigDecimalMovingProductGathererTest {
     @Test
     void movingProductBy() {
         // Arrange
-        final List<TestValueHolder> input = List.of(
+        final var input = List.of(
                 new TestValueHolder(1, new BigDecimal("1")),
                 new TestValueHolder(2, new BigDecimal("2")),
                 new TestValueHolder(3, new BigDecimal("10")),
@@ -91,7 +91,7 @@ class BigDecimalMovingProductGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input.stream()
+        final var output = input.stream()
                 .gather(Gatherers4j.movingProductBy(2, TestValueHolder::value))
                 .toList();
 
@@ -109,10 +109,10 @@ class BigDecimalMovingProductGathererTest {
     @Test
     void movingProductWithPartials() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.movingProduct(2).includePartialValues())
                 .toList();
 
@@ -130,10 +130,10 @@ class BigDecimalMovingProductGathererTest {
     @Test
     void movingProductWithPartialsWithOriginal() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
+        final var input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
 
         // Act
-        final List<WithOriginal<BigDecimal, BigDecimal>> output = input
+        final var output = input
                 .gather(Gatherers4j.movingProduct(2)
                         .includePartialValues()
                         .withOriginal()
@@ -154,7 +154,7 @@ class BigDecimalMovingProductGathererTest {
     @Test
     void treatNullAsOne() {
         // Arrange
-        final Stream<BigDecimal> input = Stream.of(
+        final var input = Stream.of(
                 new BigDecimal("2"),
                 new BigDecimal("3"),
                 null,
@@ -162,7 +162,7 @@ class BigDecimalMovingProductGathererTest {
         );
 
         // Act
-        final List<BigDecimal> output = input
+        final var output = input
                 .gather(Gatherers4j.movingProduct(2).treatNullAsOne())
                 .toList();
 

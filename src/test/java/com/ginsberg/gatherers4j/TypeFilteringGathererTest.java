@@ -60,7 +60,7 @@ class TypeFilteringGathererTest {
         final Stream<Number> input = Stream.of(1, 2.0, 3L, (short) 4, (byte) 5);
 
         // Act
-        final List<Integer> output = input.gather(Gatherers4j.filterInstanceOf(Integer.class)).toList();
+        final var output = input.gather(Gatherers4j.filterInstanceOf(Integer.class)).toList();
 
         // Assert
         assertThat(output).satisfiesExactly(item ->

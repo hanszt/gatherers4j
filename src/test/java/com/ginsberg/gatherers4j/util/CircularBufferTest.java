@@ -17,7 +17,7 @@ class CircularBufferTest {
     @Test
     void add() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(2);
+        final var cb = new CircularBuffer<String>(2);
 
         // Act
         Stream.of("A", "B").forEach(cb::add);
@@ -29,7 +29,7 @@ class CircularBufferTest {
     @Test
     void addOverwritesFirst() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(2);
+        final var cb = new CircularBuffer<String>(2);
 
         // Act
         Stream.of("A", "B", "C").forEach(cb::add);
@@ -41,11 +41,11 @@ class CircularBufferTest {
     @Test
     void asList() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        final var cb = new CircularBuffer<String>(5);
         Stream.of("A", "B", "C", "D").forEach(cb::add);
 
         // Act
-        final List<String> output = cb.asList();
+        final var output = cb.asList();
 
         // Assert
         assertThat(output).containsExactly("A", "B", "C", "D");
@@ -54,10 +54,10 @@ class CircularBufferTest {
     @Test
     void asListEmpty() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        final var cb = new CircularBuffer<String>(5);
 
         // Act
-        final List<String> output = cb.asList();
+        final var output = cb.asList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -66,7 +66,7 @@ class CircularBufferTest {
     @Test
     void createdEmpty() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(2);
+        final var cb = new CircularBuffer<String>(2);
 
         // Assert
         assertThat(cb.isEmpty()).isTrue();
@@ -76,7 +76,7 @@ class CircularBufferTest {
     @Test
     void drop() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        final var cb = new CircularBuffer<String>(5);
         Stream.of("A", "B", "C", "D").forEach(cb::add);
 
         // Act
@@ -90,7 +90,7 @@ class CircularBufferTest {
     @Test
     void dropMoreThanSize() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        final var cb = new CircularBuffer<String>(5);
         Stream.of("A", "B", "C", "D").forEach(cb::add);
 
         // Act
@@ -105,7 +105,7 @@ class CircularBufferTest {
     @ValueSource(ints = {-1, 0})
     void dropWithoutEffect(final int drops) {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(2);
+        final var cb = new CircularBuffer<String>(2);
         Stream.of("A", "B").forEach(cb::add);
 
         // Act
@@ -118,11 +118,11 @@ class CircularBufferTest {
     @Test
     void iterator() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        final var cb = new CircularBuffer<String>(5);
         Stream.of("A", "B", "C", "D").forEach(cb::add);
 
         // Act
-        final Iterator<String> iterator = cb.iterator();
+        final var iterator = cb.iterator();
 
         // Assert
         assertThat(iterator).toIterable().containsExactly("A", "B", "C", "D");
@@ -130,7 +130,7 @@ class CircularBufferTest {
 
     @Test
     void iteratorDoesNotSupportRemove() {
-        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        final var cb = new CircularBuffer<String>(5);
         Stream.of("A", "B", "C", "D").forEach(cb::add);
         final var iterator = cb.iterator();
 
@@ -141,10 +141,10 @@ class CircularBufferTest {
     @Test
     void iteratorEmpty() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(5);
+        final var cb = new CircularBuffer<String>(5);
 
         // Act
-        final Iterator<String> iterator = cb.iterator();
+        final var iterator = cb.iterator();
 
         // Assert
         assertThat(iterator).toIterable().isEmpty();
@@ -160,11 +160,11 @@ class CircularBufferTest {
     @Test
     void removeFirst() {
         // Arrange
-        final CircularBuffer<String> cb = new CircularBuffer<>(2);
+        final var cb = new CircularBuffer<String>(2);
         Stream.of("A", "B").forEach(cb::add);
 
         // Act
-        final String removed = cb.removeFirst();
+        final var removed = cb.removeFirst();
 
         // Assert
         assertThat(removed).isEqualTo("A");

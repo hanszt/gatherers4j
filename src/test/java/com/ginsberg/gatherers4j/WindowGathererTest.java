@@ -35,7 +35,7 @@ class WindowGathererTest {
         final Stream<String> input = Stream.empty();
 
         // Act
-        final List<List<String>> output = input.gather(
+        final var output = input.gather(
                 Gatherers4j.window(1, 1, true)
         ).toList();
 
@@ -46,10 +46,10 @@ class WindowGathererTest {
     @Test
     void excludesPartialWindow() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E");
+        final var input = Stream.of("A", "B", "C", "D", "E");
 
         // Act
-        final List<List<String>> output = input.gather(
+        final var output = input.gather(
                 Gatherers4j.window(2, 2, false)
         ).toList();
 
@@ -64,10 +64,10 @@ class WindowGathererTest {
     @Test
     void includesPartialWindow() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E");
+        final var input = Stream.of("A", "B", "C", "D", "E");
 
         // Act
-        final List<List<String>> output = input.gather(
+        final var output = input.gather(
                 Gatherers4j.window(2, 2, true)
         ).toList();
 
@@ -82,14 +82,14 @@ class WindowGathererTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
-    void steppingMustBePositive(int stepping) {
+    void steppingMustBePositive(final int stepping) {
         assertThatThrownBy(() -> new WindowGatherer<>(1, stepping, true))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
-    void windowSizeMustBePositive(int windowSize) {
+    void windowSizeMustBePositive(final int windowSize) {
         assertThatThrownBy(() -> new WindowGatherer<>(windowSize, 1, true))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -97,10 +97,10 @@ class WindowGathererTest {
     @Test
     void windowWithSteppingAndPartials() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F");
+        final var input = Stream.of("A", "B", "C", "D", "E", "F");
 
         // Act
-        final List<List<String>> output = input.gather(
+        final var output = input.gather(
                 Gatherers4j.window(3, 2, true)
         ).toList();
 
@@ -116,10 +116,10 @@ class WindowGathererTest {
     @Test
     void windowWithSteppingAndMultiplePartials() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F", "G");
+        final var input = Stream.of("A", "B", "C", "D", "E", "F", "G");
 
         // Act
-        final List<List<String>> output = input.gather(
+        final var output = input.gather(
                 Gatherers4j.window(5, 2, true)
         ).toList();
 
@@ -136,10 +136,10 @@ class WindowGathererTest {
     @Test
     void windowWithSteppingThatSkips() {
         // Arrange
-        final Stream<String> input = Stream.of("A", "B", "C", "D", "E", "F");
+        final var input = Stream.of("A", "B", "C", "D", "E", "F");
 
         // Act
-        final List<List<String>> output = input.gather(
+        final var output = input.gather(
                 Gatherers4j.window(2, 3, true)
         ).toList();
 
@@ -157,7 +157,7 @@ class WindowGathererTest {
         final Stream<String> input = Stream.of(null, null, null, null, null);
 
         // Act
-        final List<List<String>> output = input.gather(
+        final var output = input.gather(
                 Gatherers4j.window(2, 2, false)
         ).toList();
 

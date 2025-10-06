@@ -39,7 +39,7 @@ class GroupChangingGathererTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final List<List<String>> output = input.gather(Gatherers4j.group()).toList();
+            final var output = input.gather(Gatherers4j.group()).toList();
 
             // Assert
             assertThat(output).isEmpty();
@@ -49,10 +49,10 @@ class GroupChangingGathererTest {
         @Test
         void groupingByIdentity() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "A", "B", "B", "C", "C", "C");
+            final var input = Stream.of("A", "A", "B", "B", "C", "C", "C");
 
             // Act
-            final List<List<String>> output = input.gather(Gatherers4j.group()).toList();
+            final var output = input.gather(Gatherers4j.group()).toList();
 
             // Assert
             assertThat(output).containsExactly(
@@ -65,10 +65,10 @@ class GroupChangingGathererTest {
         @Test
         void nullsMatch() {
             // Arrange
-            final Stream<String> input = Stream.of(null, null, "A");
+            final var input = Stream.of(null, null, "A");
 
             // Act
-            final List<List<String>> output = input
+            final var output = input
                     .gather(Gatherers4j.group()).toList();
 
             // Assert
@@ -82,10 +82,10 @@ class GroupChangingGathererTest {
         @Test
         void returnedListUnmodifiable() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "A", "B", "B", "C", "C", "C");
+            final var input = Stream.of("A", "A", "B", "B", "C", "C", "C");
 
             // Act
-            final List<List<String>> output = input.gather(Gatherers4j.group()).toList();
+            final var output = input.gather(Gatherers4j.group()).toList();
 
             // Assert
             assertThat(output).hasSize(3);
@@ -107,7 +107,7 @@ class GroupChangingGathererTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final List<List<String>> output = input.gather(Gatherers4j.groupBy(String::length)).toList();
+            final var output = input.gather(Gatherers4j.groupBy(String::length)).toList();
 
             // Assert
             assertThat(output).isEmpty();
@@ -116,10 +116,10 @@ class GroupChangingGathererTest {
         @Test
         void groupingByFunction() {
             // Arrange
-            final Stream<String> input = Stream.of("A", "B", "AA", "BB", "CCC", "A", "BB", "CCC");
+            final var input = Stream.of("A", "B", "AA", "BB", "CCC", "A", "BB", "CCC");
 
             // Act
-            final List<List<String>> output = input.gather(Gatherers4j.groupBy(String::length)).toList();
+            final var output = input.gather(Gatherers4j.groupBy(String::length)).toList();
 
             // Assert
             assertThat(output).containsExactly(
@@ -141,10 +141,10 @@ class GroupChangingGathererTest {
         @Test
         void nullsMatch() {
             // Arrange
-            final Stream<String> input = Stream.of(null, null, "A");
+            final var input = Stream.of(null, null, "A");
 
             // Act
-            final List<List<String>> output = input
+            final var output = input
                     .gather(Gatherers4j.groupBy(it -> it == null ? null : it.length())).toList();
 
             // Assert
@@ -158,10 +158,10 @@ class GroupChangingGathererTest {
         @Test
         void singleElementStream() {
             // Arrange
-            final Stream<String> input = Stream.of("A");
+            final var input = Stream.of("A");
 
             // Act
-            final List<List<String>> output = input.gather(Gatherers4j.groupBy(String::length)).toList();
+            final var output = input.gather(Gatherers4j.groupBy(String::length)).toList();
 
             // Assert
             assertThat(output).containsExactly(
@@ -178,10 +178,10 @@ class GroupChangingGathererTest {
             @Test
             void descending() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(3, 2, 1, 2, 2, 1);
+                final var input = Stream.of(3, 2, 1, 2, 2, 1);
 
                 // Act
-                final List<List<Integer>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.Descending))
                         .toList();
 
@@ -200,7 +200,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.Descending))
                         .toList();
 
@@ -211,10 +211,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureDescending() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(4, 3, 2, 1);
+                final var input = Stream.of(4, 3, 2, 1);
 
                 // Act
-                final List<Integer> output = input.gather(Gatherers4j.ensureOrdered(Order.Descending)).toList();
+                final var output = input.gather(Gatherers4j.ensureOrdered(Order.Descending)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(4, 3, 2, 1);
@@ -230,10 +230,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.Descending))
                         .toList();
 
@@ -250,7 +250,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.Ascending))
                         .toList();
 
@@ -261,10 +261,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureAscending() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1, 2, 3, 4);
+                final var input = Stream.of(1, 2, 3, 4);
 
                 // Act
-                final List<Integer> output = input.gather(Gatherers4j.ensureOrdered(Order.Ascending)).toList();
+                final var output = input.gather(Gatherers4j.ensureOrdered(Order.Ascending)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(1, 2, 3, 4);
@@ -280,10 +280,10 @@ class GroupChangingGathererTest {
             @Test
             void ascending() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1, 2, 3, 3, 2, 3);
+                final var input = Stream.of(1, 2, 3, 3, 2, 3);
 
                 // Act
-                final List<List<Integer>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.Ascending))
                         .toList();
 
@@ -299,10 +299,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.Ascending))
                         .toList();
 
@@ -319,7 +319,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.AscendingOrEqual))
                         .toList();
 
@@ -330,10 +330,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureAscendingOrEqual() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(4, 4, 5, 6);
+                final var input = Stream.of(4, 4, 5, 6);
 
                 // Act
-                final List<Integer> output = input.gather(Gatherers4j.ensureOrdered(Order.AscendingOrEqual)).toList();
+                final var output = input.gather(Gatherers4j.ensureOrdered(Order.AscendingOrEqual)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(4, 4, 5, 6);
@@ -349,10 +349,10 @@ class GroupChangingGathererTest {
             @Test
             void ascendingOrEqual() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(1, 2, 3, 3, 2, 3);
+                final var input = Stream.of(1, 2, 3, 3, 2, 3);
 
                 // Act
-                final List<List<Integer>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.AscendingOrEqual))
                         .toList();
 
@@ -367,10 +367,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.AscendingOrEqual))
                         .toList();
 
@@ -387,7 +387,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.DescendingOrEqual))
                         .toList();
 
@@ -398,10 +398,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureDescendingOrEqual() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(4, 3, 2, 2);
+                final var input = Stream.of(4, 3, 2, 2);
 
                 // Act
-                final List<Integer> output = input.gather(Gatherers4j.ensureOrdered(Order.DescendingOrEqual)).toList();
+                final var output = input.gather(Gatherers4j.ensureOrdered(Order.DescendingOrEqual)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(4, 3, 2, 2);
@@ -417,10 +417,10 @@ class GroupChangingGathererTest {
             @Test
             void descendingOrEqual() {
                 // Arrange
-                final Stream<Integer> input = Stream.of(3, 2, 1, 2, 2, 1);
+                final var input = Stream.of(3, 2, 1, 2, 2, 1);
 
                 // Act
-                final List<List<Integer>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.DescendingOrEqual))
                         .toList();
 
@@ -435,10 +435,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrdered(Order.DescendingOrEqual))
                         .toList();
 
@@ -473,10 +473,10 @@ class GroupChangingGathererTest {
             @Test
             void returnedListUnmodifiable() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "B", "C");
+                final var input = Stream.of("A", "B", "C");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(new GroupChangingGatherer<>(Order.Ascending, Comparator.comparing(String::length)))
                         .toList();
 
@@ -495,10 +495,10 @@ class GroupChangingGathererTest {
             @Test
             void descending() {
                 // Arrange
-                final Stream<String> input = Stream.of("AAA", "AA", "A", "AA", "AA", "A");
+                final var input = Stream.of("AAA", "AA", "A", "AA", "AA", "A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -517,7 +517,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -537,10 +537,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureOrderedDescending() {
                 // Arrange
-                final Stream<String> input = Stream.of("AAA", "AA", "A");
+                final var input = Stream.of("AAA", "AA", "A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.ensureOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -551,10 +551,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -571,7 +571,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -582,10 +582,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureAscending() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "AA", "AAA");
+                final var input = Stream.of("A", "AA", "AAA");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.ensureOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -605,10 +605,10 @@ class GroupChangingGathererTest {
             @Test
             void ascending() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "AA", "AAA", "AAA", "AA", "AAA");
+                final var input = Stream.of("A", "AA", "AAA", "AAA", "AA", "AAA");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -624,10 +624,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -645,7 +645,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -656,10 +656,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureAscendingOrEqual() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "A", "A");
+                final var input = Stream.of("A", "A", "A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.ensureOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -679,10 +679,10 @@ class GroupChangingGathererTest {
             @Test
             void nonDecreasing() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "AA", "AAA", "AAA", "AA", "AAA");
+                final var input = Stream.of("A", "AA", "AAA", "AAA", "AA", "AAA");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -697,10 +697,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -717,7 +717,7 @@ class GroupChangingGathererTest {
                 final Stream<String> input = Stream.empty();
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -728,10 +728,10 @@ class GroupChangingGathererTest {
             @Test
             void ensureDescendingOrEqual() {
                 // Arrange
-                final Stream<String> input = Stream.of("A", "A", "A");
+                final var input = Stream.of("A", "A", "A");
 
                 // Act
-                final List<String> output = input
+                final var output = input
                         .gather(Gatherers4j.ensureOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -751,10 +751,10 @@ class GroupChangingGathererTest {
             @Test
             void descendingOrEqual() {
                 // Arrange
-                final Stream<String> input = Stream.of("AAA", "AA", "A", "AA", "AA", "A");
+                final var input = Stream.of("AAA", "AA", "A", "AA", "AA", "A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
@@ -769,10 +769,10 @@ class GroupChangingGathererTest {
             @Test
             void singleElementStream() {
                 // Arrange
-                final Stream<String> input = Stream.of("A");
+                final var input = Stream.of("A");
 
                 // Act
-                final List<List<String>> output = input
+                final var output = input
                         .gather(Gatherers4j.groupOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
                         .toList();
 
