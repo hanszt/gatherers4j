@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class TakeUntilGathererTest {
 
     @Test
-    @SuppressWarnings("DataFlowIssue")
     void predicateMustNotBeNull() {
         assertThatThrownBy(() -> Gatherers4j.takeUntil(null)).isInstanceOf(IllegalArgumentException.class);
     }
