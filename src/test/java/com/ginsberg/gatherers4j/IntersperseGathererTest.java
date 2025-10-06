@@ -18,20 +18,20 @@ package com.ginsberg.gatherers4j;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.intersperse;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class IntersperseGathererTest {
 
     @Test
-    void intersperse() {
+    void testIntersperse() {
         // Arrange
         final var input = Stream.of("A", "B", "C");
 
         // Act
-        final var output = input.gather(Gatherers4j.intersperse("::")).toList();
+        final var output = input.gather(intersperse("::")).toList();
 
         // Assert
         assertThat(output).containsExactly("A", "::", "B", "::", "C");
@@ -43,7 +43,7 @@ class IntersperseGathererTest {
         final Stream<String> input = Stream.empty();
 
         // Act
-        final var output = input.gather(Gatherers4j.intersperse("-")).toList();
+        final var output = input.gather(intersperse("-")).toList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -55,7 +55,7 @@ class IntersperseGathererTest {
         final var input = Stream.of("A", "B", "C");
 
         // Act
-        final var output = input.gather(Gatherers4j.intersperse(null)).toList();
+        final var output = input.gather(intersperse(null)).toList();
 
         // Assert
         assertThat(output).containsExactly("A", null, "B", null, "C");
@@ -67,7 +67,7 @@ class IntersperseGathererTest {
         final var input = Stream.of("A");
 
         // Act
-        final var output = input.gather(Gatherers4j.intersperse("-")).toList();
+        final var output = input.gather(intersperse("-")).toList();
 
         // Assert
         assertThat(output).containsExactly("A");

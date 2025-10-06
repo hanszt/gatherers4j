@@ -405,7 +405,20 @@ public final class Gatherers4j {
     /// @param <INPUT>            The type of elements in the stream and the element to intersperse
     /// @return A non-null Gatherer
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> intersperse(final INPUT intersperseElement) {
-        return new IntersperseGatherer<>(intersperseElement);
+        return Gatherer.ofSequential(
+                () -> new Object() {
+                    boolean hasStarted = false;
+                },
+                Gatherer.Integrator.ofGreedy((state, item, downstream) -> {
+                            if (state.hasStarted) {
+                                downstream.push(intersperseElement);
+                            } else {
+                                state.hasStarted = true;
+                            }
+                            return downstream.push(item);
+                        }
+                )
+        );
     }
 
     /// Perform a mapping operation given the element being mapped and its zero-based index.
