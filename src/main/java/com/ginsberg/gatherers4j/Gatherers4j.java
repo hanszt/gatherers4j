@@ -136,19 +136,37 @@ public final class Gatherers4j {
     /// @param <INPUT> Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> dedupeConsecutive() {
-        return new DedupeConsecutiveGatherer<>();
+        return dedupeConsecutiveBy(e -> e);
     }
 
     /// Remove consecutive duplicates from a stream where duplication is measured by the given `function`.
     ///
-    /// @param mappingFunction A non-null function, the results of which will be used to check for consecutive duplication.
-    /// @param <INPUT>         Type of elements in both the input and output streams
+    /// @param selector A non-null function, the results of which will be used to check for consecutive duplication.
+    /// @param <T>         Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> dedupeConsecutiveBy(
-            final Function<INPUT, Object> mappingFunction
+    public static <T extends @Nullable Object> Gatherer<T, ?, T> dedupeConsecutiveBy(
+            final Function<? super T, @Nullable Object> selector
     ) {
-        mustNotBeNull(mappingFunction, "Mapping function must not be null");
-        return new DedupeConsecutiveGatherer<>(mappingFunction);
+        mustNotBeNull(selector, "Mapping function must not be null");
+        class State {
+            @Nullable
+            Object value = null;
+            boolean hasValue = false;
+
+            boolean integrate(T element, Gatherer.Downstream<? super T> downstream) {
+                final var mapped = selector.apply(element);
+                if (!hasValue) {
+                    hasValue = true;
+                    value = mapped;
+                    return downstream.push(element);
+                } else if (!Objects.equals(value, mapped)) {
+                    value = mapped;
+                    return downstream.push(element);
+                }
+                return !downstream.isRejecting();
+            }
+        }
+        return Gatherer.ofSequential(State::new, Integrator.<State, T, T>ofGreedy(State::integrate));
     }
 
     /// Filter a stream such that it only contains distinct elements measured by the given `function`.
