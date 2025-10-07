@@ -39,11 +39,11 @@ class TypeFilteringGathererTest {
 
         // Assert
         assertThat(output).satisfiesExactly(
-                item ->assertThat(item)
+                item -> assertThat(item)
                         .isEqualTo(1)
                         .isInstanceOf(Integer.class),
                 item -> assertThat(item)
-                        .isEqualTo((short)4)
+                        .isEqualTo((short) 4)
                         .isInstanceOf(Short.class)
         );
     }
@@ -74,7 +74,7 @@ class TypeFilteringGathererTest {
     @Test
     void validTypesMustNotBeNull() {
         assertThatThrownBy(() -> {
-            TypeFilteringGatherer.of((Class<Object>[])null);
+            TypeFilteringGatherer.of((Class<Object>[]) null);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 

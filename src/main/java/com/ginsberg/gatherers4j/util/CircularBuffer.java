@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class CircularBuffer<T extends @Nullable Object> implements Iterable<T>{
+public class CircularBuffer<T extends @Nullable Object> implements Iterable<T> {
     private final T[] buffer;
     private int size = 0;
     private int head = 0;
@@ -32,7 +32,7 @@ public class CircularBuffer<T extends @Nullable Object> implements Iterable<T>{
 
     @SuppressWarnings("unchecked")
     public CircularBuffer(final int capacity) {
-        if(capacity < 1) {
+        if (capacity < 1) {
             throw new IllegalArgumentException("capacity must be greater than zero");
         }
         buffer = (T[]) new Object[capacity];

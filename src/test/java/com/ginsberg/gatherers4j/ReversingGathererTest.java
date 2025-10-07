@@ -40,12 +40,13 @@ class ReversingGathererTest {
     @Test
     void simpleReverse() {
         // Arrange
-        final var input = Stream.of("A", "B", "C", "D", "E", "F", "G");
+        final var input = List.of("A", "B", "C", "D", "E", "F", "G");
 
         // Act
-        final var output = input.gather(Gatherers4j.reverse()).toList();
+        final var output = input.stream().gather(Gatherers4j.reverse()).toList();
 
         // Assert
-        assertThat(output).containsExactly("G", "F", "E", "D", "C", "B", "A");
+        assertThat(output).containsExactly("G", "F", "E", "D", "C", "B", "A")
+                .isEqualTo(input.reversed());
     }
 }
