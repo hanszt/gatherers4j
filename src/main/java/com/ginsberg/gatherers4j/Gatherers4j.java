@@ -544,7 +544,43 @@ public final class Gatherers4j {
     /// @param distance  Distance to rotate elements
     /// @return A non-null Gatherer
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> rotate(final Rotate direction, final int distance) {
-        return new RotateGatherer<>(direction, distance);
+        mustNotBeNull(direction, "direction must not be null");
+        class State {
+            final List<INPUT> fullStream = new ArrayList<>();
+            final Rotate dir = distance < 0 ? direction.flip() : direction;
+            final int dist = Math.abs(distance);
+
+            boolean rotate(INPUT element, Gatherer.Downstream<? super INPUT> downstream) {
+                if (dist == 0) {
+                    downstream.push(element);
+                } else if (dir == Rotate.Left && fullStream.size() == dist) {
+                    downstream.push(element);
+                } else {
+                    fullStream.add(element);
+                }
+                return !downstream.isRejecting();
+            }
+
+            void flush(Gatherer.Downstream<? super INPUT> downstream) {
+                final var size = fullStream.size();
+                if (size == 0) {
+                    return;
+                }
+                final var rotateDistance = dist % size;
+                for (var i = 0; i < size; i++) {
+                    if (dir == Rotate.Left) {
+                        downstream.push(fullStream.get((i + rotateDistance) % size));
+                    } else {
+                        downstream.push(fullStream.get((i - rotateDistance + size) % size));
+                    }
+                }
+            }
+        }
+        return Gatherer.<INPUT, State, INPUT>ofSequential(
+                State::new,
+                Integrator.<State, INPUT, INPUT>ofGreedy(State::rotate),
+                State::flush
+        );
     }
 
     /// Create a `Stream<BigDecimal>` that represents the running population standard

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class RotateGathererTest {
 
@@ -65,18 +66,18 @@ class RotateGathererTest {
 
         private static Stream<Arguments> rotateLeftArguments() {
             return Stream.of(
-                    Arguments.arguments(1, List.of("B", "C", "D", "E", "A")),
-                    Arguments.arguments(2, List.of("C", "D", "E", "A", "B")),
-                    Arguments.arguments(3, List.of("D", "E", "A", "B", "C")),
-                    Arguments.arguments(4, List.of("E", "A", "B", "C", "D")),
-                    Arguments.arguments(5, List.of("A", "B", "C", "D", "E")),
-                    Arguments.arguments(6, List.of("B", "C", "D", "E", "A")),
-                    Arguments.arguments(-1, List.of("E", "A", "B", "C", "D")),
-                    Arguments.arguments(-2, List.of("D", "E", "A", "B", "C")),
-                    Arguments.arguments(-3, List.of("C", "D", "E", "A", "B")),
-                    Arguments.arguments(-4, List.of("B", "C", "D", "E", "A")),
-                    Arguments.arguments(-5, List.of("A", "B", "C", "D", "E")),
-                    Arguments.arguments(-6, List.of("E", "A", "B", "C", "D"))
+                    arguments(1, List.of("B", "C", "D", "E", "A")),
+                    arguments(2, List.of("C", "D", "E", "A", "B")),
+                    arguments(3, List.of("D", "E", "A", "B", "C")),
+                    arguments(4, List.of("E", "A", "B", "C", "D")),
+                    arguments(5, List.of("A", "B", "C", "D", "E")),
+                    arguments(6, List.of("B", "C", "D", "E", "A")),
+                    arguments(-1, List.of("E", "A", "B", "C", "D")),
+                    arguments(-2, List.of("D", "E", "A", "B", "C")),
+                    arguments(-3, List.of("C", "D", "E", "A", "B")),
+                    arguments(-4, List.of("B", "C", "D", "E", "A")),
+                    arguments(-5, List.of("A", "B", "C", "D", "E")),
+                    arguments(-6, List.of("E", "A", "B", "C", "D"))
             );
         }
 
@@ -100,16 +101,16 @@ class RotateGathererTest {
 
         private static Stream<Arguments> rotateRightArguments() {
             return Stream.of(
-                    Arguments.arguments(1, List.of("E", "A", "B", "C", "D")),
-                    Arguments.arguments(2, List.of("D", "E", "A", "B", "C")),
-                    Arguments.arguments(3, List.of("C", "D", "E", "A", "B")),
-                    Arguments.arguments(4, List.of("B", "C", "D", "E", "A")),
-                    Arguments.arguments(5, List.of("A", "B", "C", "D", "E")),
-                    Arguments.arguments(-1, List.of("B", "C", "D", "E", "A")),
-                    Arguments.arguments(-2, List.of("C", "D", "E", "A", "B")),
-                    Arguments.arguments(-3, List.of("D", "E", "A", "B", "C")),
-                    Arguments.arguments(-4, List.of("E", "A", "B", "C", "D")),
-                    Arguments.arguments(-5, List.of("A", "B", "C", "D", "E"))
+                    arguments(1, List.of("E", "A", "B", "C", "D")),
+                    arguments(2, List.of("D", "E", "A", "B", "C")),
+                    arguments(3, List.of("C", "D", "E", "A", "B")),
+                    arguments(4, List.of("B", "C", "D", "E", "A")),
+                    arguments(5, List.of("A", "B", "C", "D", "E")),
+                    arguments(-1, List.of("B", "C", "D", "E", "A")),
+                    arguments(-2, List.of("C", "D", "E", "A", "B")),
+                    arguments(-3, List.of("D", "E", "A", "B", "C")),
+                    arguments(-4, List.of("E", "A", "B", "C", "D")),
+                    arguments(-5, List.of("A", "B", "C", "D", "E"))
             );
         }
 
