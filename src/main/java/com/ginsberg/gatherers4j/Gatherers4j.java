@@ -20,6 +20,8 @@ import module com.ginsberg.gatherers4j;
 import module java.base;
 import org.jspecify.annotations.Nullable;
 
+import java.util.stream.Gatherer.Integrator;
+
 import static com.ginsberg.gatherers4j.util.GathererUtils.equalityOnlyComparator;
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
@@ -409,7 +411,7 @@ public final class Gatherers4j {
                 () -> new Object() {
                     boolean hasStarted = false;
                 },
-                Gatherer.Integrator.ofGreedy((state, item, downstream) -> {
+                Integrator.ofGreedy((state, item, downstream) -> {
                             if (state.hasStarted) {
                                 downstream.push(intersperseElement);
                             } else {
@@ -657,7 +659,7 @@ public final class Gatherers4j {
             throw new IllegalArgumentException("percentage must be less than 1.0");
         }
         return Gatherer.ofSequential(
-                Gatherer.Integrator.ofGreedy((_, element, downstream) -> {
+                Integrator.ofGreedy((_, element, downstream) -> {
                     if (randomGenerator.nextDouble() < percentage) {
                         return downstream.push(element);
                     }
@@ -942,6 +944,6 @@ public final class Gatherers4j {
                 return !downstream.isRejecting();
             }
         }
-        return Gatherer.<INPUT, State, OUTPUT>ofSequential(State::new, State::zipNext);
+        return Gatherer.ofSequential(State::new, Integrator.<State, INPUT, OUTPUT>ofGreedy(State::zipNext));
     }
 }
