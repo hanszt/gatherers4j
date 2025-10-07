@@ -18,7 +18,6 @@ package com.ginsberg.gatherers4j;
 
 import com.ginsberg.gatherers4j.test.ParallelAndSequentialTest;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.test.ParallelAndSequentialTest.NULL;

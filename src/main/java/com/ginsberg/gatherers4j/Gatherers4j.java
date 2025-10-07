@@ -22,8 +22,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.stream.Gatherer.Integrator;
 
-import static com.ginsberg.gatherers4j.util.GathererUtils.equalityOnlyComparator;
-import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
+import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
 /// This is the main entry-point for the Gatherers4j library. All available gatherers
 /// are created from static methods on this class.
@@ -155,7 +154,7 @@ public final class Gatherers4j {
     /// Filter a stream such that it only contains distinct elements measured by the given `function`.
     ///
     /// @param selector A non-null mapping function, the results of which will be used to check for distinct elements
-    /// @param <INPUT>         Type of elements in both the input and output streams
+    /// @param <INPUT>  Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> distinctBy(
             final Function<INPUT, @Nullable Object> selector
@@ -866,12 +865,54 @@ public final class Gatherers4j {
 
     /// Emit only those elements that occur in the input stream a single time.
     ///
-    /// @param <INPUT> Type of elements in the input stream
+    /// @param <T> Type of elements in the input stream
     /// @return A non-null `Gatherer`
-    public static <INPUT extends @Nullable Object, SELECTED extends @Nullable Object> Gatherer<INPUT, ?, INPUT> uniquelyOccurringBy(
-            final Function<? super INPUT, ? extends SELECTED> selector
+    public static <T extends @Nullable Object, S extends @Nullable Object> Gatherer<T, ?, T> uniquelyOccurringBy(
+            final Function<? super T, ? extends S> selector
     ) {
-        return new UniquelyOccurringGatherer<>(selector);
+        mustNotBeNull(selector, "Selector must not be null");
+        class State {
+            final Set<S> duplicates = new HashSet<>();
+            final Map<S, T> found = new LinkedHashMap<>();
+
+            boolean integrate(T element, Gatherer.Downstream<? super T> downstream) {
+                final var selected = selector.apply(element);
+                if (!duplicates.contains(selected)) {
+                    if (found.containsKey(selected)) {
+                        duplicates.add(selected);
+                        found.remove(selected);
+                    } else {
+                        found.put(selected, element);
+                    }
+                }
+                return !downstream.isRejecting();
+            }
+
+            State combine(State other) {
+                for (final var element : other.duplicates) {
+                    duplicates.add(element);
+                    found.remove(element);
+                }
+                for (final var e : other.found.entrySet()) {
+                    final var selected = e.getKey();
+                    if (!duplicates.contains(selected)) {
+                        if (found.containsKey(selected)) {
+                            found.remove(selected);
+                            duplicates.add(selected);
+                        } else {
+                            found.put(selected, e.getValue());
+                        }
+                    }
+                }
+                return this;
+            }
+        }
+        return Gatherer.of(
+                State::new,
+                Integrator.<State, T, T>ofGreedy(State::integrate),
+                State::combine,
+                (state, downstream) -> pushAll(state.found.values(), downstream)
+        );
     }
 
     /// Create windows over the elements of the input stream that are `windowSize` in length, sliding over `stepping` number of elements
