@@ -18,9 +18,9 @@ package com.ginsberg.gatherers4j;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.takeLast;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -35,9 +35,9 @@ class LastGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.takeLast(last))
+                .gather(takeLast(last))
                 .toList();
-        
+
         // Assert
         assertThat(output).containsExactly("D", "E", "F");
     }
@@ -50,7 +50,7 @@ class LastGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.takeLast(last))
+                .gather(takeLast(last))
                 .toList();
 
         // Assert
@@ -66,7 +66,7 @@ class LastGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.takeLast(last))
+                .gather(takeLast(last))
                 .toList();
 
         // Assert
@@ -81,7 +81,7 @@ class LastGathererTest {
 
         // Act/Assert
         assertThatThrownBy(() ->
-                input.gather(Gatherers4j.takeLast(last))
+                input.gather(takeLast(last))
         ).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
@@ -93,7 +93,7 @@ class LastGathererTest {
 
         // Act/Assert
         final var output = input
-                .gather(Gatherers4j.takeLast(last))
+                .gather(takeLast(last))
                 .limit(1)
                 .toList();
 

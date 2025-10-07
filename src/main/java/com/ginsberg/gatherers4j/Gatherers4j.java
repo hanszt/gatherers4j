@@ -807,7 +807,7 @@ public final class Gatherers4j {
     /// @param <INPUT> Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> uniquelyOccurring() {
-        return new UniquelyOccurringGatherer<>(e -> e);
+        return uniquelyOccurringBy(e -> e);
     }
 
     /// Emit only those elements that occur in the input stream a single time.

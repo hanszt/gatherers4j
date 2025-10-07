@@ -43,7 +43,7 @@ class InterleavingGathererTest {
         void interleavingGathererIterable() {
             // Arrange
             final var left = Stream.of("A", "B", "C");
-            final Iterable<String> right = List.of("D", "E", "F");
+            final Iterable<String> right = List.of("D", "E", "F", "G");
 
             // Act
             final var output = left
