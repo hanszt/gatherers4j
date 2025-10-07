@@ -407,13 +407,18 @@ public final class Gatherers4j {
     /// @param <INPUT>            The type of elements in the stream and the element to intersperse
     /// @return A non-null Gatherer
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> intersperse(final INPUT intersperseElement) {
+        return intersperseBy(_ -> intersperseElement);
+    }
+
+    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> intersperseBy(final Function<? super INPUT, ? extends INPUT> intersperser) {
+        mustNotBeNull(intersperser, "intersperser must not be null");
         return Gatherer.ofSequential(
                 () -> new Object() {
                     boolean hasStarted = false;
                 },
                 Integrator.ofGreedy((state, item, downstream) -> {
                             if (state.hasStarted) {
-                                downstream.push(intersperseElement);
+                                downstream.push(intersperser.apply(item));
                             } else {
                                 state.hasStarted = true;
                             }
