@@ -20,7 +20,6 @@ import com.ginsberg.gatherers4j.enums.Size;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -177,14 +176,14 @@ class SizeGathererTest {
         @Test
         void doesNotEmitAtTarget() {
             assertThatThrownBy(() ->
-                    Stream.of("A", "B").gather(Gatherers4j.ensureSize(Size.LessThan,  2)).toList()
+                    Stream.of("A", "B").gather(Gatherers4j.ensureSize(Size.LessThan, 2)).toList()
             ).isInstanceOf(IllegalStateException.class);
         }
 
         @Test
         void doesNotEmitOverTarget() {
             assertThatThrownBy(() ->
-                    Stream.of("A", "B", "C").gather(Gatherers4j.ensureSize(Size.LessThan,  2)).toList()
+                    Stream.of("A", "B", "C").gather(Gatherers4j.ensureSize(Size.LessThan, 2)).toList()
             ).isInstanceOf(IllegalStateException.class);
         }
 
@@ -194,7 +193,7 @@ class SizeGathererTest {
             final var input = Stream.of("A");
 
             // Act
-            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThan,  2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThan, 2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A");
@@ -208,7 +207,7 @@ class SizeGathererTest {
         @Test
         void doesNotEmitOverTarget() {
             assertThatThrownBy(() ->
-                    Stream.of("A", "B", "C").gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo,  2)).toList()
+                    Stream.of("A", "B", "C").gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo, 2)).toList()
             ).isInstanceOf(IllegalStateException.class);
         }
 
@@ -218,7 +217,7 @@ class SizeGathererTest {
             final var input = Stream.of("A", "B");
 
             // Act
-            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo,  2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo, 2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B");
@@ -230,7 +229,7 @@ class SizeGathererTest {
             final var input = Stream.of("A");
 
             // Act
-            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo,  2)).toList();
+            final var output = input.gather(Gatherers4j.ensureSize(Size.LessThanOrEqualTo, 2)).toList();
 
             // Assert
             assertThat(output).containsExactly("A");
