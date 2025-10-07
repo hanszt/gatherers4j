@@ -345,7 +345,40 @@ public final class Gatherers4j {
             final Supplier<OUTPUT> initialValue,
             final IndexedAccumulatorFunction<? super OUTPUT, ? super INPUT, ? extends OUTPUT> foldFunction
     ) {
-        return new AccumulatingGatherer<>(false, initialValue, foldFunction);
+        return accumulate(false, initialValue, foldFunction);
+    }
+
+    private static <T extends @Nullable Object, R extends @Nullable Object> Gatherer<T, ?, R> accumulate(
+            boolean running,
+            Supplier<R> initialValue,
+            IndexedAccumulatorFunction<? super R, ? super T, ? extends R> accumulatorFunction
+    ) {
+        mustNotBeNull(accumulatorFunction, "Accumulator function must not be null");
+        mustNotBeNull(initialValue, "Initial value supplier must not be null");
+        class State {
+            @Nullable
+            R carriedValue = initialValue.get();
+            int index = 0;
+
+            boolean integrate(T element, Gatherer.Downstream<? super R> downstream) {
+                carriedValue = accumulatorFunction.apply(index++, carriedValue, element);
+                if (running) {
+                    downstream.push(carriedValue);
+                }
+                return !downstream.isRejecting();
+            }
+
+            void finish(Gatherer.Downstream<? super R> downstream) {
+                if (!running) {
+                    downstream.push(carriedValue);
+                }
+            }
+        }
+        return Gatherer.<T, State, R>ofSequential(
+                State::new,
+                Integrator.<State, T, R>ofGreedy(State::integrate),
+                State::finish
+        );
     }
 
     /// Turn a `Stream<INPUT>` into a `Stream<List<INPUT>>` where adjacent equal elements are in the same `List`
@@ -748,7 +781,7 @@ public final class Gatherers4j {
             final Supplier<OUTPUT> initialValue,
             final IndexedAccumulatorFunction<OUTPUT, INPUT, OUTPUT> scanFunction
     ) {
-        return new AccumulatingGatherer<>(true, initialValue, scanFunction);
+        return accumulate(true, initialValue, scanFunction);
     }
 
     /// Shuffle the input stream into a random order.
