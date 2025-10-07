@@ -154,13 +154,24 @@ public final class Gatherers4j {
 
     /// Filter a stream such that it only contains distinct elements measured by the given `function`.
     ///
-    /// @param mappingFunction A non-null mapping function, the results of which will be used to check for distinct elements
+    /// @param selector A non-null mapping function, the results of which will be used to check for distinct elements
     /// @param <INPUT>         Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> distinctBy(
-            final Function<INPUT, @Nullable Object> mappingFunction
+            final Function<INPUT, @Nullable Object> selector
     ) {
-        return new DistinctGatherer<>(mappingFunction);
+        mustNotBeNull(selector, "Mapping function must not be null");
+        return Gatherer.ofSequential(
+                () -> new Object() {
+                    final Set<Object> seen = new HashSet<>();
+                },
+                Integrator.ofGreedy((state, item, downstream) -> {
+                    if (state.seen.add(selector.apply(item))) {
+                        downstream.push(item);
+                    }
+                    return !downstream.isRejecting();
+                })
+        );
     }
 
     /// Drop every nth element of the stream.
