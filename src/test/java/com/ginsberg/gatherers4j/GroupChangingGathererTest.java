@@ -458,7 +458,7 @@ class GroupChangingGathererTest {
             @Test
             void comparatorMustNotBeNull() {
                 assertThatThrownBy(() ->
-                        new GroupChangingGatherer<>(Order.Ascending, null)
+                        Gatherers4j.groupOrderedBy(Order.Ascending, null)
                 ).isExactlyInstanceOf(IllegalArgumentException.class);
             }
 
@@ -466,7 +466,7 @@ class GroupChangingGathererTest {
             @Test
             void operationMustNotBeNull() {
                 assertThatThrownBy(() ->
-                        new GroupChangingGatherer<>(null, (_, _) -> 0)
+                        Gatherers4j.groupOrderedBy(null, (_, _) -> 0)
                 ).isExactlyInstanceOf(IllegalArgumentException.class);
             }
 
@@ -477,7 +477,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(new GroupChangingGatherer<>(Order.Ascending, Comparator.comparing(String::length)))
+                        .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparing(String::length)))
                         .toList();
 
                 // Assert

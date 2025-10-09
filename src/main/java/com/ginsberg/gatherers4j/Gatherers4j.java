@@ -234,8 +234,8 @@ public final class Gatherers4j {
     /// @param order   The non-null order the stream must be in.
     /// @return A non-null Gatherer
     public static <INPUT extends Comparable<INPUT>> Gatherer<INPUT, ?, INPUT> ensureOrdered(final Order order) {
-        final Gatherer<INPUT, ?, List<INPUT>> generic = GroupChangingGatherer.usingComparable(order);
-        return generic.andThen(new FlattenSingleOrFail<>("Elements not in proper order: " + order.name()));
+        final Gatherer<INPUT, ?, List<INPUT>> groupOrderedBy = groupOrdered(order);
+        return groupOrderedBy.andThen(new FlattenSingleOrFail<>("Elements not in proper order: " + order.name()));
     }
 
     /// Ensure that the elements in the input stream are in the given `Order` as measured by the given `Comparator`, and fail exceptionally if they are not.
@@ -245,7 +245,7 @@ public final class Gatherers4j {
     /// @param comparator The non-null comparator used to compare stream elements
     /// @return A non-null Gatherer
     public static <INPUT> Gatherer<INPUT, ?, INPUT> ensureOrderedBy(final Order order, final Comparator<INPUT> comparator) {
-        return GroupChangingGatherer.usingComparator(order, comparator)
+        return groupOrderedBy(order, comparator)
                 .andThen(new FlattenSingleOrFail<>("Elements not in proper order: " + order.name()));
     }
 
@@ -422,7 +422,7 @@ public final class Gatherers4j {
     /// @param <INPUT> Type of elements in the input stream
     /// @return A non-null `GroupingByGatherer`
     public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, List<INPUT>> group() {
-        return GroupChangingGatherer.usingComparator(Order.Equal, equalityOnlyComparator());
+        return groupOrderedBy(Order.Equal, equalityOnlyComparator());
     }
 
     /// Turn a `Stream<INPUT>` into a `Stream<List<INPUT>>` where adjacent equal elements are in the same `List`
@@ -435,7 +435,7 @@ public final class Gatherers4j {
             final Function<@Nullable INPUT, @Nullable Object> mappingFunction
     ) {
         mustNotBeNull(mappingFunction, "mappingFunction must not be null");
-        return GroupChangingGatherer.usingComparator(Order.Equal, equalityOnlyComparator(mappingFunction));
+        return groupOrderedBy(Order.Equal, equalityOnlyComparator(mappingFunction));
     }
 
     /// Turn a `Stream<Comparable>` into a `Stream<List<>>` where adjacent equal elements are in the same `List`
@@ -444,20 +444,44 @@ public final class Gatherers4j {
     /// @param <INPUT> Type of elements in the input stream, implementing `Comparable`
     /// @return A non-null `Gatherer`
     public static <INPUT extends @Nullable Comparable<INPUT>> Gatherer<INPUT, ?, List<INPUT>> groupOrdered(final Order order) {
-        return GroupChangingGatherer.usingComparable(order);
+        return groupOrderedBy(order, Comparable::compareTo);
     }
 
     /// Turn a `Stream<INPUT>` into a `Stream<List<INPUT>>` where adjacent equal elements are in the same `List`
     /// and order is measured by the given `Comparator`. The lists emitted to the output stream are unmodifiable.
     ///
     /// @param comparator A non-null function, the results of which are used to measure equality of consecutive elements.
-    /// @param <INPUT>    Type of elements in the input stream
+    /// @param <T>    Type of elements in the input stream
     /// @return A non-null `Gatherer`
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, List<INPUT>> groupOrderedBy(
+    public static <T extends @Nullable Object> Gatherer<T, ?, List<T>> groupOrderedBy(
             final Order order,
-            final Comparator<INPUT> comparator
+            final Comparator<T> comparator
     ) {
-        return GroupChangingGatherer.usingComparator(order, comparator);
+        mustNotBeNull(order, "Order must not be null");
+        mustNotBeNull(comparator, "Comparator must not be null");
+        class State {
+            List<T> items = new ArrayList<>();
+
+            boolean integrate(T item, Downstream<? super List<T>> downstream) {
+                if (!items.isEmpty()) {
+                    final T previous = items.getLast();
+                    if (!order.allows(comparator.compare(item, previous))) {
+                        downstream.push(Collections.unmodifiableList(items));
+                        items = new ArrayList<>();
+                    }
+                }
+                items.add(item);
+                return !downstream.isRejecting();
+            }
+
+            void finish(Downstream<? super List<T>> downstream) {
+                if (!downstream.isRejecting() && !items.isEmpty()) {
+                    downstream.push(Collections.unmodifiableList(items));
+                }
+            }
+        }
+        final Integrator.Greedy<State, T, List<T>> integrator = State::integrate;
+        return Gatherer.<T, State, List<T>>ofSequential(State::new, integrator, State::finish);
     }
 
     /// Creates a stream of alternating objects from the input stream and the argument iterable
