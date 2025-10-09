@@ -365,8 +365,7 @@ public final class Gatherers4j {
                 return !downstream.isRejecting();
             }
         }
-        final Integrator.Greedy<State, T, T> integrator = State::integrate;
-        return Gatherer.ofSequential(State::new, integrator);
+        return Gatherer.ofSequential(State::new, (Integrator.Greedy<State, T, T>) State::integrate);
     }
 
     ///  Perform a fold over every element in the input stream along with its index
@@ -391,8 +390,7 @@ public final class Gatherers4j {
         mustNotBeNull(accumulatorFunction, "Accumulator function must not be null");
         mustNotBeNull(initialValue, "Initial value supplier must not be null");
         class State {
-            @Nullable
-            R carriedValue = initialValue.get();
+            @Nullable R carriedValue = initialValue.get();
             int index = 0;
 
             boolean integrate(T element, Downstream<? super R> downstream) {
@@ -404,16 +402,13 @@ public final class Gatherers4j {
             }
 
             void finish(Downstream<? super R> downstream) {
-                if (!running) {
+                if (!downstream.isRejecting() && !running) {
                     downstream.push(carriedValue);
                 }
             }
         }
-        return Gatherer.<T, State, R>ofSequential(
-                State::new,
-                Integrator.<State, T, R>ofGreedy(State::integrate),
-                State::finish
-        );
+        final Integrator.Greedy<State, T, R> integrator = State::integrate;
+        return Gatherer.<T, State, R>ofSequential(State::new, integrator, State::finish);
     }
 
     /// Turn a `Stream<INPUT>` into a `Stream<List<INPUT>>` where adjacent equal elements are in the same `List`
@@ -451,7 +446,7 @@ public final class Gatherers4j {
     /// and order is measured by the given `Comparator`. The lists emitted to the output stream are unmodifiable.
     ///
     /// @param comparator A non-null function, the results of which are used to measure equality of consecutive elements.
-    /// @param <T>    Type of elements in the input stream
+    /// @param <T>        Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, List<T>> groupOrderedBy(
             final Order order,
