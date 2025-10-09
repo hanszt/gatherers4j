@@ -40,6 +40,12 @@ public final class GathererUtils {
         return subject;
     }
 
+    public static void require(boolean condition, final String message) {
+        if (!condition) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     // Yes, I realize this is not to contract, but I only want it to measure equality in a narrow case
     // in which I only care about certain outputs.
     @SuppressWarnings("ComparatorMethodParameterNotUsed")

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.window;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -35,9 +36,9 @@ class WindowGathererTest {
         final Stream<String> input = Stream.empty();
 
         // Act
-        final var output = input.gather(
-                Gatherers4j.window(1, 1, true)
-        ).toList();
+        final var output = input
+                .gather(window(1, 1, true))
+                .toList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -49,9 +50,9 @@ class WindowGathererTest {
         final var input = Stream.of("A", "B", "C", "D", "E");
 
         // Act
-        final var output = input.gather(
-                Gatherers4j.window(2, 2, false)
-        ).toList();
+        final var output = input
+                .gather(window(2, 2, false))
+                .toList();
 
         // Assert
         assertThat(output)
@@ -67,9 +68,9 @@ class WindowGathererTest {
         final var input = Stream.of("A", "B", "C", "D", "E");
 
         // Act
-        final var output = input.gather(
-                Gatherers4j.window(2, 2, true)
-        ).toList();
+        final var output = input
+                .gather(window(2, 2, true))
+                .toList();
 
         // Assert
         assertThat(output)
@@ -83,14 +84,14 @@ class WindowGathererTest {
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
     void steppingMustBePositive(final int stepping) {
-        assertThatThrownBy(() -> new WindowGatherer<>(1, stepping, true))
+        assertThatThrownBy(() -> Gatherers4j.window(1, stepping, true))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
     void windowSizeMustBePositive(final int windowSize) {
-        assertThatThrownBy(() -> new WindowGatherer<>(windowSize, 1, true))
+        assertThatThrownBy(() -> Gatherers4j.window(windowSize, 1, true))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -100,9 +101,9 @@ class WindowGathererTest {
         final var input = Stream.of("A", "B", "C", "D", "E", "F");
 
         // Act
-        final var output = input.gather(
-                Gatherers4j.window(3, 2, true)
-        ).toList();
+        final var output = input
+                .gather(window(3, 2, true))
+                .toList();
 
         // Assert
         assertThat(output)
@@ -119,9 +120,9 @@ class WindowGathererTest {
         final var input = Stream.of("A", "B", "C", "D", "E", "F", "G");
 
         // Act
-        final var output = input.gather(
-                Gatherers4j.window(5, 2, true)
-        ).toList();
+        final var output = input
+                .gather(window(5, 2, true))
+                .toList();
 
         // Assert
         assertThat(output)
@@ -139,9 +140,9 @@ class WindowGathererTest {
         final var input = Stream.of("A", "B", "C", "D", "E", "F");
 
         // Act
-        final var output = input.gather(
-                Gatherers4j.window(2, 3, true)
-        ).toList();
+        final var output = input
+                .gather(window(2, 3, true))
+                .toList();
 
         // Assert
         assertThat(output)
@@ -157,9 +158,9 @@ class WindowGathererTest {
         final Stream<String> input = Stream.of(null, null, null, null, null);
 
         // Act
-        final var output = input.gather(
-                Gatherers4j.window(2, 2, false)
-        ).toList();
+        final var output = input
+                .gather(window(2, 2, false))
+                .toList();
 
         // Assert
         assertThat(output)

@@ -18,8 +18,10 @@ package com.ginsberg.gatherers4j;
 
 import module com.ginsberg.gatherers4j;
 import module java.base;
+import com.ginsberg.gatherers4j.util.CircularBuffer;
 import org.jspecify.annotations.Nullable;
 
+import java.util.stream.Gatherer.Downstream;
 import java.util.stream.Gatherer.Integrator;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
@@ -153,7 +155,7 @@ public final class Gatherers4j {
             Object value = null;
             boolean hasValue = false;
 
-            boolean integrate(T element, Gatherer.Downstream<? super T> downstream) {
+            boolean integrate(T element, Downstream<? super T> downstream) {
                 final var mapped = selector.apply(element);
                 if (!hasValue) {
                     hasValue = true;
@@ -341,7 +343,7 @@ public final class Gatherers4j {
     /// Filter the input stream so that it contains elements in the `order` specified as measured by the given `Comparator`.
     /// Anything not matching that order is removed as it is encountered.
     ///
-    /// @param <T>    Type of elements in the input and output stream
+    /// @param <T>        Type of elements in the input and output stream
     /// @param comparator A non-null `Comparator` to compare stream elements
     /// @return A non-null gatherer
     public static <T> Gatherer<T, ?, T> filterOrderedBy(final Order order, final Comparator<T> comparator) {
@@ -351,7 +353,7 @@ public final class Gatherers4j {
             boolean first = true;
             @Nullable T previous = null;
 
-            boolean integrate(T item, Gatherer.Downstream<? super T> downstream) {
+            boolean integrate(T item, Downstream<? super T> downstream) {
                 if (first) {
                     downstream.push(item);
                     previous = item;
@@ -393,7 +395,7 @@ public final class Gatherers4j {
             R carriedValue = initialValue.get();
             int index = 0;
 
-            boolean integrate(T element, Gatherer.Downstream<? super R> downstream) {
+            boolean integrate(T element, Downstream<? super R> downstream) {
                 carriedValue = accumulatorFunction.apply(index++, carriedValue, element);
                 if (running) {
                     downstream.push(carriedValue);
@@ -401,7 +403,7 @@ public final class Gatherers4j {
                 return !downstream.isRejecting();
             }
 
-            void finish(Gatherer.Downstream<? super R> downstream) {
+            void finish(Downstream<? super R> downstream) {
                 if (!running) {
                     downstream.push(carriedValue);
                 }
@@ -644,7 +646,7 @@ public final class Gatherers4j {
             final Rotate dir = distance < 0 ? direction.flip() : direction;
             final int dist = Math.abs(distance);
 
-            boolean rotate(INPUT element, Gatherer.Downstream<? super INPUT> downstream) {
+            boolean rotate(INPUT element, Downstream<? super INPUT> downstream) {
                 if (dist == 0) {
                     downstream.push(element);
                 } else if (dir == Rotate.Left && fullStream.size() == dist) {
@@ -655,7 +657,7 @@ public final class Gatherers4j {
                 return !downstream.isRejecting();
             }
 
-            void flush(Gatherer.Downstream<? super INPUT> downstream) {
+            void flush(Downstream<? super INPUT> downstream) {
                 final var size = fullStream.size();
                 if (size == 0) {
                     return;
@@ -959,7 +961,7 @@ public final class Gatherers4j {
             final Set<S> duplicates = new HashSet<>();
             final Map<S, T> found = new LinkedHashMap<>();
 
-            boolean integrate(T element, Gatherer.Downstream<? super T> downstream) {
+            boolean integrate(T element, Downstream<? super T> downstream) {
                 final var selected = selector.apply(element);
                 if (!duplicates.contains(selected)) {
                     if (found.containsKey(selected)) {
@@ -1002,13 +1004,43 @@ public final class Gatherers4j {
     /// Create windows over the elements of the input stream that are `windowSize` in length, sliding over `stepping` number of elements
     /// and optionally including partial windows at the end of ths stream.
     ///
-    /// @param <INPUT>         Type of elements in the input and output stream
+    /// @param <T>             Type of elements in the input and output stream
     /// @param windowSize      Size of the window, must be greater than 0
     /// @param stepping        Number of elements to slide over each time a window has filled, must be greater than 0
     /// @param includePartials To include left-over partial windows at the end of the stream or not
     /// @return A non-null `Gatherer`
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, List<INPUT>> window(final int windowSize, final int stepping, final boolean includePartials) {
-        return new WindowGatherer<>(windowSize, stepping, includePartials);
+    public static <T extends @Nullable Object> Gatherer<T, ?, List<T>> window(final int windowSize, final int stepping, final boolean includePartials) {
+        require(windowSize > 0, "Window size must be greater than zero");
+        require(stepping > 0, "Stepping must be greater than zero");
+        class Window {
+            int stepDelta = 0;
+            final CircularBuffer<T> window = new CircularBuffer<>(windowSize);
+
+            boolean integrate(T element, Downstream<? super List<T>> downstream) {
+                if (stepDelta == 0) {
+                    window.add(element);
+                } else {
+                    stepDelta--;
+                }
+                if (window.size() == windowSize) {
+                    downstream.push(window.asList());
+                    stepDelta = Math.max(0, stepping - windowSize);
+                    window.drop(stepping);
+                }
+                return !downstream.isRejecting();
+            }
+
+            void finish(Downstream<? super List<T>> downstream) {
+                if (includePartials) {
+                    while (!downstream.isRejecting() && !window.isEmpty()) {
+                        downstream.push(window.asList());
+                        window.drop(stepping);
+                    }
+                }
+            }
+        }
+        final Integrator.Greedy<Window, T, List<T>> integrator = Window::integrate;
+        return Gatherer.<T, Window, List<T>>ofSequential(Window::new, integrator, Window::finish);
     }
 
     /// Maps all elements of the stream as-is along with their 0-based index.
@@ -1111,7 +1143,7 @@ public final class Gatherers4j {
             @Nullable
             INPUT previous = null;
 
-            boolean zipNext(final INPUT item, final Gatherer.Downstream<? super OUTPUT> downstream) {
+            boolean zipNext(final INPUT item, final Downstream<? super OUTPUT> downstream) {
                 if (first) {
                     first = false;
                 } else {
