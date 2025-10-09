@@ -20,9 +20,11 @@ import com.ginsberg.gatherers4j.enums.Order;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.filterOrdered;
+import static com.ginsberg.gatherers4j.Gatherers4j.filterOrderedBy;
+import static java.util.Comparator.comparingInt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -40,7 +42,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.Descending))
+                        .gather(filterOrdered(Order.Descending))
                         .toList();
 
                 // Assert
@@ -54,7 +56,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.Descending))
+                        .gather(filterOrdered(Order.Descending))
                         .toList();
 
                 // Assert
@@ -68,7 +70,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.Descending))
+                        .gather(filterOrdered(Order.Descending))
                         .toList();
 
                 // Assert
@@ -85,7 +87,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.Ascending))
+                        .gather(filterOrdered(Order.Ascending))
                         .toList();
 
                 // Assert
@@ -99,7 +101,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.Ascending))
+                        .gather(filterOrdered(Order.Ascending))
                         .toList();
 
                 // Assert
@@ -113,7 +115,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.Ascending))
+                        .gather(filterOrdered(Order.Ascending))
                         .toList();
 
                 // Assert
@@ -130,7 +132,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.AscendingOrEqual))
+                        .gather(filterOrdered(Order.AscendingOrEqual))
                         .toList();
 
                 // Assert
@@ -144,7 +146,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.AscendingOrEqual))
+                        .gather(filterOrdered(Order.AscendingOrEqual))
                         .toList();
 
                 // Assert
@@ -158,7 +160,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.AscendingOrEqual))
+                        .gather(filterOrdered(Order.AscendingOrEqual))
                         .toList();
 
                 // Assert
@@ -175,7 +177,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.DescendingOrEqual))
+                        .gather(filterOrdered(Order.DescendingOrEqual))
                         .toList();
 
                 // Assert
@@ -189,7 +191,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.DescendingOrEqual))
+                        .gather(filterOrdered(Order.DescendingOrEqual))
                         .toList();
 
                 // Assert
@@ -203,7 +205,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrdered(Order.DescendingOrEqual))
+                        .gather(filterOrdered(Order.DescendingOrEqual))
                         .toList();
 
                 // Assert
@@ -221,7 +223,7 @@ class FilterChangingGathererTest {
             @Test
             void comparatorMustNotBeNull() {
                 assertThatThrownBy(() ->
-                        new FilterChangingGatherer<>(Order.Ascending, null)
+                        filterOrderedBy(Order.Ascending, null)
                 ).isExactlyInstanceOf(IllegalArgumentException.class);
             }
 
@@ -229,7 +231,7 @@ class FilterChangingGathererTest {
             @Test
             void operationMustNotBeNull() {
                 assertThatThrownBy(() ->
-                        new FilterChangingGatherer<>(null, (_, _) -> 0)
+                        filterOrderedBy(null, (_, _) -> 0)
                 ).isExactlyInstanceOf(IllegalArgumentException.class);
             }
 
@@ -244,7 +246,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.Descending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -258,7 +260,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.Descending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -272,7 +274,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.Descending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -289,7 +291,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -303,7 +305,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -317,7 +319,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -334,7 +336,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -348,7 +350,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -362,7 +364,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -379,7 +381,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -393,7 +395,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -407,7 +409,7 @@ class FilterChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.filterOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(filterOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert

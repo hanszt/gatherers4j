@@ -335,17 +335,36 @@ public final class Gatherers4j {
     /// @param <INPUT> Type of elements in the input and output stream
     /// @return A non-null gatherer
     public static <INPUT extends Comparable<INPUT>> Gatherer<INPUT, ?, INPUT> filterOrdered(final Order order) {
-        return FilterChangingGatherer.usingComparable(order);
+        return filterOrderedBy(order, Comparable::compareTo);
     }
 
     /// Filter the input stream so that it contains elements in the `order` specified as measured by the given `Comparator`.
     /// Anything not matching that order is removed as it is encountered.
     ///
-    /// @param <INPUT>    Type of elements in the input and output stream
+    /// @param <T>    Type of elements in the input and output stream
     /// @param comparator A non-null `Comparator` to compare stream elements
     /// @return A non-null gatherer
-    public static <INPUT> Gatherer<INPUT, ?, INPUT> filterOrderedBy(final Order order, final Comparator<INPUT> comparator) {
-        return FilterChangingGatherer.usingComparator(order, comparator);
+    public static <T> Gatherer<T, ?, T> filterOrderedBy(final Order order, final Comparator<T> comparator) {
+        mustNotBeNull(order, "Order must not be null");
+        mustNotBeNull(comparator, "Comparator must not be null");
+        class State {
+            boolean first = true;
+            @Nullable T previous = null;
+
+            boolean integrate(T item, Gatherer.Downstream<? super T> downstream) {
+                if (first) {
+                    downstream.push(item);
+                    previous = item;
+                    first = false;
+                } else if (order.allows(comparator.compare(item, previous))) {
+                    downstream.push(item);
+                    previous = item;
+                }
+                return !downstream.isRejecting();
+            }
+        }
+        final Integrator.Greedy<State, T, T> integrator = State::integrate;
+        return Gatherer.ofSequential(State::new, integrator);
     }
 
     ///  Perform a fold over every element in the input stream along with its index
