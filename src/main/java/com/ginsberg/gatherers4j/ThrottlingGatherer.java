@@ -18,8 +18,8 @@ package com.ginsberg.gatherers4j;
 
 import org.jspecify.annotations.Nullable;
 
-import java.time.Clock;
 import java.time.Duration;
+import java.time.InstantSource;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
@@ -27,44 +27,41 @@ import java.util.stream.Gatherer;
 import static com.ginsberg.gatherers4j.util.GathererUtils.NANOS_PER_MILLISECOND;
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-public class ThrottlingGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, ThrottlingGatherer.State, INPUT> {
+public record ThrottlingGatherer<T extends @Nullable Object>(
+        ThrottlingGatherer.LimitRule limitRule,
+        int allowed,
+        Duration duration,
+        InstantSource instantSource
+) implements Gatherer<T, ThrottlingGatherer.State, T> {
 
-    public enum LimitRule {
+    enum LimitRule {
         Drop,
         Pause
     }
 
-    private final LimitRule limitRule;
-    private final Duration duration;
-    private final int allowed;
-    private Clock clock = Clock.systemUTC();
-
-    ThrottlingGatherer(final LimitRule limitRule, final int allowed, final Duration duration) {
+    public ThrottlingGatherer {
+        mustNotBeNull(instantSource, "InstantSource must not be null");
         mustNotBeNull(duration, "Duration must not be null");
+        mustNotBeNull(limitRule, "LimitRule must not be null");
         if (duration.toMillis() < 1) {
             throw new IllegalArgumentException("Minimum duration is 1ms");
         }
         if (allowed <= 0) {
             throw new IllegalArgumentException("Allowed must be positive");
         }
-        this.limitRule = mustNotBeNull(limitRule, "LimitRule must not be null");
-        this.duration = duration;
-        this.allowed = allowed;
     }
 
-    public ThrottlingGatherer<INPUT> withClock(final Clock clock) {
-        this.clock = mustNotBeNull(clock, "Clock must not be null");
-        return this;
+    public ThrottlingGatherer<T> withInstantSource(final InstantSource instantSource) {
+        return new ThrottlingGatherer<>(limitRule, allowed, duration, instantSource);
     }
 
     @Override
     public Supplier<State> initializer() {
-        return () -> new State(limitRule, duration, allowed, clock);
+        return () -> new State(limitRule, duration, allowed, instantSource);
     }
 
     @Override
-    public Integrator<State, INPUT, INPUT> integrator() {
+    public Integrator<State, T, T> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             if (!downstream.isRejecting() && state.attempt()) {
                 downstream.push(element);
@@ -77,26 +74,26 @@ public class ThrottlingGatherer<INPUT extends @Nullable Object>
         final int allowedPerPeriod;
         final long periodDurationMillis;
         final LimitRule limitRule;
-        final Clock clock;
+        final InstantSource instantSource;
         long thisPeriodEnd;
         int remainingPermits;
 
-        State(final LimitRule limitRule, final Duration duration, final int allowed, final Clock clock) {
+        State(final LimitRule limitRule, final Duration duration, final int allowed, final InstantSource instantSource) {
             this.limitRule = limitRule;
             this.allowedPerPeriod = allowed;
             this.periodDurationMillis = duration.toMillis();
-            this.clock = clock;
+            this.instantSource = instantSource;
             resetPeriod();
         }
 
         private void resetPeriod() {
-            thisPeriodEnd = clock.millis() + periodDurationMillis;
+            thisPeriodEnd = instantSource.millis() + periodDurationMillis;
             remainingPermits = allowedPerPeriod;
         }
 
         // Assuming this is not run in parallel. Gate with a lock if that assumption fails/changes.
         boolean attempt() {
-            final var now = clock.millis();
+            final var now = instantSource.millis();
             if(now < thisPeriodEnd) {
                 // The current period has not ended
                 if(remainingPermits == 0) {

@@ -19,11 +19,9 @@ package com.ginsberg.gatherers4j;
 import com.ginsberg.gatherers4j.util.GathererUtils;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.util.List;
+import java.time.InstantSource;
 import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Stream;
 
@@ -50,7 +48,7 @@ class ThrottlingGathererTest {
     @Test
     void clockMustNotBeNull() {
         assertThatThrownBy(() ->
-                Stream.of("A").gather(Gatherers4j.throttle(1, Duration.ofSeconds(1)).withClock(null))
+                Stream.of("A").gather(Gatherers4j.throttle(1, Duration.ofSeconds(1)).withInstantSource(null))
         ).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
@@ -79,7 +77,7 @@ class ThrottlingGathererTest {
     @SuppressWarnings("DataFlowIssue")
     @Test
     void limitRuleIsNotNull() {
-        assertThatThrownBy(() -> new ThrottlingGatherer<>(null, 1, Duration.ofSeconds(1))
+        assertThatThrownBy(() -> new ThrottlingGatherer<>(null, 1, Duration.ofSeconds(1), InstantSource.system())
         ).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
@@ -88,11 +86,11 @@ class ThrottlingGathererTest {
         // Arrange
         final var input = Stream.of("A", "B", "C");
         final var duration = Duration.ofMillis(100);
-        final Clock clock = new PredictableClock(0, 0, 0, 101, 0, 0);
+        final var instantSource = new PredictableInstantSource(0, 0, 0, 101, 0, 0);
 
         // Act
         final var output = input
-                .gather(Gatherers4j.throttle(2, duration).withClock(clock))
+                .gather(Gatherers4j.throttle(2, duration).withInstantSource(instantSource))
                 .map(_ -> System.currentTimeMillis())
                 .toList();
 
@@ -134,18 +132,13 @@ class ThrottlingGathererTest {
         assertThat(output.get(2) - output.get(0)).isGreaterThanOrEqualTo(duration.toMillis() - offset);
     }
 
-    private static class PredictableClock extends Clock {
+    private static class PredictableInstantSource implements InstantSource {
 
         private final int[] pauses;
         private int invocation;
 
-        private PredictableClock(final int... pauses) {
+        private PredictableInstantSource(final int... pauses) {
             this.pauses = pauses;
-        }
-
-        @Override
-        public ZoneId getZone() {
-            return ZoneId.systemDefault();
         }
 
         @Override
@@ -156,11 +149,6 @@ class ThrottlingGathererTest {
             }
             invocation = (invocation + 1) % pauses.length;
             return Instant.now();
-        }
-
-        @Override
-        public Clock withZone(final ZoneId zone) {
-            return Clock.system(ZoneId.systemDefault());
         }
     }
 }

@@ -128,7 +128,7 @@ public final class Gatherers4j {
             final int amount,
             final Duration duration
     ) {
-        return new ThrottlingGatherer<>(ThrottlingGatherer.LimitRule.Drop, amount, duration);
+        return throttle(ThrottlingGatherer.LimitRule.Drop, amount, duration, Clock.systemUTC());
     }
 
     /// Remove consecutive duplicate elements from a stream as measured by `Object.equals(Object)`
@@ -903,7 +903,7 @@ public final class Gatherers4j {
             final int amount,
             final Duration duration
     ) {
-        return new ThrottlingGatherer<>(ThrottlingGatherer.LimitRule.Pause, amount, duration);
+        return new ThrottlingGatherer<>(ThrottlingGatherer.LimitRule.Pause, amount, duration, Clock.systemUTC());
     }
 
     /// Emit only those elements that occur in the input stream a single time.
@@ -1089,5 +1089,14 @@ public final class Gatherers4j {
             }
         }
         return Gatherer.ofSequential(State::new, Integrator.<State, INPUT, OUTPUT>ofGreedy(State::zipNext));
+    }
+
+    private static <T extends @Nullable Object> ThrottlingGatherer<T> throttle(
+            final ThrottlingGatherer.LimitRule limitRule,
+            final int allowed,
+            final Duration duration,
+            final Clock clock
+    ) {
+        return new ThrottlingGatherer<>(limitRule, allowed, duration, clock);
     }
 }
