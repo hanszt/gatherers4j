@@ -18,9 +18,9 @@ package com.ginsberg.gatherers4j;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.dropLast;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -28,18 +28,17 @@ class DropLastGathererTest {
 
     @Test
     void countMustBePositive() {
-        assertThatThrownBy(() -> Stream.of("A")
-                .gather(Gatherers4j.dropLast(0)).toList())
+        assertThatThrownBy(() -> dropLast(0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void dropLast() {
+    void testDropLast() {
         // Arrange
         final var input = Stream.of("A", "B", "C");
 
         // Act
-        final var output = input.gather(Gatherers4j.dropLast(2)).toList();
+        final var output = input.gather(dropLast(2)).toList();
 
         // Assert
         assertThat(output).containsExactly("A");
@@ -51,7 +50,7 @@ class DropLastGathererTest {
         final var input = Stream.of("A", null, null);
 
         // Act
-        final var output = input.gather(Gatherers4j.dropLast(2)).toList();
+        final var output = input.gather(dropLast(2)).toList();
 
         // Assert
         assertThat(output).containsExactly("A");
@@ -63,7 +62,7 @@ class DropLastGathererTest {
         final var input = Stream.of("A", "B", "C");
 
         // Act
-        final var output = input.gather(Gatherers4j.dropLast(4)).toList();
+        final var output = input.gather(dropLast(4)).toList();
 
         // Assert
         assertThat(output).isEmpty();

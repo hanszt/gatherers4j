@@ -142,7 +142,7 @@ public final class Gatherers4j {
     /// Remove consecutive duplicates from a stream where duplication is measured by the given `function`.
     ///
     /// @param selector A non-null function, the results of which will be used to check for consecutive duplication.
-    /// @param <T>         Type of elements in both the input and output streams
+    /// @param <T>      Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> dedupeConsecutiveBy(
             final Function<? super T, @Nullable Object> selector
@@ -205,11 +205,25 @@ public final class Gatherers4j {
 
     /// Keep all elements except the last `count` elements of the stream.
     ///
-    /// @param count   A positive number of elements to drop from the end of the stream
-    /// @param <INPUT> Type of elements in both the input and output streams
+    /// @param count A positive number of elements to drop from the end of the stream
+    /// @param <T>   Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> dropLast(final int count) {
-        return new DropLastGatherer<>(count);
+    public static <T extends @Nullable Object> Gatherer<T, ?, T> dropLast(final int count) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("DropLast count must be positive");
+        }
+        return Gatherer.ofSequential(
+                () -> new Object() {
+                    final List<T> items = new ArrayList<>(count);
+                },
+                Integrator.ofGreedy((state, item, downstream) -> {
+                    if (state.items.size() == count) {
+                        downstream.push(state.items.removeFirst());
+                    }
+                    state.items.add(item);
+                    return !downstream.isRejecting();
+                })
+        );
     }
 
     /// Ensure that the `Comparable` elements in the input stream are in the given `Order`, and fail exceptionally if they are not.
