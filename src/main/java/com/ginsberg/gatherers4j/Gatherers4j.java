@@ -1023,7 +1023,7 @@ public final class Gatherers4j {
                     stepDelta--;
                 }
                 if (window.size() == windowSize) {
-                    downstream.push(window.asList());
+                    downstream.push(window.toList());
                     stepDelta = Math.max(0, stepping - windowSize);
                     window.drop(stepping);
                 }
@@ -1033,7 +1033,7 @@ public final class Gatherers4j {
             void finish(Downstream<? super List<T>> downstream) {
                 if (includePartials) {
                     while (!downstream.isRejecting() && !window.isEmpty()) {
-                        downstream.push(window.asList());
+                        downstream.push(window.toList());
                         window.drop(stepping);
                     }
                 }

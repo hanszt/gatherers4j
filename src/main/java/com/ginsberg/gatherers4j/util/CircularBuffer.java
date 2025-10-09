@@ -74,7 +74,7 @@ public class CircularBuffer<T extends @Nullable Object> implements Iterable<T> {
         size -= n;
     }
 
-    public List<T> asList() {
+    public List<T> toList() {
         @SuppressWarnings("unchecked") final var result = (T[]) new Object[size];
 
         if (head + size <= buffer.length) {

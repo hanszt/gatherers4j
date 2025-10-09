@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
@@ -23,7 +21,7 @@ class CircularBufferTest {
         Stream.of("A", "B").forEach(cb::add);
 
         // Assert
-        assertThat(cb.asList()).containsExactly("A", "B");
+        assertThat(cb.toList()).containsExactly("A", "B");
     }
 
     @Test
@@ -35,29 +33,29 @@ class CircularBufferTest {
         Stream.of("A", "B", "C").forEach(cb::add);
 
         // Assert
-        assertThat(cb.asList()).containsExactly("B", "C");
+        assertThat(cb.toList()).containsExactly("B", "C");
     }
 
     @Test
-    void asList() {
+    void toList() {
         // Arrange
         final var cb = new CircularBuffer<String>(5);
         Stream.of("A", "B", "C", "D").forEach(cb::add);
 
         // Act
-        final var output = cb.asList();
+        final var output = cb.toList();
 
         // Assert
         assertThat(output).containsExactly("A", "B", "C", "D");
     }
 
     @Test
-    void asListEmpty() {
+    void toListEmpty() {
         // Arrange
         final var cb = new CircularBuffer<String>(5);
 
         // Act
-        final var output = cb.asList();
+        final var output = cb.toList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -84,7 +82,7 @@ class CircularBufferTest {
 
         // Assert
         assertThat(cb.size()).isEqualTo(1);
-        assertThat(cb.asList()).containsExactly("D");
+        assertThat(cb.toList()).containsExactly("D");
     }
 
     @Test
@@ -112,7 +110,7 @@ class CircularBufferTest {
         cb.drop(drops);
 
         // Assert
-        assertThat(cb.asList()).containsExactly("A", "B");
+        assertThat(cb.toList()).containsExactly("A", "B");
     }
 
     @Test
