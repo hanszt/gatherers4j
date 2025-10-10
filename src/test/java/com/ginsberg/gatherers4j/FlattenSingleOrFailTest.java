@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.flattenSingleOrFail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -36,7 +37,7 @@ class FlattenSingleOrFailTest {
 
         // Act
         assertThatThrownBy(() ->
-                input.gather(new FlattenSingleOrFail<>("More than one input collection"))
+                input.gather(flattenSingleOrFail("More than one input collection"))
                         .peek(emitted::add)
                         .toList()
         ).isExactlyInstanceOf(IllegalStateException.class);
@@ -51,7 +52,7 @@ class FlattenSingleOrFailTest {
         final var input = Stream.of(List.of("A", "B"));
 
         // Act
-        final var output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
+        final var output = input.gather(flattenSingleOrFail("More than one input collection")).toList();
 
         // Assert
         assertThat(output).containsExactly("A", "B");
@@ -63,7 +64,7 @@ class FlattenSingleOrFailTest {
         final Stream<List<String>> input = Stream.empty();
 
         // Act
-        final var output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
+        final var output = input.gather(flattenSingleOrFail("More than one input collection")).toList();
 
         // Assert
         assertThat(output).isEmpty();
@@ -73,19 +74,18 @@ class FlattenSingleOrFailTest {
     void failsWhenThereAreMoreThanOneList() {
         assertThatThrownBy(() ->
                 Stream.of(List.of("A"), Set.of("A"))
-                        .gather(new FlattenSingleOrFail<>("More than one input collection"))
+                        .gather(flattenSingleOrFail("More than one input collection"))
                         .toList()
         ).isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @SuppressWarnings("DataFlowIssue")
     @Test
     void singleElementNull() {
         // Arrange
         final var input = Stream.of((List<String>) null);
 
         // Act
-        final var output = input.gather(new FlattenSingleOrFail<>("More than one input collection")).toList();
+        final var output = input.gather(flattenSingleOrFail("More than one input collection")).toList();
 
         // Assert
         assertThat(output).isEmpty();

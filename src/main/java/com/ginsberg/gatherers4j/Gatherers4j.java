@@ -235,7 +235,33 @@ public final class Gatherers4j {
     /// @return A non-null Gatherer
     public static <T extends Comparable<T>> Gatherer<T, ?, T> ensureOrdered(final Order order) {
         final Gatherer<T, ?, List<T>> groupOrderedBy = groupOrdered(order);
-        return groupOrderedBy.andThen(new FlattenSingleOrFail<>("Elements not in proper order: " + order.name()));
+        return groupOrderedBy.andThen(flattenSingleOrFail("Elements not in proper order: " + order.name()));
+    }
+
+    /// Note: "Single" in this case means at most one. The naming of this more precisely seemed clumsy.
+    static <T extends Collection<R>, R> Gatherer<T, ?, R> flattenSingleOrFail(final String message) {
+        mustNotBeNull(message, "message must not be null");
+        class State {
+            boolean isFirst = true;
+            @Nullable T firstCollection = null;
+
+            private boolean integrate(T item, Downstream<? super R> downstream) {
+                if (isFirst) {
+                    firstCollection = item;
+                    isFirst = false;
+                    return !downstream.isRejecting();
+                } else {
+                    throw new IllegalStateException(message);
+                }
+            }
+
+            private void finish(Downstream<? super R> downstream) {
+                if(firstCollection != null) {
+                    pushAll(firstCollection, downstream);
+                }
+            }
+        }
+        return Gatherer.<T, State, R>ofSequential(State::new, State::integrate, State::finish);
     }
 
     /// Ensure that the elements in the input stream are in the given `Order` as measured by the given `Comparator`, and fail exceptionally if they are not.
@@ -246,7 +272,7 @@ public final class Gatherers4j {
     /// @return A non-null Gatherer
     public static <T> Gatherer<T, ?, T> ensureOrderedBy(final Order order, final Comparator<T> comparator) {
         return groupOrderedBy(order, comparator)
-                .andThen(new FlattenSingleOrFail<>("Elements not in proper order: " + order.name()));
+                .andThen(flattenSingleOrFail("Elements not in proper order: " + order.name()));
     }
 
     /// Ensure the input stream's meets the given `size` criteria, and emit all elements if so.
