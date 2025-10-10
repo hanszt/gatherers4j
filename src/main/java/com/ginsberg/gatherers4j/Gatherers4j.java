@@ -213,14 +213,12 @@ public final class Gatherers4j {
             throw new IllegalArgumentException("DropLast count must be positive");
         }
         return Gatherer.ofSequential(
-                () -> new Object() {
-                    final List<T> items = new ArrayList<>(count);
-                },
-                Integrator.ofGreedy((state, item, downstream) -> {
-                    if (state.items.size() == count) {
-                        downstream.push(state.items.removeFirst());
+                () -> new ArrayList<T>(count),
+                Integrator.ofGreedy((items, item, downstream) -> {
+                    if (items.size() == count) {
+                        downstream.push(items.removeFirst());
                     }
-                    state.items.add(item);
+                    items.add(item);
                     return !downstream.isRejecting();
                 })
         );
