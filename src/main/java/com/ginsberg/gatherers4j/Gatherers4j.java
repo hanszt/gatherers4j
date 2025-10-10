@@ -340,7 +340,7 @@ public final class Gatherers4j {
     public static <T extends @Nullable Object> Gatherer<T, ?, T> filterIndexed(
             final BiPredicate<Integer, T> predicate
     ) {
-        return SimpleIndexingGatherers.filterIndexed(predicate);
+        return IndexingGatherers.filterIndexed(predicate);
     }
 
     /// Filter the elements in the stream to only include elements of the given types.
@@ -586,7 +586,7 @@ public final class Gatherers4j {
     /// @return A non-null Gatherer
     public static <T extends @Nullable Object, R extends @Nullable Object> Gatherer<T, ?, R> mapIndexed(
             final BiFunction<Integer, T, R> mappingFunction) {
-        return SimpleIndexingGatherers.mapIndexed(mappingFunction);
+        return IndexingGatherers.mapIndexed(mappingFunction);
     }
 
     /// Create a Stream that represents the moving product of a `Stream<BigDecimal>` looking
@@ -683,7 +683,7 @@ public final class Gatherers4j {
     /// @return A non-null Gatherer
     public static <T extends @Nullable Object> Gatherer<T, ?, T> peekIndexed(
             final BiConsumer<Integer, T> peekingConsumer) {
-        return SimpleIndexingGatherers.peekIndexed(peekingConsumer);
+        return IndexingGatherers.peekIndexed(peekingConsumer);
     }
 
     private static final int INFINITE = -1;
@@ -1182,7 +1182,7 @@ public final class Gatherers4j {
     /// @param <T> Type of elements in the input stream
     /// @return A non-null `SimpleIndexingGatherers`
     public static <T extends @Nullable Object> Gatherer<T, ?, WithIndex<T>> withIndex() {
-        return SimpleIndexingGatherers.withIndex();
+        return IndexingGatherers.withIndex();
     }
 
     /// Creates a stream of `Pair<T,S>` objects whose values come from the stream this is called on

@@ -26,7 +26,7 @@ import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-public class SimpleIndexingGatherers {
+final class IndexingGatherers {
 
     public static <T extends @Nullable Object> Gatherer<T, ?, T> filterIndexed(
             final BiPredicate<Integer, @Nullable T> predicate
