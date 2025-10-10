@@ -80,8 +80,7 @@ class RepeatingGathererTest {
     @ParameterizedTest(name = "With {0} repeats")
     @ValueSource(ints = {Integer.MIN_VALUE, -1})
     void numberOfRepeatsMustBeNegative(final int repeats) {
-        assertThatThrownBy(() ->
-                RepeatingGatherer.ofFinite(repeats)
+        assertThatThrownBy(() -> Gatherers4j.repeat(repeats)
         ).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 

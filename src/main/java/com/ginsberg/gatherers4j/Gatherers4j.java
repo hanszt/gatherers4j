@@ -686,6 +686,8 @@ public final class Gatherers4j {
         return SimpleIndexingGatherers.peekIndexed(peekingConsumer);
     }
 
+    private static final int INFINITE = -1;
+
     /// Repeatedly emit the input stream to the output stream a given number of times.
     /// Note: This implementation consumes the entire input stream into memory, so it must be used on finite streams.
     ///
@@ -693,7 +695,8 @@ public final class Gatherers4j {
     /// @param repeats Number of repeats, must be greater than 1
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> repeat(final int repeats) {
-        return RepeatingGatherer.ofFinite(repeats);
+        require(repeats >= 0, "Number of repeats must not be negative");
+        return repeatInternal(repeats);
     }
 
     /// Repeatedly emit the input stream to the output stream infinitely.
@@ -702,7 +705,29 @@ public final class Gatherers4j {
     /// @param <T> Type of elements in the input and output stream
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> repeatInfinitely() {
-        return RepeatingGatherer.ofInfinite();
+        return repeatInternal(INFINITE);
+    }
+
+    private static <T extends @Nullable Object> Gatherer<T, ?, T> repeatInternal(final int repeats) {
+        return Gatherer.ofSequential(
+                () -> new Object() {
+                    int repeatsRemaining = repeats;
+                    final List<T> items = new ArrayList<>();
+                },
+                Integrator.ofGreedy((state, element, downstream) -> {
+                    state.items.add(element);
+                    return repeats != 0 && !downstream.isRejecting();
+                }),
+                (state, downstream) -> {
+                    while (!downstream.isRejecting() && (state.repeatsRemaining == INFINITE || state.repeatsRemaining > 0)) {
+
+                        pushAll(state.items, downstream);
+                        if (state.repeatsRemaining != INFINITE) {
+                            state.repeatsRemaining--;
+                        }
+                    }
+                }
+        );
     }
 
     /// Reverse the order of the input Stream.
