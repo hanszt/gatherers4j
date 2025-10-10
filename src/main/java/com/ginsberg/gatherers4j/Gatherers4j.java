@@ -606,10 +606,39 @@ public final class Gatherers4j {
     /// Note: This consumes the entire stream and holds it in memory, so it will not work on infinite
     /// streams and may cause memory pressure on very large streams.
     ///
-    /// @param <INPUT> Type of elements in the input stream
+    /// @param <T> Type of elements in the input stream
     /// @return A non-null `Gatherer`
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, WithCount<INPUT>> orderByFrequency(final Frequency order) {
-        return new FrequencyGatherer<>(order);
+    public static <T extends @Nullable Object> Gatherer<T, ?, WithCount<T>> orderByFrequency(final Frequency order) {
+        mustNotBeNull(order, "Order must be specified");
+        class State {
+            final Map<T, Long> counts = new HashMap<>();
+
+            boolean integrate(T element, Downstream<? super WithCount<T>> downstream) {
+                counts.merge(element, 1L, Long::sum);
+                return !downstream.isRejecting();
+            }
+
+            State combine(State other) {
+                other.counts.forEach((key, value) -> counts.merge(key, value, Long::sum));
+                return this;
+            }
+
+            void finish(Downstream<? super WithCount<T>> downstream) {
+                final var counts = this.counts
+                        .entrySet()
+                        .stream().map(it -> new WithCount<>(it.getKey(), it.getValue()))
+                        .sorted(comparator());
+                pushAll(counts, downstream);
+            }
+
+            Comparator<WithCount<T>> comparator() {
+                return order == Frequency.Descending ?
+                        ((o1, o2) -> (int) (o2.count() - o1.count())) :
+                        ((o1, o2) -> (int) (o1.count() - o2.count()));
+            }
+        }
+        final Integrator.Greedy<State, T, WithCount<T>> integrator = State::integrate;
+        return Gatherer.<T, State, WithCount<T>>of(State::new, integrator, State::combine, State::finish);
     }
 
     /// Peek at each element along with its zero-based index.

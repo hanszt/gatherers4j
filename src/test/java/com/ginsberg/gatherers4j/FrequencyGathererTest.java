@@ -21,9 +21,9 @@ import com.ginsberg.gatherers4j.enums.Frequency;
 import com.ginsberg.gatherers4j.test.ParallelAndSequentialTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.orderByFrequency;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -32,7 +32,7 @@ class FrequencyGathererTest {
     @ParallelAndSequentialTest(values = {"A", "A", "A", "B", "B", "B", "B", "C", "C"})
     void ascending(final Stream<String> input) {
         // Act
-        final var output = input.gather(Gatherers4j.orderByFrequency(Frequency.Ascending)).toList();
+        final var output = input.gather(orderByFrequency(Frequency.Ascending)).toList();
 
         // Assert
         assertThat(output)
@@ -48,7 +48,7 @@ class FrequencyGathererTest {
     void descending(final Stream<String> input) {
 
         // Act
-        final var output = input.gather(Gatherers4j.orderByFrequency(Frequency.Descending)).toList();
+        final var output = input.gather(orderByFrequency(Frequency.Descending)).toList();
 
         // Assert
         assertThat(output)
@@ -61,9 +61,8 @@ class FrequencyGathererTest {
 
     @Test
     void orderMustBeSpecified() {
-        assertThatThrownBy(() ->
-                Stream.of("A").gather(new FrequencyGatherer<>(null)).toList()
-        ).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> orderByFrequency(null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }
