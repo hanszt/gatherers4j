@@ -1125,7 +1125,8 @@ public final class Gatherers4j {
             final Iterable<S> other,
             final BiFunction<? super T, ? super S, ? extends R> mapper
     ) {
-        return new ZipWithGatherer<>(other, mapper);
+        mustNotBeNull(other, "Other iterable must not be null");
+        return new ZipWithGatherer<>(other.spliterator(), mapper, null, null);
     }
 
     /// Creates a stream of `Pair<T,S>` objects whose values come from the stream this is called on
@@ -1139,7 +1140,7 @@ public final class Gatherers4j {
             final Iterator<S> other
     ) {
         mustNotBeNull(other, "Other iterator must not be null");
-        return new ZipWithGatherer<>(() -> other, Pair::new);
+        return zipWith(() -> other, Pair::new);
     }
 
     /// Creates a stream of `Pair<T,S>` objects whose values come from the stream this is called on
@@ -1152,14 +1153,15 @@ public final class Gatherers4j {
     public static <T extends @Nullable Object, S extends @Nullable Object> ZipWithGatherer<T, S, Pair<T, S>> zipWith(
             final Stream<S> other
     ) {
-        return new ZipWithGatherer<>(other, Pair::new);
+        return zipWith(other, Pair::new);
     }
 
     public static <T extends @Nullable Object, S extends @Nullable Object, R extends @Nullable Object> ZipWithGatherer<T, S, R> zipWith(
             final Stream<S> other,
             final BiFunction<? super T, ? super S, ? extends R> mapper
     ) {
-        return new ZipWithGatherer<>(other, mapper);
+        mustNotBeNull(other, "Other stream must not be null");
+        return new ZipWithGatherer<>(other.spliterator(), mapper, null, null);
     }
 
     /// Creates a stream of `Pair<T,S>` objects whose values come from the stream this is called on
@@ -1174,7 +1176,7 @@ public final class Gatherers4j {
             final S... other
     ) {
         mustNotBeNull(other, "Other must not be null");
-        return new ZipWithGatherer<>(Arrays.stream(other), Pair::new);
+        return zipWith(Arrays.stream(other), Pair::new);
     }
 
     /// Creates a stream of `List` objects which contain each two adjacent elements in the input stream.
