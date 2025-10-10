@@ -958,16 +958,19 @@ public final class Gatherers4j {
     public static <T extends @Nullable Object> Gatherer<T, ?, T> shuffle(final RandomGenerator randomGenerator) {
         mustNotBeNull(randomGenerator, "RandomGenerator must not be null");
         return Gatherer.ofSequential(
-                () -> new Object() {
-                    final List<T> items = new ArrayList<>();
-                },
-                Integrator.ofGreedy((state, item, downstream) -> {
-                    state.items.add(item);
-                    return !downstream.isRejecting();
-                }),
-                (state, downstream) -> {
-                    Collections.shuffle(state.items, randomGenerator);
-                    pushAll(state.items, downstream);
+                ArrayList<T>::new,
+                Integrator.ofGreedy((items, item, downstream) ->
+                        items.add(item) && !downstream.isRejecting()),
+                (items, downstream) -> {
+                    while (!items.isEmpty() && !downstream.isRejecting()) {
+                        final var randomSlot = randomGenerator.nextInt(items.size());
+                        final var last = items.removeLast();
+                        if (randomSlot < items.size()) {
+                            downstream.push(items.set(randomSlot, last));
+                        } else {
+                            downstream.push(last);
+                        }
+                    }
                 }
         );
     }

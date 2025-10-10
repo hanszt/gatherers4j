@@ -42,7 +42,7 @@ class ShufflingGathererTest {
                 .collect(joining());
 
         // Assert
-        assertThat(output).isEqualTo("CGEAFDB");
+        assertThat(output).isEqualTo("BDFAEGC");
     }
 
     @Test
@@ -67,6 +67,7 @@ class ShufflingGathererTest {
 
     @Test
     void withNullRandomGenerator() {
+        //noinspection DataFlowIssue
         assertThatThrownBy(() -> shuffle(null))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
