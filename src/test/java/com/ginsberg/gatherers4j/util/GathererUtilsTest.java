@@ -93,7 +93,7 @@ class GathererUtilsTest {
     @Nested
     class PushAllShortCircuiting {
 
-        private static final class CountingDownstream<INPUT> implements Gatherer.Downstream<INPUT> {
+        private static final class CountingDownstream<T> implements Gatherer.Downstream<T> {
             final int maxAccept;
             int pushes = 0;
 
@@ -102,7 +102,7 @@ class GathererUtilsTest {
             }
 
             @Override
-            public boolean push(final INPUT item) {
+            public boolean push(final T item) {
                 pushes++;
                 return !isRejecting();
             }

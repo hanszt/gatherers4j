@@ -26,7 +26,7 @@ final class TypeFilteringGatherer {
     }
 
     @SafeVarargs
-    public static <INPUT, OUTPUT> Gatherer<INPUT, ?, OUTPUT> of(final Class<? extends OUTPUT>... validTypes) {
+    public static <T, R> Gatherer<T, ?, R> of(final Class<? extends R>... validTypes) {
         mustNotBeNull(validTypes, "validTypes must not be null");
         if (validTypes.length == 0) {
             throw new IllegalArgumentException("Must provide at least one type");

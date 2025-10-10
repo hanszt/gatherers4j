@@ -29,12 +29,12 @@ import java.util.stream.Stream;
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 import static com.ginsberg.gatherers4j.util.GathererUtils.pushAll;
 
-public class SizeGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, SizeGatherer.State<INPUT>, INPUT> {
+public class SizeGatherer<T extends @Nullable Object>
+        implements Gatherer<T, SizeGatherer.State<T>, T> {
 
     private final long targetSize;
     private final Size operation;
-    private Supplier<Stream<INPUT>> orElse;
+    private Supplier<Stream<T>> orElse;
 
     SizeGatherer(final Size operation, final long targetSize) {
         if (targetSize < 0) {
@@ -48,14 +48,14 @@ public class SizeGatherer<INPUT extends @Nullable Object>
     }
 
     /// When the current stream does not have the correct length, call the given
-    /// `Supplier<Stream<INPUT>>` to produce an output instead of throwing an exception (the default behavior).
+    /// `Supplier<Stream<T>>` to produce an output instead of throwing an exception (the default behavior).
     ///
     /// Note: You will need a type witness when using this:
     ///
     /// `source.gather(Gatherers4j.<String>ensureSizeExactly(2).orElse(() -> Stream.of("A", "B")))`
     ///
     /// @param orElse - A non-null `Supplier`, the results of which will be used instead of the input stream.
-    public SizeGatherer<INPUT> orElse(final Supplier<Stream<INPUT>> orElse) {
+    public SizeGatherer<T> orElse(final Supplier<Stream<T>> orElse) {
         this.orElse = mustNotBeNull(orElse, "The orElse function must not be null");
         return this;
     }
@@ -67,13 +67,13 @@ public class SizeGatherer<INPUT extends @Nullable Object>
     ///
     /// `source.gather(Gatherers4j.<String>ensureSizeExactly(2).orElseEmpty())`
     ///
-    public SizeGatherer<INPUT> orElseEmpty() {
+    public SizeGatherer<T> orElseEmpty() {
         this.orElse = Stream::empty;
         return this;
     }
 
     @Override
-    public BiConsumer<State<INPUT>, Downstream<? super INPUT>> finisher() {
+    public BiConsumer<State<T>, Downstream<? super T>> finisher() {
         return (state, downstream) -> {
             if (!state.failed && operation.accept(state.elements.size(), targetSize)) {
                 pushAll(state.elements, downstream);
@@ -84,12 +84,12 @@ public class SizeGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public Supplier<State<INPUT>> initializer() {
+    public Supplier<State<T>> initializer() {
         return State::new;
     }
 
     @Override
-    public Integrator<State<INPUT>, INPUT, INPUT> integrator() {
+    public Integrator<State<T>, T, T> integrator() {
         return (state, element, downstream) -> {
             if (operation.tryAccept(state.elements.size() + 1, targetSize)) {
                 state.elements.add(element);
@@ -100,8 +100,8 @@ public class SizeGatherer<INPUT extends @Nullable Object>
         };
     }
 
-    public static class State<INPUT> {
+    public static class State<T> {
         boolean failed = false;
-        final List<INPUT> elements = new ArrayList<>();
+        final List<T> elements = new ArrayList<>();
     }
 }

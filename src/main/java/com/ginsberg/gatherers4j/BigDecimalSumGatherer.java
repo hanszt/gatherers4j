@@ -23,9 +23,9 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BigDecimalSumGatherer<INPUT extends @Nullable Object> extends BigDecimalGatherer<INPUT> {
+public class BigDecimalSumGatherer<T extends @Nullable Object> extends BigDecimalGatherer<T> {
 
-    BigDecimalSumGatherer(final Function<INPUT, @Nullable BigDecimal> mappingFunction) {
+    BigDecimalSumGatherer(final Function<T, @Nullable BigDecimal> mappingFunction) {
         super(mappingFunction);
     }
 

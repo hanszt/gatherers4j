@@ -24,7 +24,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-import static com.ginsberg.gatherers4j.util.GathererUtils.NANOS_PER_MILLISECOND;
+import static com.ginsberg.gatherers4j.util.GathererUtils.NANOS_PER_MILLIS;
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
 public record ThrottlingGatherer<T extends @Nullable Object>(
@@ -101,7 +101,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
                         return false;
                     }
                     // Wait until next period, reset counters, fall through to take permit.
-                    LockSupport.parkNanos((thisPeriodEnd - now) * NANOS_PER_MILLISECOND);
+                    LockSupport.parkNanos((thisPeriodEnd - now) * NANOS_PER_MILLIS);
                     resetPeriod();
                 }
             } else {

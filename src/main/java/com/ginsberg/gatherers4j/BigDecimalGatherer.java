@@ -25,18 +25,18 @@ import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-abstract public class BigDecimalGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, BigDecimalGatherer.State, BigDecimal> {
-    private final Function<INPUT, @Nullable BigDecimal> mappingFunction;
+abstract public class BigDecimalGatherer<T extends @Nullable Object>
+        implements Gatherer<T, BigDecimalGatherer.State, BigDecimal> {
+    private final Function<T, @Nullable BigDecimal> mappingFunction;
     private MathContext mathContext = MathContext.DECIMAL64;
     private @Nullable BigDecimal nullReplacement;
 
-    BigDecimalGatherer(final Function<INPUT, @Nullable BigDecimal> mappingFunction) {
+    BigDecimalGatherer(final Function<T, @Nullable BigDecimal> mappingFunction) {
         this.mappingFunction = mustNotBeNull(mappingFunction, "Mapping function must not be null");
     }
 
     @Override
-    public Integrator<BigDecimalGatherer.State, INPUT, BigDecimal> integrator() {
+    public Integrator<BigDecimalGatherer.State, T, BigDecimal> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             final var mappedElement = getMappedElement(element);
             if (mappedElement != null) {
@@ -49,7 +49,7 @@ abstract public class BigDecimalGatherer<INPUT extends @Nullable Object>
         });
     }
 
-    private @Nullable BigDecimal getMappedElement(final INPUT element) {
+    private @Nullable BigDecimal getMappedElement(final T element) {
         if(element == null) {
             return nullReplacement;
         }
@@ -58,14 +58,14 @@ abstract public class BigDecimalGatherer<INPUT extends @Nullable Object>
     }
 
     /// When encountering a `null` value in a stream, treat it as `BigDecimal.ZERO` instead.
-    public BigDecimalGatherer<INPUT> treatNullAsZero() {
+    public BigDecimalGatherer<T> treatNullAsZero() {
         return treatNullAs(BigDecimal.ZERO);
     }
 
     /// When encountering a `null` value in a stream, treat it as the given `replacement` value instead.
     ///
     /// @param replacement The value to replace `null` with
-    public BigDecimalGatherer<INPUT> treatNullAs(@Nullable final BigDecimal replacement) {
+    public BigDecimalGatherer<T> treatNullAs(@Nullable final BigDecimal replacement) {
         this.nullReplacement = replacement;
         return this;
     }
@@ -73,13 +73,13 @@ abstract public class BigDecimalGatherer<INPUT extends @Nullable Object>
     /// Replace the `MathContext` used for all mathematical operations in this class.
     ///
     /// @param mathContext A non-null `MathContext`
-    public BigDecimalGatherer<INPUT> withMathContext(final MathContext mathContext) {
+    public BigDecimalGatherer<T> withMathContext(final MathContext mathContext) {
         this.mathContext = mustNotBeNull(mathContext, "MathContext must not be null");
         return this;
     }
 
     /// Include the original input value from the stream in addition to the calculated average.
-    public WithOriginalGatherer<INPUT, BigDecimalGatherer.State, BigDecimal> withOriginal() {
+    public WithOriginalGatherer<T, BigDecimalGatherer.State, BigDecimal> withOriginal() {
         return new WithOriginalGatherer<>(this);
     }
 

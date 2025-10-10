@@ -17,9 +17,9 @@ See also [`uniquelyOccurring()`](/gatherers4j/gatherers/filtering-and-selection/
 
 **Signature**
 
-`distinctBy(Function<INPUT, Object> mappingFunction)`
+`distinctBy(Function<T, Object> mappingFunction)`
 
-* `mappingFunction` - A non-null function to map `INPUT` types to an arbitrary `Object` to use for comparison
+* `mappingFunction` - A non-null function to map `T` types to an arbitrary `Object` to use for comparison
 
 ### Examples
 

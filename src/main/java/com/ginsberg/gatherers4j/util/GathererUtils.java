@@ -31,7 +31,7 @@ public final class GathererUtils {
     private GathererUtils() {
     }
 
-    public static final long NANOS_PER_MILLISECOND = Duration.ofMillis(1).toNanos();
+    public static final long NANOS_PER_MILLIS = Duration.ofMillis(1).toNanos();
 
     public static <T> T mustNotBeNull(@Nullable final T subject, final String message) {
         if (subject == null) {

@@ -3,19 +3,19 @@ title: "exponentialMovingAverageWithPeriodBy()"
 linkTitle: "exponentialMovingAverageWithPeriodBy()"
 show_in_table: true
 category: "Mathematical Operations"
-description: Calculate the exponential moving average of `BigDecimal` objects mapped from a `Stream<INPUT>` via a `mappingFunction` over the given number of `periods`.
+description: Calculate the exponential moving average of `BigDecimal` objects mapped from a `Stream<T>` via a `mappingFunction` over the given number of `periods`.
 
 ---
 
 ### Implementation Notes
-This implementation is suitable mapping an arbitrary `Stream<INPUT>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`exponentialMovingAverageWithPeriod()`](/gatherers4j/gatherers/mathematical/exponentialmovingaveragewithperiod/).
+This implementation is suitable mapping an arbitrary `Stream<T>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`exponentialMovingAverageWithPeriod()`](/gatherers4j/gatherers/mathematical/exponentialmovingaveragewithperiod/).
 By default, nulls are ignored and play no part in calculations, see `treatNullAs()` and `treatNullAsZero()` below for ways to change this behavior. 
 
 **Signatures**
 
-`exponentialMovingAverageWithPeriodBy(int periods, Function<INPUT, BigDecimal> mappingFunction)`
+`exponentialMovingAverageWithPeriodBy(int periods, Function<T, BigDecimal> mappingFunction)`
 * `periods` - The number of `periods` to average over, must be greater than 1.
-* `mappingFunction` - A non-null function to map stream `INPUT` elements into `BigDecimal` for calculation
+* `mappingFunction` - A non-null function to map stream `T` elements into `BigDecimal` for calculation
 
 **Additional Methods**
 

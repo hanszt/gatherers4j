@@ -24,12 +24,12 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-public class WithOriginalGatherer<INPUT extends @Nullable Object, STATE, OUTPUT extends @Nullable Object>
-        implements Gatherer<INPUT, STATE, WithOriginal<INPUT, OUTPUT>> {
+public class WithOriginalGatherer<T extends @Nullable Object, STATE, R extends @Nullable Object>
+        implements Gatherer<T, STATE, WithOriginal<T, R>> {
 
-    private final Gatherer<INPUT, STATE, OUTPUT> delegate;
+    private final Gatherer<T, STATE, R> delegate;
 
-    WithOriginalGatherer(final Gatherer<INPUT, STATE, OUTPUT> delegate) {
+    WithOriginalGatherer(final Gatherer<T, STATE, R> delegate) {
         this.delegate = delegate;
     }
 
@@ -39,8 +39,8 @@ public class WithOriginalGatherer<INPUT extends @Nullable Object, STATE, OUTPUT 
     }
 
     @Override
-    public Integrator<STATE, INPUT, WithOriginal<INPUT, OUTPUT>> integrator() {
-        final var capturingDownstream = new CapturingDownstream<OUTPUT>();
+    public Integrator<STATE, T, WithOriginal<T, R>> integrator() {
+        final var capturingDownstream = new CapturingDownstream<R>();
         final var delegateIntegrator = delegate.integrator();
 
         return (state, element, downstream) -> {
@@ -52,12 +52,12 @@ public class WithOriginalGatherer<INPUT extends @Nullable Object, STATE, OUTPUT 
         };
     }
 
-    private static class CapturingDownstream<OUTPUT> implements Downstream<OUTPUT> {
+    private static class CapturingDownstream<R> implements Downstream<R> {
 
-        private final Deque<OUTPUT> captured = new ConcurrentLinkedDeque<>();
+        private final Deque<R> captured = new ConcurrentLinkedDeque<>();
 
         @Override
-        public boolean push(final OUTPUT capturedElement) {
+        public boolean push(final R capturedElement) {
             captured.push(capturedElement);
             return true; // Unused
         }

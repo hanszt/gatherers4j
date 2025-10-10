@@ -27,7 +27,7 @@ import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.pushAll;
 
-public class SampleFixedSizeGatherer<INPUT extends @Nullable Object> implements Gatherer<INPUT, SampleFixedSizeGatherer.State<INPUT>, INPUT> {
+public class SampleFixedSizeGatherer<T extends @Nullable Object> implements Gatherer<T, SampleFixedSizeGatherer.State<T>, T> {
 
     private final int sampleSize;
 
@@ -39,12 +39,12 @@ public class SampleFixedSizeGatherer<INPUT extends @Nullable Object> implements 
     }
 
     @Override
-    public Supplier<State<INPUT>> initializer() {
+    public Supplier<State<T>> initializer() {
         return () -> new State<>(sampleSize);
     }
 
     @Override
-    public Integrator<State<INPUT>, INPUT, INPUT> integrator() {
+    public Integrator<State<T>, T, T> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             state.take(element);
             return !downstream.isRejecting();
@@ -52,12 +52,12 @@ public class SampleFixedSizeGatherer<INPUT extends @Nullable Object> implements 
     }
 
     @Override
-    public BiConsumer<State<INPUT>, Downstream<? super INPUT>> finisher() {
+    public BiConsumer<State<T>, Downstream<? super T>> finisher() {
         return (inputState, downstream) -> pushAll(inputState.elements, downstream);
     }
 
-    public static class State<INPUT> {
-        private final List<INPUT> elements = new ArrayList<>();
+    public static class State<T> {
+        private final List<T> elements = new ArrayList<>();
         private final RandomGenerator random = RandomGenerator.getDefault();
         private final int sampleSize;
         private int index = 0;
@@ -66,7 +66,7 @@ public class SampleFixedSizeGatherer<INPUT extends @Nullable Object> implements 
             this.sampleSize = sampleSize;
         }
 
-        void take(final @Nullable INPUT element) {
+        void take(final @Nullable T element) {
             if (index < sampleSize) {
                 elements.add(element);
             } else {

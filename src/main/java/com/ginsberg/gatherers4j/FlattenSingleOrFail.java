@@ -26,8 +26,8 @@ import java.util.stream.Gatherer;
 import static com.ginsberg.gatherers4j.util.GathererUtils.pushAll;
 
 /// Note: "Single" in this case means at most one. The naming of this more precisely seemed clumsy.
-class FlattenSingleOrFail<INPUT extends Collection<OUTPUT>, OUTPUT>
-        implements Gatherer<INPUT, FlattenSingleOrFail.State<INPUT>, OUTPUT> {
+class FlattenSingleOrFail<T extends Collection<R>, R>
+        implements Gatherer<T, FlattenSingleOrFail.State<T>, R> {
 
     private final String message;
 
@@ -36,12 +36,12 @@ class FlattenSingleOrFail<INPUT extends Collection<OUTPUT>, OUTPUT>
     }
 
     @Override
-    public Supplier<State<INPUT>> initializer() {
+    public Supplier<State<T>> initializer() {
         return State::new;
     }
 
     @Override
-    public Integrator<State<INPUT>, INPUT, OUTPUT> integrator() {
+    public Integrator<State<T>, T, R> integrator() {
         return (state, element, downstream) -> {
             if (state.isFirst) {
                 state.firstCollection = element;
@@ -54,7 +54,7 @@ class FlattenSingleOrFail<INPUT extends Collection<OUTPUT>, OUTPUT>
     }
 
     @Override
-    public BiConsumer<State<INPUT>, Downstream<? super OUTPUT>> finisher() {
+    public BiConsumer<State<T>, Downstream<? super R>> finisher() {
         return (inputState, downstream) -> {
             if(inputState.firstCollection != null) {
                 pushAll(inputState.firstCollection, downstream);
@@ -62,8 +62,8 @@ class FlattenSingleOrFail<INPUT extends Collection<OUTPUT>, OUTPUT>
         };
     }
 
-    public static class State<INPUT> {
+    public static class State<T> {
         boolean isFirst = true;
-        @Nullable INPUT firstCollection;
+        @Nullable T firstCollection;
     }
 }

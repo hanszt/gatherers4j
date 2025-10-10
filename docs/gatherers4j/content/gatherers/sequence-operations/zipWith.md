@@ -3,7 +3,7 @@ title: "zipWith()"
 linkTitle: "zipWith()"
 show_in_table: true
 category: Sequence Operations
-description: Creates a stream of `Pair<FIRST,SECOND>` objects whose values come from the input stream and the source of arguments provided 
+description: Creates a stream of `Pair<T,S>` objects whose values come from the input stream and the source of arguments provided 
 
 ---
 
@@ -17,20 +17,20 @@ this behavior are available, see "Additional Methods" below.
 
 Note there are three possible types for the `other` of interleaved elements.
 
-1. `zipWith(Iterator<SECOND> other)`
-2. `zipWith(Iterable<SECOND> other)`
-3. `zipWith(Stream<SECOND> other)`
-4. `zipWith(SECOND... other)`
+1. `zipWith(Iterator<S> other)`
+2. `zipWith(Iterable<S> other)`
+3. `zipWith(Stream<S> other)`
+4. `zipWith(S... other)`
 * `other` Must be non-null
 
 **Additional Methods**
 
 | Method                               | Purpose                                                                                                                                                                                                                                                                                              |
 |--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `nullArgumentWhenSourceLonger()`     | When the argument `Iterable`, `Iterator`, `Stream` or varargs runs out of elements before the source stream does, use `null` for the remaining `SECOND` elements of each `Pair` until the source is exhausted. [See example.](#pair-the-input-stream-with-null-if-the-argument-source-is-shorter)                          |
-| `nullSourceWhenArgumentLonger()`     | When the source stream runs out of elements before the argument `Iterable`, `Iterator`, `Stream`, or varargs does, use `null` for the remaining `FIRST` elements of each `Pair` until the argument is exhausted. [See example.](#pair-the-argument-stream-with-null-if-the-input-source-is-shorter)                                  |
-| `argumentWhenSourceLonger(function)` | When the argument `Iterable`, `Iterator`, `Stream`, or varargs runs out of elements before the source stream does, use the result of the `function` provided for the remaining `SECOND` elements of each `Pair`until the source is exhausted. [See example.](#pair-the-input-stream-with-the-result-of-a-function-if-the-argument-source-is-shorter)   |
-| `sourceWhenArgumentLonger(function)` | When the source stream runs out of elements before the argument `Iterable`, `Iterator`,  `Stream` or varargs does, use the result of the `function` provided for the remaining `FIRST` elements of each `Pair` until the argument is exhausted. [See example.](#pair-the-input-stream-with-the-result-of-a-function-if-the-argument-source-is-shorter) |
+| `nullArgumentWhenSourceLonger()`     | When the argument `Iterable`, `Iterator`, `Stream` or varargs runs out of elements before the source stream does, use `null` for the remaining `S` elements of each `Pair` until the source is exhausted. [See example.](#pair-the-input-stream-with-null-if-the-argument-source-is-shorter)                          |
+| `nullSourceWhenArgumentLonger()`     | When the source stream runs out of elements before the argument `Iterable`, `Iterator`, `Stream`, or varargs does, use `null` for the remaining `T` elements of each `Pair` until the argument is exhausted. [See example.](#pair-the-argument-stream-with-null-if-the-input-source-is-shorter)                                  |
+| `argumentWhenSourceLonger(function)` | When the argument `Iterable`, `Iterator`, `Stream`, or varargs runs out of elements before the source stream does, use the result of the `function` provided for the remaining `S` elements of each `Pair`until the source is exhausted. [See example.](#pair-the-input-stream-with-the-result-of-a-function-if-the-argument-source-is-shorter)   |
+| `sourceWhenArgumentLonger(function)` | When the source stream runs out of elements before the argument `Iterable`, `Iterator`,  `Stream` or varargs does, use the result of the `function` provided for the remaining `T` elements of each `Pair` until the argument is exhausted. [See example.](#pair-the-input-stream-with-the-result-of-a-function-if-the-argument-source-is-shorter) |
 
 ### Examples
 

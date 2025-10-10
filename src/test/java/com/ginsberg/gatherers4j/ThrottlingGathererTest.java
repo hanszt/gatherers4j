@@ -145,7 +145,7 @@ class ThrottlingGathererTest {
         public Instant instant() {
             final var when = pauses[invocation];
             if (when > 0) {
-                LockSupport.parkNanos(when * GathererUtils.NANOS_PER_MILLISECOND);
+                LockSupport.parkNanos(when * GathererUtils.NANOS_PER_MILLIS);
             }
             invocation = (invocation + 1) % pauses.length;
             return Instant.now();

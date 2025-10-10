@@ -28,8 +28,8 @@ import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
 public class SimpleIndexingGatherers {
 
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> filterIndexed(
-            final BiPredicate<Integer, @Nullable INPUT> predicate
+    public static <T extends @Nullable Object> Gatherer<T, ?, T> filterIndexed(
+            final BiPredicate<Integer, @Nullable T> predicate
     ) {
         mustNotBeNull(predicate, "Predicate must not be null");
         return Gatherer.ofSequential(
@@ -43,8 +43,8 @@ public class SimpleIndexingGatherers {
         );
     }
 
-    public static <INPUT extends @Nullable Object, OUTPUT extends @Nullable Object> Gatherer<INPUT, ?, OUTPUT> mapIndexed(
-            final BiFunction<Integer, @Nullable INPUT, @Nullable OUTPUT> mappingFunction
+    public static <T extends @Nullable Object, R extends @Nullable Object> Gatherer<T, ?, R> mapIndexed(
+            final BiFunction<Integer, @Nullable T, @Nullable R> mappingFunction
     ) {
         mustNotBeNull(mappingFunction, "mappingFunction must not be null");
         return Gatherer.ofSequential(
@@ -55,8 +55,8 @@ public class SimpleIndexingGatherers {
         );
     }
 
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, INPUT> peekIndexed(
-            final BiConsumer<Integer, @Nullable INPUT> peekingConsumer
+    public static <T extends @Nullable Object> Gatherer<T, ?, T> peekIndexed(
+            final BiConsumer<Integer, @Nullable T> peekingConsumer
     ) {
         mustNotBeNull(peekingConsumer, "peekingConsumer must not be null");
         return Gatherer.ofSequential(
@@ -69,7 +69,7 @@ public class SimpleIndexingGatherers {
         );
     }
 
-    public static <INPUT extends @Nullable Object> Gatherer<INPUT, ?, WithIndex<INPUT>> withIndex() {
+    public static <T extends @Nullable Object> Gatherer<T, ?, WithIndex<T>> withIndex() {
         return mapIndexed(WithIndex::new);
     }
 

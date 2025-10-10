@@ -3,7 +3,7 @@ title: "group()"
 linkTitle: "group()"
 show_in_table: true
 category: Grouping and Windowing
-description: Turn a `Stream<INPUT>` into a `Stream<List<INPUT>>` where adjacent equal elements are in the same `List` and equality is measured by `Object::equals()`.
+description: Turn a `Stream<T>` into a `Stream<List<T>>` where adjacent equal elements are in the same `List` and equality is measured by `Object::equals()`.
 ---
 
 

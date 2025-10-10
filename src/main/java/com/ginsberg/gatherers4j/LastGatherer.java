@@ -24,8 +24,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-public class LastGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, LastGatherer.State<INPUT>, INPUT> {
+public class LastGatherer<T extends @Nullable Object>
+        implements Gatherer<T, LastGatherer.State<T>, T> {
 
     private final int lastCount;
 
@@ -37,7 +37,7 @@ public class LastGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public BiConsumer<State<INPUT>, Downstream<? super INPUT>> finisher() {
+    public BiConsumer<State<T>, Downstream<? super T>> finisher() {
         return (state, downstream) -> {
             final var iterator = state.elements.iterator();
             while (iterator.hasNext() && !downstream.isRejecting()) {
@@ -47,20 +47,20 @@ public class LastGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public Supplier<State<INPUT>> initializer() {
+    public Supplier<State<T>> initializer() {
         return () -> new State<>(lastCount);
     }
 
     @Override
-    public Integrator<State<INPUT>, INPUT, INPUT> integrator() {
+    public Integrator<State<T>, T, T> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             state.elements.add(element);
             return !downstream.isRejecting();
         });
     }
 
-    public static class State<INPUT extends @Nullable Object> {
-        final CircularBuffer<INPUT> elements;
+    public static class State<T extends @Nullable Object> {
+        final CircularBuffer<T> elements;
         State(final int capacity) {
             elements = new CircularBuffer<>(capacity);
         }

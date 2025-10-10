@@ -3,7 +3,7 @@ title: "crossWith()"
 linkTitle: "crossWith()"
 show_in_table: true
 category: Sequence Operations
-description: Cross every element of the input stream with every element of the given source, emitting them to the output stream as a `Pair<INPUT, CROSS>`.
+description: Cross every element of the input stream with every element of the given source, emitting them to the output stream as a `Pair<T, S>`.
 ---
 
 ### Implementation Notes
@@ -17,10 +17,10 @@ for the `source` to be infinite, which would pair a single element from the inpu
 
 Note there are four possible types for the `soruce` of crossing elements.
 
-1. `crossWith(Iterator<CROSS> source)`
-2. `crossWith(Iterable<CROSS> source)`
-3. `crossWith(Stream<CROSS> source)`
-4. `crossWith(CROSS... source)`
+1. `crossWith(Iterator<S> source)`
+2. `crossWith(Iterable<S> source)`
+3. `crossWith(Stream<S> source)`
+4. `crossWith(S... source)`
 * `source` Must be non-null
 
 

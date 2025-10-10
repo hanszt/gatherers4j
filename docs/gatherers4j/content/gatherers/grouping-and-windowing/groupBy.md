@@ -3,7 +3,7 @@ title: "groupBy()"
 linkTitle: "groupBy()"
 show_in_table: true
 category: Grouping and Windowing
-description: Turn a `Stream<INPUT>` into a `Stream<List<INPUT>>` where adjacent equal elements are in the same `List` and equality is measured by the given `mappingFunction`.
+description: Turn a `Stream<T>` into a `Stream<List<T>>` where adjacent equal elements are in the same `List` and equality is measured by the given `mappingFunction`.
 ---
 
 
@@ -17,8 +17,8 @@ For a version of `groupBy()` that measures equality with `Object::equals()`, see
 
 **Signature**
 
-`groupBy(Function<INPUT, Object> mappingFunction)`
-* `mappingFunction` - A non-null function to map `INPUT` types to an arbitrary `Object` to use for comparison
+`groupBy(Function<T, Object> mappingFunction)`
+* `mappingFunction` - A non-null function to map `T` types to an arbitrary `Object` to use for comparison
 
 ### Examples
 

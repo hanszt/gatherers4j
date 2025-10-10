@@ -26,17 +26,17 @@ import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.pushAll;
 
-public class RepeatingGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, RepeatingGatherer.State<INPUT>, INPUT> {
+public class RepeatingGatherer<T extends @Nullable Object>
+        implements Gatherer<T, RepeatingGatherer.State<T>, T> {
 
     private static final int INFINITE = -1;
     private final int repeats;
 
-    public static <INPUT> RepeatingGatherer<INPUT> ofInfinite() {
+    public static <T> RepeatingGatherer<T> ofInfinite() {
         return new RepeatingGatherer<>(INFINITE);
     }
 
-    public static <INPUT> RepeatingGatherer<INPUT> ofFinite(final int repeats) {
+    public static <T> RepeatingGatherer<T> ofFinite(final int repeats) {
         if (repeats < 0) {
             throw new IllegalArgumentException("Number of repeats must not be negative");
         }
@@ -48,12 +48,12 @@ public class RepeatingGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public Supplier<RepeatingGatherer.State<INPUT>> initializer() {
+    public Supplier<RepeatingGatherer.State<T>> initializer() {
         return () -> new State<>(repeats);
     }
 
     @Override
-    public Integrator<RepeatingGatherer.State<INPUT>, INPUT, INPUT> integrator() {
+    public Integrator<RepeatingGatherer.State<T>, T, T> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             state.theStream.add(element);
             return repeats != 0 && !downstream.isRejecting();
@@ -61,7 +61,7 @@ public class RepeatingGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public BiConsumer<RepeatingGatherer.State<INPUT>, Downstream<? super INPUT>> finisher() {
+    public BiConsumer<RepeatingGatherer.State<T>, Downstream<? super T>> finisher() {
         return (inputState, downstream) -> {
             while (!downstream.isRejecting() && (inputState.repeatsRemaining == INFINITE || inputState.repeatsRemaining > 0)) {
 
@@ -73,9 +73,9 @@ public class RepeatingGatherer<INPUT extends @Nullable Object>
         };
     }
 
-    public static class State<INPUT> {
+    public static class State<T> {
         int repeatsRemaining;
-        final List<INPUT> theStream = new ArrayList<>();
+        final List<T> theStream = new ArrayList<>();
 
         State(final int repeatsRemaining) {
             this.repeatsRemaining = repeatsRemaining;

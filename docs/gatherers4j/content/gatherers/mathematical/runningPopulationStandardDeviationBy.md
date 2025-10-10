@@ -8,15 +8,15 @@ description: Calculate the running population standard deviation of a `BigDecima
 ---
 
 ### Implementation Notes
-This implementation is suitable mapping an arbitrary `Stream<INPUT>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`runningPopulationStandardDeviation()`](/gatherers4j/gatherers/mathematical/runningpopulationstandarddeviation/).
+This implementation is suitable mapping an arbitrary `Stream<T>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`runningPopulationStandardDeviation()`](/gatherers4j/gatherers/mathematical/runningpopulationstandarddeviation/).
 By default, nulls are ignored and play no part in calculations, see `treatNullAs()` and `treatNullAsZero()` below for ways to change this behavior. The default `MathContext`
 for all calculations is {{< jdklink linkName="MathContext.DECIMAL64" package="java.base/java/math/MathContext.html#DECIMAL64" >}}, but this can be overridden (see `withMathContext()`, below).
 
 
 **Signatures**
 
-`runningPopulationStandardDeviationBy(Function<INPUT, BigDecimal> mappingFunction)`
-* `mappingFunction` - A non-null function to map stream `INPUT` elements into `BigDecimal` for calculation
+`runningPopulationStandardDeviationBy(Function<T, BigDecimal> mappingFunction)`
+* `mappingFunction` - A non-null function to map stream `T` elements into `BigDecimal` for calculation
 
 **Additional Methods**
 

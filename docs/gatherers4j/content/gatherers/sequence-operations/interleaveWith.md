@@ -17,10 +17,10 @@ this behavior (append source if longer, append argument if longer, append either
 
 Note there are three possible types for the `other` of interleaved elements.
 
-1. `interleaveWith(Iterator<CROSS> other)`
-2. `interleaveWith(Iterable<CROSS> other)`
-3. `interleaveWith(Stream<CROSS> other)`
-4. `interleaveWith(CROSS... other)`
+1. `interleaveWith(Iterator<S> other)`
+2. `interleaveWith(Iterable<S> other)`
+3. `interleaveWith(Stream<S> other)`
+4. `interleaveWith(S... other)`
 * `other` Must be non-null
 
 **Additional Methods**

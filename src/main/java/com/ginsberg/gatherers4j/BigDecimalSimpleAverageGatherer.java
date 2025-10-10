@@ -23,9 +23,9 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public final class BigDecimalSimpleAverageGatherer<INPUT extends @Nullable Object> extends BigDecimalGatherer<INPUT> {
+public final class BigDecimalSimpleAverageGatherer<T extends @Nullable Object> extends BigDecimalGatherer<T> {
 
-    BigDecimalSimpleAverageGatherer(final Function<INPUT, @Nullable BigDecimal> mappingFunction) {
+    BigDecimalSimpleAverageGatherer(final Function<T, @Nullable BigDecimal> mappingFunction) {
         super(mappingFunction);
     }
 

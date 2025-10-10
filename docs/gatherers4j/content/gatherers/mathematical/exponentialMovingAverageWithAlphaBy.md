@@ -3,19 +3,19 @@ title: "exponentialMovingAverageWithAlphaBy()"
 linkTitle: "exponentialMovingAverageWithAlphaBy()"
 show_in_table: true
 category: "Mathematical Operations"
-description: Calculate the exponential moving average of `BigDecimal` objects mapped from a `Stream<INPUT>` via a `mappingFunction` with the given `alpha`.
+description: Calculate the exponential moving average of `BigDecimal` objects mapped from a `Stream<T>` via a `mappingFunction` with the given `alpha`.
 
 ---
 
 ### Implementation Notes
-This implementation is suitable mapping an arbitrary `Stream<INPUT>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`exponentialMovingAverageWithAlpha()`](/gatherers4j/gatherers/mathematical/exponentialmovingaveragewithalpha/).
+This implementation is suitable mapping an arbitrary `Stream<T>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`exponentialMovingAverageWithAlpha()`](/gatherers4j/gatherers/mathematical/exponentialmovingaveragewithalpha/).
 By default, nulls are ignored and play no part in calculations, see `treatNullAs()` and `treatNullAsZero()` below for ways to change this behavior. 
 
 **Signatures**
 
-`exponentialMovingAverageWithAlphaBy(double alpha, Function<INPUT, BigDecimal> mappingFunction)`
+`exponentialMovingAverageWithAlphaBy(double alpha, Function<T, BigDecimal> mappingFunction)`
 * `alpha` - The alpha value to use, which must be between 0 and 1, exclusive
-* `mappingFunction` - A non-null function to map stream `INPUT` elements into `BigDecimal` for calculation
+* `mappingFunction` - A non-null function to map stream `T` elements into `BigDecimal` for calculation
 
 **Additional Methods**
 

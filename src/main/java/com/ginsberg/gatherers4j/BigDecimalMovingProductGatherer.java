@@ -24,15 +24,15 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BigDecimalMovingProductGatherer<INPUT extends @Nullable Object>
-        extends BigDecimalGatherer<INPUT> {
+public class BigDecimalMovingProductGatherer<T extends @Nullable Object>
+        extends BigDecimalGatherer<T> {
 
     private final int windowSize;
     private boolean includePartialValues = false;
 
     BigDecimalMovingProductGatherer(
             final int windowSize,
-            final Function<INPUT, @Nullable BigDecimal> mappingFunction
+            final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
         super(mappingFunction);
         if (windowSize <= 1) {
@@ -52,13 +52,13 @@ public class BigDecimalMovingProductGatherer<INPUT extends @Nullable Object>
     /// For example, if the trailing product is over 10 values, but the stream has only emitted two
     /// values, the gatherer should calculate the two values and emit the answer. The default is to not
     /// emit anything until the full size of the window has been seen.
-    public BigDecimalMovingProductGatherer<INPUT> includePartialValues() {
+    public BigDecimalMovingProductGatherer<T> includePartialValues() {
         includePartialValues = true;
         return this;
     }
 
     /// When encountering a `null` value in a stream, treat it as `BigDecimal.ONE` instead.
-    public BigDecimalGatherer<INPUT> treatNullAsOne() {
+    public BigDecimalGatherer<T> treatNullAsOne() {
         return treatNullAs(BigDecimal.ONE);
     }
 

@@ -14,7 +14,7 @@ matter but will look funny if you have type hinting on in your IDE)
 
 **Signature**
 
-`filterInstanceOf(Class<? extends OUTPUT>... validTypes)`
+`filterInstanceOf(Class<? extends R>... validTypes)`
 
 * `validTypes` - A non-empty number of `Class` types to limit the output stream to
 

@@ -3,19 +3,19 @@ title: "runningProductBy()"
 linkTitle: "runningProductBy()"
 show_in_table: true
 category: "Mathematical Operations"
-description: Calculate the running product of `BigDecimal` objects mapped from a `Stream<INPUT>` via a `mappingFunction`.
+description: Calculate the running product of `BigDecimal` objects mapped from a `Stream<T>` via a `mappingFunction`.
 ---
 
 ### Implementation Notes
-This implementation is suitable mapping an arbitrary `Stream<INPUT>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`runningProduct()`](/gatherers4j/gatherers/mathematical/runningproduct/).
+This implementation is suitable mapping an arbitrary `Stream<T>` to `BigDecimal` via a `mappingFunction`; for a version that operates directly on a `Stream<BigDecimal>`, see [`runningProduct()`](/gatherers4j/gatherers/mathematical/runningproduct/).
 By default, nulls are ignored and play no part in calculations, see `treatNullAs()` and `treatNullAsOne()` below for ways to change this behavior. The default `MathContext`
 for all calculations is {{< jdklink linkName="MathContext.DECIMAL64" package="java.base/java/math/MathContext.html#DECIMAL64" >}}, but this can be overridden (see `withMathContext()`, below).
 
 
 **Signatures**
 
-`runningProductBy(Function<INPUT, BigDecimal> mappingFunction)`
-* `mappingFunction` - A non-null function to map stream `INPUT` elements into `BigDecimal` for calculation
+`runningProductBy(Function<T, BigDecimal> mappingFunction)`
+* `mappingFunction` - A non-null function to map stream `T` elements into `BigDecimal` for calculation
 
 **Additional Methods**
 

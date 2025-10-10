@@ -18,8 +18,8 @@ package com.ginsberg.gatherers4j.dto;
 
 import org.jspecify.annotations.Nullable;
 
-public record Pair<FIRST, SECOND>(
-        @Nullable FIRST first,
-        @Nullable SECOND second
+public record Pair<T, S>(
+        @Nullable T first,
+        @Nullable S second
 ) {
 }

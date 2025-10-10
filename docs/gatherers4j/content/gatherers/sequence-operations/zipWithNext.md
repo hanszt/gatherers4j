@@ -18,7 +18,7 @@ The lists returned from this Gatherer are unmodifiable.
 
 ### Examples
 
-#### Return adjacent elements in `List<INPUT>`
+#### Return adjacent elements in `List<T>`
 
 
 ```java

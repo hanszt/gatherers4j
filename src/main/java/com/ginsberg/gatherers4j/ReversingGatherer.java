@@ -24,16 +24,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-public class ReversingGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, ReversingGatherer.State<INPUT>, INPUT> {
+public class ReversingGatherer<T extends @Nullable Object>
+        implements Gatherer<T, ReversingGatherer.State<T>, T> {
 
     @Override
-    public Supplier<ReversingGatherer.State<INPUT>> initializer() {
+    public Supplier<ReversingGatherer.State<T>> initializer() {
         return State::new;
     }
 
     @Override
-    public Integrator<State<INPUT>, INPUT, INPUT> integrator() {
+    public Integrator<State<T>, T, T> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             state.inputs.add(element);
             return !downstream.isRejecting();
@@ -41,7 +41,7 @@ public class ReversingGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public BiConsumer<ReversingGatherer.State<INPUT>, Downstream<? super INPUT>> finisher() {
+    public BiConsumer<ReversingGatherer.State<T>, Downstream<? super T>> finisher() {
         return (state, downstream) -> {
             for (var i = state.inputs.size() - 1; i >= 0 && !downstream.isRejecting(); i--) {
                 downstream.push(state.inputs.get(i));
@@ -49,7 +49,7 @@ public class ReversingGatherer<INPUT extends @Nullable Object>
         };
     }
 
-    public static class State<INPUT> {
-        final List<INPUT> inputs = new ArrayList<>();
+    public static class State<T> {
+        final List<T> inputs = new ArrayList<>();
     }
 }

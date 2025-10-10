@@ -27,38 +27,38 @@ import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-public class InterleavingGatherer<INPUT extends @Nullable Object>
-        implements Gatherer<INPUT, Void, INPUT> {
+public class InterleavingGatherer<T extends @Nullable Object>
+        implements Gatherer<T, Void, T> {
 
-    private final Spliterator<INPUT> otherSpliterator;
+    private final Spliterator<T> otherSpliterator;
     private boolean appendArgumentIfLonger;
     private boolean appendSourceIfLonger;
 
-    InterleavingGatherer(final Iterable<INPUT> other) {
+    InterleavingGatherer(final Iterable<T> other) {
         mustNotBeNull(other, "Other iterable must not be null");
         otherSpliterator = other.spliterator();
     }
 
-    InterleavingGatherer(final Iterator<INPUT> other) {
+    InterleavingGatherer(final Iterator<T> other) {
         mustNotBeNull(other, "Other iterable must not be null");
-        final Iterable<INPUT> iterable = () -> other;
+        final Iterable<T> iterable = () -> other;
         otherSpliterator = iterable.spliterator();
     }
 
-    InterleavingGatherer(final Stream<INPUT> other) {
+    InterleavingGatherer(final Stream<T> other) {
         mustNotBeNull(other, "Other stream must not be null");
         otherSpliterator = other.spliterator();
     }
 
     @SafeVarargs
-    InterleavingGatherer(final INPUT... other) {
+    InterleavingGatherer(final T... other) {
         mustNotBeNull(other, "Other stream must not be null");
         otherSpliterator = Arrays.spliterator(other);
     }
 
     /// If the source stream and the argument stream/iterator/iterable/varargs provide a different
     /// number of elements, append all the remaining elements from either one to the output stream.
-    public InterleavingGatherer<INPUT> appendLonger() {
+    public InterleavingGatherer<T> appendLonger() {
         this.appendArgumentIfLonger = true;
         this.appendSourceIfLonger = true;
         return this;
@@ -66,20 +66,20 @@ public class InterleavingGatherer<INPUT extends @Nullable Object>
 
     /// If the argument stream/iterator/iterable/varargs provides more elements than the source stream,
     /// append all remaining elements from the argument stream/iterator/iterable/varargs to the output stream.
-    public InterleavingGatherer<INPUT> appendArgumentIfLonger() {
+    public InterleavingGatherer<T> appendArgumentIfLonger() {
         this.appendArgumentIfLonger = true;
         return this;
     }
 
     /// If the source stream provides more elements than the argument stream/iterator/iterable/varargs,
     /// append all the remaining elements to the output stream.
-    public InterleavingGatherer<INPUT> appendSourceIfLonger() {
+    public InterleavingGatherer<T> appendSourceIfLonger() {
         this.appendSourceIfLonger = true;
         return this;
     }
 
     @Override
-    public Integrator<Void, INPUT, INPUT> integrator() {
+    public Integrator<Void, T, T> integrator() {
         return (_, element, downstream) -> {
             downstream.push(element);
             if (appendSourceIfLonger) {
@@ -93,7 +93,7 @@ public class InterleavingGatherer<INPUT extends @Nullable Object>
     }
 
     @Override
-    public BiConsumer<Void, Downstream<? super INPUT>> finisher() {
+    public BiConsumer<Void, Downstream<? super T>> finisher() {
         return (_, downstream) -> {
             var downstreamRejecting = downstream.isRejecting();
             while (appendArgumentIfLonger && !downstreamRejecting) {

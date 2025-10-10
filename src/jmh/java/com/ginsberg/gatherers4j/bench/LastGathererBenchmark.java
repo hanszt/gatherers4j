@@ -36,9 +36,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 @BenchmarkMode(Mode.Throughput)
-@OutputTimeUnit(TimeUnit.SECONDS)
-@Warmup(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@OutputTimeUnit(TimeUnit.SS)
+@Warmup(iterations = 3, time = 1, timeUnit = TimeUnit.SS)
+@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SS)
 @Fork(value = 1)
 public class LastGathererBenchmark {
 

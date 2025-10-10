@@ -3,7 +3,7 @@ title: "filterOrdered()"
 linkTitle: "filterOrdered()"
 show_in_table: true
 category: Filtering and Selection
-description: Filter the input stream so that it contains `Comparable<INPUT>` elements in the order provided.
+description: Filter the input stream so that it contains `Comparable<T>` elements in the order provided.
 
 ---
 

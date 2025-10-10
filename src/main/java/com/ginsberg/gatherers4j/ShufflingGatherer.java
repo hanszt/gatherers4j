@@ -27,8 +27,8 @@ import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-public class ShufflingGatherer<INPUT extends @Nullable Object> implements
-        Gatherer<INPUT, ShufflingGatherer.State<INPUT>, INPUT> {
+public class ShufflingGatherer<T extends @Nullable Object> implements
+        Gatherer<T, ShufflingGatherer.State<T>, T> {
 
     private final RandomGenerator randomGenerator;
 
@@ -37,12 +37,12 @@ public class ShufflingGatherer<INPUT extends @Nullable Object> implements
     }
 
     @Override
-    public Supplier<ShufflingGatherer.State<INPUT>> initializer() {
+    public Supplier<ShufflingGatherer.State<T>> initializer() {
         return State::new;
     }
 
     @Override
-    public Integrator<ShufflingGatherer.State<INPUT>, INPUT, INPUT> integrator() {
+    public Integrator<ShufflingGatherer.State<T>, T, T> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             state.inputs.add(element);
             return !downstream.isRejecting();
@@ -50,7 +50,7 @@ public class ShufflingGatherer<INPUT extends @Nullable Object> implements
     }
 
     @Override
-    public BiConsumer<ShufflingGatherer.State<INPUT>, Downstream<? super INPUT>> finisher() {
+    public BiConsumer<ShufflingGatherer.State<T>, Downstream<? super T>> finisher() {
         return (state, downstream) -> {
             while (!state.inputs.isEmpty() && !downstream.isRejecting()) {
                 final var randomSlot = randomGenerator.nextInt(state.inputs.size());
@@ -64,7 +64,7 @@ public class ShufflingGatherer<INPUT extends @Nullable Object> implements
         };
     }
 
-    public static class State<INPUT> {
-        final List<INPUT> inputs = new ArrayList<>();
+    public static class State<T> {
+        final List<T> inputs = new ArrayList<>();
     }
 }

@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-public final class BigDecimalStandardDeviationGatherer<INPUT extends @Nullable Object> extends BigDecimalGatherer<INPUT> {
+public final class BigDecimalStandardDeviationGatherer<T extends @Nullable Object> extends BigDecimalGatherer<T> {
 
     enum Mode {
         Population,
@@ -36,7 +36,7 @@ public final class BigDecimalStandardDeviationGatherer<INPUT extends @Nullable O
 
     BigDecimalStandardDeviationGatherer(
             final Mode mode,
-            final Function<INPUT, @Nullable BigDecimal> mappingFunction) {
+            final Function<T, @Nullable BigDecimal> mappingFunction) {
         super(mustNotBeNull(mappingFunction, "Mapping function must not be null"));
         this.mode = mustNotBeNull(mode, "Mode must not be null");
     }

@@ -7,21 +7,21 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BigDecimalExponentialMovingAverageGatherer<INPUT extends @Nullable Object>
-        extends BigDecimalGatherer<INPUT> {
+public class BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Object>
+        extends BigDecimalGatherer<T> {
 
     private final double alpha;
 
-    public static <INPUT extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<INPUT> withAlpha(
+    public static <T extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<T> withAlpha(
             final double alpha,
-            final Function<INPUT, @Nullable BigDecimal> mappingFunction
+            final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
         return new BigDecimalExponentialMovingAverageGatherer<>(alpha, mappingFunction);
     }
 
-    public static <INPUT extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<INPUT> withPeriod(
+    public static <T extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<T> withPeriod(
             final int periods,
-            final Function<INPUT, @Nullable BigDecimal> mappingFunction
+            final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
         if (periods <= 1) {
             throw new IllegalArgumentException("periods must be greater than 1");
@@ -32,7 +32,7 @@ public class BigDecimalExponentialMovingAverageGatherer<INPUT extends @Nullable 
 
     private BigDecimalExponentialMovingAverageGatherer(
             final double alpha,
-            final Function<INPUT, @Nullable BigDecimal> mappingFunction
+            final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
         super(mappingFunction);
         if (alpha <= 0 || alpha >= 1.0) {

@@ -24,15 +24,15 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BigDecimalMovingSumGatherer<INPUT extends @Nullable Object>
-        extends BigDecimalGatherer<INPUT> {
+public class BigDecimalMovingSumGatherer<T extends @Nullable Object>
+        extends BigDecimalGatherer<T> {
 
     private final int windowSize;
     private boolean includePartialValues = false;
 
     BigDecimalMovingSumGatherer(
             final int windowSize,
-            final Function<INPUT, @Nullable BigDecimal> mappingFunction
+            final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
         super(mappingFunction);
         if (windowSize <= 1) {
@@ -52,7 +52,7 @@ public class BigDecimalMovingSumGatherer<INPUT extends @Nullable Object>
     /// For example, if the trailing sum is over 10 values, but the stream has only emitted two
     /// values, the gatherer should calculate the two values and emit the answer. The default is to not
     /// emit anything until the full size of the window has been seen.
-    public BigDecimalMovingSumGatherer<INPUT> includePartialValues() {
+    public BigDecimalMovingSumGatherer<T> includePartialValues() {
         includePartialValues = true;
         return this;
     }
