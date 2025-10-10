@@ -735,18 +735,14 @@ public final class Gatherers4j {
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> reverse() {
         return Gatherer.ofSequential(
-                () -> new Object() {
-                    final List<T> inputs = new ArrayList<>();
-                },
-                Integrator.ofGreedy((state, element, downstream) -> {
-                    state.inputs.add(element);
-                    return !downstream.isRejecting();
-                }),
-                ((state, downstream) -> {
-                    for (var i = state.inputs.size() - 1; i >= 0 && !downstream.isRejecting(); i--) {
-                        downstream.push(state.inputs.get(i));
+                ArrayList<T>::new,
+                Integrator.ofGreedy((items, element, downstream) ->
+                        items.add(element) && !downstream.isRejecting()),
+                (items, downstream) -> {
+                    for (var i = items.size() - 1; i >= 0 && !downstream.isRejecting(); i--) {
+                        downstream.push(items.get(i));
                     }
-                })
+                }
         );
     }
 
