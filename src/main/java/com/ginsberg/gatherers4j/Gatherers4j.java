@@ -181,11 +181,9 @@ public final class Gatherers4j {
     ) {
         mustNotBeNull(selector, "Mapping function must not be null");
         return Gatherer.ofSequential(
-                () -> new Object() {
-                    final Set<Object> seen = new HashSet<>();
-                },
-                Integrator.ofGreedy((state, item, downstream) -> {
-                    if (state.seen.add(selector.apply(item))) {
+                HashSet::new,
+                Integrator.ofGreedy((seen, item, downstream) -> {
+                    if (seen.add(selector.apply(item))) {
                         downstream.push(item);
                     }
                     return !downstream.isRejecting();
