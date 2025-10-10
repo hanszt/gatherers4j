@@ -58,7 +58,7 @@ public class BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Obje
         }
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             if (first) {
                 first = false;
                 ema = element;

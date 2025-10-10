@@ -76,7 +76,7 @@ public final class BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Obj
         }
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             sum = sum.subtract(series[index]).add(element, mathContext);
             series[index % series.length] = element;
             index = (index + 1) % series.length;

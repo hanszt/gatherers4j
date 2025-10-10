@@ -75,7 +75,7 @@ public class BigDecimalMovingSumGatherer<T extends @Nullable Object>
         }
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             sum = sum.subtract(series[index % series.length]).add(element, mathContext);
             series[index % series.length] = element;
             index++;

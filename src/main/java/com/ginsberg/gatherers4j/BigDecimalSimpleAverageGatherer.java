@@ -39,7 +39,7 @@ public final class BigDecimalSimpleAverageGatherer<T extends @Nullable Object> e
         BigDecimal average = BigDecimal.ZERO;
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             count++;
             average = average.add(element.subtract(average).divide(BigDecimal.valueOf(count), mathContext));
         }

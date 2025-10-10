@@ -56,9 +56,9 @@ public final class BigDecimalStandardDeviationGatherer<T extends @Nullable Objec
         }
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             final var previousAverage = average;
-            super.add(element, mathContext);
+            super.update(element, mathContext);
             dSquared = dSquared.add( element.subtract(average).multiply( element.subtract(previousAverage)));
             if (mode == Mode.Sample) {
                 if (count > 1) {

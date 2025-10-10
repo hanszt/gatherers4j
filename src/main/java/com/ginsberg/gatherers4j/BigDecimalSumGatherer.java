@@ -38,7 +38,7 @@ public class BigDecimalSumGatherer<T extends @Nullable Object> extends BigDecima
         BigDecimal sum = BigDecimal.ZERO;
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             sum = sum.add(element, mathContext);
         }
 

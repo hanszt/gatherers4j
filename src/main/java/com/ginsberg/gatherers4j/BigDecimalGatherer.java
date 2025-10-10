@@ -40,7 +40,7 @@ abstract public class BigDecimalGatherer<T extends @Nullable Object>
         return Integrator.ofGreedy((state, element, downstream) -> {
             final var mappedElement = getMappedElement(element);
             if (mappedElement != null) {
-                state.add(mappedElement, mathContext);
+                state.update(mappedElement, mathContext);
                 if (state.canCalculate()) {
                     return downstream.push(state.calculate());
                 }
@@ -84,7 +84,7 @@ abstract public class BigDecimalGatherer<T extends @Nullable Object>
     }
 
     public interface State {
-        void add(final BigDecimal element, final MathContext mathContext);
+        void update(final BigDecimal element, final MathContext mathContext);
 
         default boolean canCalculate() {
             return true;

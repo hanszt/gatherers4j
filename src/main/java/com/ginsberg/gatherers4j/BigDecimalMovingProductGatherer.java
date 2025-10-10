@@ -80,7 +80,7 @@ public class BigDecimalMovingProductGatherer<T extends @Nullable Object>
         }
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             product = product.divide(series[index % series.length], mathContext).multiply(element, mathContext);
             series[index % series.length] = element;
             index++;

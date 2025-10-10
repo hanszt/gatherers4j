@@ -24,22 +24,22 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-public class WithOriginalGatherer<T extends @Nullable Object, STATE, R extends @Nullable Object>
-        implements Gatherer<T, STATE, WithOriginal<T, R>> {
+public class WithOriginalGatherer<T extends @Nullable Object, A, R extends @Nullable Object>
+        implements Gatherer<T, A, WithOriginal<T, R>> {
 
-    private final Gatherer<T, STATE, R> delegate;
+    private final Gatherer<T, A, R> delegate;
 
-    WithOriginalGatherer(final Gatherer<T, STATE, R> delegate) {
+    WithOriginalGatherer(final Gatherer<T, A, R> delegate) {
         this.delegate = delegate;
     }
 
     @Override
-    public Supplier<STATE> initializer() {
+    public Supplier<A> initializer() {
         return delegate.initializer();
     }
 
     @Override
-    public Integrator<STATE, T, WithOriginal<T, R>> integrator() {
+    public Integrator<A, T, WithOriginal<T, R>> integrator() {
         final var capturingDownstream = new CapturingDownstream<R>();
         final var delegateIntegrator = delegate.integrator();
 

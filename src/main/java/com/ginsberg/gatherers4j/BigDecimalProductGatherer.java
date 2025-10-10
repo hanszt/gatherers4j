@@ -43,7 +43,7 @@ public class BigDecimalProductGatherer<T extends @Nullable Object> extends BigDe
         BigDecimal product = BigDecimal.ONE;
 
         @Override
-        public void add(final BigDecimal element, final MathContext mathContext) {
+        public void update(final BigDecimal element, final MathContext mathContext) {
             product = product.multiply(element, mathContext);
         }
 
