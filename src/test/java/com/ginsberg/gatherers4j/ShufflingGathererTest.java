@@ -22,9 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.shuffle;
+import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -37,11 +38,11 @@ class ShufflingGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.shuffle(new Random(42)))
-                .collect(Collectors.joining());
+                .gather(shuffle(new Random(42)))
+                .collect(joining());
 
         // Assert
-        assertThat(output).isEqualTo("BDFAEGC");
+        assertThat(output).isEqualTo("CGEAFDB");
     }
 
     @Test
@@ -52,11 +53,11 @@ class ShufflingGathererTest {
         // Act
         final Set<String> output = new HashSet<>(
                 List.of(
-                        input.stream().gather(Gatherers4j.shuffle()).collect(Collectors.joining()),
-                        input.stream().gather(Gatherers4j.shuffle()).collect(Collectors.joining()),
-                        input.stream().gather(Gatherers4j.shuffle()).collect(Collectors.joining()),
-                        input.stream().gather(Gatherers4j.shuffle()).collect(Collectors.joining()),
-                        input.stream().gather(Gatherers4j.shuffle()).collect(Collectors.joining())
+                        input.stream().gather(shuffle()).collect(joining()),
+                        input.stream().gather(shuffle()).collect(joining()),
+                        input.stream().gather(shuffle()).collect(joining()),
+                        input.stream().gather(shuffle()).collect(joining()),
+                        input.stream().gather(shuffle()).collect(joining())
                 )
         );
 
@@ -66,11 +67,7 @@ class ShufflingGathererTest {
 
     @Test
     void withNullRandomGenerator() {
-        // Arrange
-        final var input = Stream.of("A");
-
-        // Act/Assert
-        assertThatThrownBy(() -> input.gather(Gatherers4j.shuffle(null)).toList())
+        assertThatThrownBy(() -> shuffle(null))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

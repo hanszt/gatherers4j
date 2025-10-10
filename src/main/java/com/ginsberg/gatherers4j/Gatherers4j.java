@@ -256,7 +256,7 @@ public final class Gatherers4j {
             }
 
             private void finish(Downstream<? super R> downstream) {
-                if(firstCollection != null) {
+                if (firstCollection != null) {
                     pushAll(firstCollection, downstream);
                 }
             }
@@ -910,7 +910,7 @@ public final class Gatherers4j {
     /// @param <T> Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> shuffle() {
-        return new ShufflingGatherer<>(RandomGenerator.getDefault());
+        return shuffle(RandomGenerator.getDefault());
     }
 
     /// Shuffle the input stream into a random order.
@@ -922,7 +922,20 @@ public final class Gatherers4j {
     /// @param <T>             Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> shuffle(final RandomGenerator randomGenerator) {
-        return new ShufflingGatherer<>(randomGenerator);
+        mustNotBeNull(randomGenerator, "RandomGenerator must not be null");
+        return Gatherer.ofSequential(
+                () -> new Object() {
+                    final List<T> items = new ArrayList<>();
+                },
+                Integrator.ofGreedy((state, item, downstream) -> {
+                    state.items.add(item);
+                    return !downstream.isRejecting();
+                }),
+                (state, downstream) -> {
+                    Collections.shuffle(state.items, randomGenerator);
+                    pushAll(state.items, downstream);
+                }
+        );
     }
 
     /// Create a Stream that represents the simple moving average of a `Stream<BigDecimal>` looking
