@@ -18,12 +18,10 @@ package com.ginsberg.gatherers4j;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 
 class TypeFilteringGathererTest {
 
@@ -50,7 +48,7 @@ class TypeFilteringGathererTest {
 
     @Test
     void mustHaveAtLeastOneValidType() {
-        assertThatThrownBy(TypeFilteringGatherer::of)
+        assertThatThrownBy(Gatherers4j::filterInstanceOf)
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -74,7 +72,7 @@ class TypeFilteringGathererTest {
     @Test
     void validTypesMustNotBeNull() {
         assertThatThrownBy(() -> {
-            TypeFilteringGatherer.of((Class<Object>[]) null);
+            Gatherers4j.filterInstanceOf((Class<Object>[]) null);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
