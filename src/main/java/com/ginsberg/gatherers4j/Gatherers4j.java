@@ -713,7 +713,20 @@ public final class Gatherers4j {
     /// @param <T> Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> reverse() {
-        return new ReversingGatherer<>();
+        return Gatherer.ofSequential(
+                () -> new Object() {
+                    final List<T> inputs = new ArrayList<>();
+                },
+                Integrator.ofGreedy((state, element, downstream) -> {
+                    state.inputs.add(element);
+                    return !downstream.isRejecting();
+                }),
+                ((state, downstream) -> {
+                    for (var i = state.inputs.size() - 1; i >= 0 && !downstream.isRejecting(); i--) {
+                        downstream.push(state.inputs.get(i));
+                    }
+                })
+        );
     }
 
     /// Consume the entire stream and emit its elements rotated in the direction specified `distance` number of spaces
