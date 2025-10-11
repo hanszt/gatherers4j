@@ -210,11 +210,9 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> dropLast(final int count) {
-        if (count <= 0) {
-            throw new IllegalArgumentException("DropLast count must be positive");
-        }
+        require(count > 0, "DropLast count must be greater than zero");
         return Gatherer.ofSequential(
-                () -> new ArrayList<T>(count),
+                () -> new CircularBuffer<T>(count),
                 Integrator.ofGreedy((items, item, downstream) -> {
                     if (items.size() == count) {
                         downstream.push(items.removeFirst());
@@ -236,15 +234,15 @@ public final class Gatherers4j {
     }
 
     /// Note: "Single" in this case means at most one. The naming of this more precisely seemed clumsy.
-    static <T extends Collection<R>, R> Gatherer<T, ?, R> flattenSingleOrFail(final String message) {
+    static <I extends Iterable<T>, T> Gatherer<I, ?, T> flattenSingleOrFail(final String message) {
         mustNotBeNull(message, "message must not be null");
         class State {
             boolean isFirst = true;
-            @Nullable T firstCollection = null;
+            @Nullable I firstIterable = null;
 
-            private boolean integrate(T item, Downstream<? super R> downstream) {
+            private boolean integrate(I iterable, Downstream<? super T> downstream) {
                 if (isFirst) {
-                    firstCollection = item;
+                    firstIterable = iterable;
                     isFirst = false;
                     return !downstream.isRejecting();
                 } else {
@@ -252,13 +250,13 @@ public final class Gatherers4j {
                 }
             }
 
-            private void finish(Downstream<? super R> downstream) {
-                if (firstCollection != null) {
-                    pushWhileNotRejecting(firstCollection, downstream);
+            private void finish(Downstream<? super T> downstream) {
+                if (firstIterable != null) {
+                    pushWhileNotRejecting(firstIterable, downstream);
                 }
             }
         }
-        return Gatherer.<T, State, R>ofSequential(State::new, State::integrate, State::finish);
+        return Gatherer.<I, State, T>ofSequential(State::new, State::integrate, State::finish);
     }
 
     /// Ensure that the elements in the input stream are in the given `Order` as measured by the given `Comparator`, and fail exceptionally if they are not.
