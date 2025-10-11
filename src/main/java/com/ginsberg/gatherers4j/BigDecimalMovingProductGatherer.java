@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.ginsberg.gatherers4j.util.GathererUtils.require;
+
 public final class BigDecimalMovingProductGatherer<T extends @Nullable Object>
         extends BigDecimalGatherer<T> {
 
@@ -35,9 +37,7 @@ public final class BigDecimalMovingProductGatherer<T extends @Nullable Object>
             final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
         super(mappingFunction);
-        if (windowSize <= 1) {
-            throw new IllegalArgumentException("Window size must be greater than 1");
-        }
+        require(windowSize > 1, "Window size must be greater than 1");
         this.windowSize = windowSize;
     }
 

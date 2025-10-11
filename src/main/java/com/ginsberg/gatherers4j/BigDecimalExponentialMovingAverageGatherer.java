@@ -7,6 +7,8 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.ginsberg.gatherers4j.util.GathererUtils.require;
+
 public final class BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Object>
         extends BigDecimalGatherer<T> {
 
@@ -23,9 +25,7 @@ public final class BigDecimalExponentialMovingAverageGatherer<T extends @Nullabl
             final int periods,
             final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
-        if (periods <= 1) {
-            throw new IllegalArgumentException("periods must be greater than 1");
-        }
+        require(periods > 1, "periods must be greater than 1");
         final var alpha = 2.0 / (((long) periods) + 1);
         return new BigDecimalExponentialMovingAverageGatherer<>(alpha, mappingFunction);
     }
@@ -35,9 +35,7 @@ public final class BigDecimalExponentialMovingAverageGatherer<T extends @Nullabl
             final Function<T, @Nullable BigDecimal> mappingFunction
     ) {
         super(mappingFunction);
-        if (alpha <= 0 || alpha >= 1.0) {
-            throw new IllegalArgumentException("alpha must be between 0.0 and 1.0, exclusive, got " + alpha);
-        }
+        require(alpha > 0 && alpha < 1.0, "alpha must be between 0.0 and 1.0, exclusive, got " + alpha);
         this.alpha = alpha;
     }
 

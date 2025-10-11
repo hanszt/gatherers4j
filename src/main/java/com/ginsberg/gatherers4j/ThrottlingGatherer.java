@@ -24,8 +24,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-import static com.ginsberg.gatherers4j.util.GathererUtils.NANOS_PER_MILLIS;
-import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
+import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
 public record ThrottlingGatherer<T extends @Nullable Object>(
         ThrottlingGatherer.LimitRule limitRule,
@@ -43,12 +42,8 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         mustNotBeNull(instantSource, "InstantSource must not be null");
         mustNotBeNull(duration, "Duration must not be null");
         mustNotBeNull(limitRule, "LimitRule must not be null");
-        if (duration.toMillis() < 1) {
-            throw new IllegalArgumentException("Minimum duration is 1ms");
-        }
-        if (allowed <= 0) {
-            throw new IllegalArgumentException("Allowed must be positive");
-        }
+        require(duration.toMillis() >= 1, "Minimum duration is 1ms");
+        require(allowed > 0, "Allowed must be positive");
     }
 
     public ThrottlingGatherer<T> withInstantSource(final InstantSource instantSource) {

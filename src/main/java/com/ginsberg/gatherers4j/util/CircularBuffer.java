@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static com.ginsberg.gatherers4j.util.GathererUtils.require;
+
 public final class CircularBuffer<T extends @Nullable Object> implements Iterable<T> {
     private final T[] buffer;
     private int size = 0;
@@ -32,9 +34,7 @@ public final class CircularBuffer<T extends @Nullable Object> implements Iterabl
 
     @SuppressWarnings("unchecked")
     public CircularBuffer(final int capacity) {
-        if (capacity < 1) {
-            throw new IllegalArgumentException("capacity must be greater than zero");
-        }
+        require(capacity >= 1, "capacity must be greater than zero");
         buffer = (T[]) new Object[capacity];
     }
 

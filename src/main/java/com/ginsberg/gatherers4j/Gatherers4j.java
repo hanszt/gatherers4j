@@ -198,9 +198,7 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> dropEveryNth(final int count) {
-        if (count < 2) {
-            throw new IllegalArgumentException("Count must be a minimum of 2");
-        }
+        require(count >= 2, "Count must be a minimum of 2");
         return filterIndexed((index, _) -> index % count != 0);
     }
 
@@ -1054,9 +1052,7 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in both the input and output streams
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, T> takeEveryNth(final int count) {
-        if (count < 2) {
-            throw new IllegalArgumentException("Count must be a minimum of 2");
-        }
+        require(count >= 2, "Count must be a minimum of 2");
         return filterIndexed((index, _) -> index % count == 0);
     }
 
