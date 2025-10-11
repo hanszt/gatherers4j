@@ -120,7 +120,7 @@ class GathererUtilsTest {
             final var downstream = new CountingDownstream<String>(2);
 
             // Act
-            GathererUtils.pushAll(elements, downstream);
+            GathererUtils.pushWhileNotRejecting(elements, downstream);
 
             // Assert
             assertThat(downstream.pushes).isEqualTo(2);
@@ -133,7 +133,7 @@ class GathererUtilsTest {
             final var downstream = new CountingDownstream<String>(2);
 
             // Act
-            GathererUtils.pushAll(elements.iterator(), downstream);
+            GathererUtils.pushWhileNotRejecting(elements.iterator(), downstream);
 
             // Assert
             assertThat(downstream.pushes).isEqualTo(2);
@@ -146,7 +146,7 @@ class GathererUtilsTest {
             final var downstream = new CountingDownstream<String>(2);
 
             // Act
-            GathererUtils.pushAll(elements, downstream);
+            GathererUtils.pushWhileNotRejecting(elements, downstream);
 
             // Assert
             assertThat(downstream.pushes).isEqualTo(2);

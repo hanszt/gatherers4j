@@ -60,23 +60,23 @@ public final class GathererUtils {
     }
 
     // Push all elements in the collection to the downstream, taking care to listen for a stop signal.
-    public static <T extends @Nullable Object> void pushAll(
+    public static <T extends @Nullable Object> void pushWhileNotRejecting(
             final Iterable<T> elements,
             final Gatherer.Downstream<? super T> downstream
     ) {
-        pushAll(elements.iterator(), downstream);
+        pushWhileNotRejecting(elements.iterator(), downstream);
     }
 
     // Push all elements in the collection to the downstream, taking care to listen for a stop signal.
-    public static <T extends @Nullable Object> void pushAll(
+    public static <T extends @Nullable Object> void pushWhileNotRejecting(
             final Stream<T> elements,
             final Gatherer.Downstream<? super T> downstream
     ) {
-        pushAll(elements.iterator(), downstream);
+        pushWhileNotRejecting(elements.iterator(), downstream);
     }
 
     // Push all elements in the collection to the downstream, taking care to listen for a stop signal.
-    public static <T extends @Nullable Object> void pushAll(
+    public static <T extends @Nullable Object> void pushWhileNotRejecting(
             final Iterator<T> iterator,
             final Gatherer.Downstream<? super T> downstream
     ) {

@@ -17,6 +17,7 @@
 package com.ginsberg.gatherers4j;
 
 import com.ginsberg.gatherers4j.enums.Size;
+import com.ginsberg.gatherers4j.util.GathererUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
-import static com.ginsberg.gatherers4j.util.GathererUtils.pushAll;
+import static com.ginsberg.gatherers4j.util.GathererUtils.pushWhileNotRejecting;
 
 public class SizeGatherer<T extends @Nullable Object>
         implements Gatherer<T, SizeGatherer.State<T>, T> {
@@ -76,9 +77,9 @@ public class SizeGatherer<T extends @Nullable Object>
     public BiConsumer<State<T>, Downstream<? super T>> finisher() {
         return (state, downstream) -> {
             if (!state.failed && operation.accept(state.elements.size(), targetSize)) {
-                pushAll(state.elements, downstream);
+                GathererUtils.pushWhileNotRejecting(state.elements, downstream);
             } else {
-                pushAll(orElse.get(), downstream);
+                pushWhileNotRejecting(orElse.get(), downstream);
             }
         };
     }

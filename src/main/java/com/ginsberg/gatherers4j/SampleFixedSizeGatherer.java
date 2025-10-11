@@ -16,6 +16,7 @@
 
 package com.ginsberg.gatherers4j;
 
+import com.ginsberg.gatherers4j.util.GathererUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.function.Supplier;
 import java.util.random.RandomGenerator;
 import java.util.stream.Gatherer;
 
-import static com.ginsberg.gatherers4j.util.GathererUtils.pushAll;
+import static com.ginsberg.gatherers4j.util.GathererUtils.pushWhileNotRejecting;
 
 public class SampleFixedSizeGatherer<T extends @Nullable Object> implements Gatherer<T, SampleFixedSizeGatherer.State<T>, T> {
 
@@ -53,7 +54,7 @@ public class SampleFixedSizeGatherer<T extends @Nullable Object> implements Gath
 
     @Override
     public BiConsumer<State<T>, Downstream<? super T>> finisher() {
-        return (inputState, downstream) -> pushAll(inputState.elements, downstream);
+        return (inputState, downstream) -> GathererUtils.pushWhileNotRejecting(inputState.elements, downstream);
     }
 
     public static class State<T> {

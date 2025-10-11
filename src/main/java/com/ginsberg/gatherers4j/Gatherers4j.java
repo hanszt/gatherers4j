@@ -254,7 +254,7 @@ public final class Gatherers4j {
 
             private void finish(Downstream<? super R> downstream) {
                 if (firstCollection != null) {
-                    pushAll(firstCollection, downstream);
+                    pushWhileNotRejecting(firstCollection, downstream);
                 }
             }
         }
@@ -664,7 +664,7 @@ public final class Gatherers4j {
                         .entrySet()
                         .stream().map(it -> new WithCount<>(it.getKey(), it.getValue()))
                         .sorted(comparator());
-                pushAll(counts, downstream);
+                pushWhileNotRejecting(counts, downstream);
             }
 
             Comparator<WithCount<T>> comparator() {
@@ -722,7 +722,7 @@ public final class Gatherers4j {
                 (state, downstream) -> {
                     while (!downstream.isRejecting() && (state.repeatsRemaining == INFINITE || state.repeatsRemaining > 0)) {
 
-                        pushAll(state.items, downstream);
+                        pushWhileNotRejecting(state.items, downstream);
                         if (state.repeatsRemaining != INFINITE) {
                             state.repeatsRemaining--;
                         }
@@ -1041,7 +1041,7 @@ public final class Gatherers4j {
                 () -> new CircularBuffer<T>(count),
                 Integrator.ofGreedy((items, item, downstream) ->
                         items.add(item) && !downstream.isRejecting()),
-                GathererUtils::pushAll
+                GathererUtils::pushWhileNotRejecting
         );
     }
 
@@ -1137,7 +1137,7 @@ public final class Gatherers4j {
                 State::new,
                 Integrator.<State, T, T>ofGreedy(State::integrate),
                 State::combine,
-                (state, downstream) -> pushAll(state.found.values(), downstream)
+                (state, downstream) -> pushWhileNotRejecting(state.found.values(), downstream)
         );
     }
 
