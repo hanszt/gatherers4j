@@ -516,7 +516,8 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in both the input stream and argument iterable
     /// @return A non-null `InterleavingGatherer`
     public static <T extends @Nullable Object> InterleavingGatherer<T> interleaveWith(final Iterable<T> other) {
-        return new InterleavingGatherer<>(other);
+        mustNotBeNull(other, "Other iterable must not be null");
+        return new InterleavingGatherer<>(other.spliterator(), false, false);
     }
 
     /// Creates a stream of alternating objects from the input stream and the argument iterator
@@ -525,7 +526,8 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in both the input stream and argument iterator
     /// @return A non-null `InterleavingGatherer`
     public static <T extends @Nullable Object> InterleavingGatherer<T> interleaveWith(final Iterator<T> other) {
-        return new InterleavingGatherer<>(other);
+        mustNotBeNull(other, "Other iterable must not be null");
+        return interleaveWith(() -> other);
     }
 
     /// Creates a stream of alternating objects from the input stream and the argument stream
@@ -534,7 +536,8 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in both the input and argument streams
     /// @return A non-null `InterleavingGatherer`
     public static <T extends @Nullable Object> InterleavingGatherer<T> interleaveWith(final Stream<T> other) {
-        return new InterleavingGatherer<>(other);
+        mustNotBeNull(other, "Other stream must not be null");
+        return new InterleavingGatherer<>(other.spliterator(), false, false);
     }
 
     /// Creates a stream of alternating objects from the input stream and the provided elements
@@ -544,7 +547,8 @@ public final class Gatherers4j {
     /// @return A non-null `InterleavingGatherer`
     @SafeVarargs
     public static <T extends @Nullable Object> InterleavingGatherer<T> interleaveWith(final T... other) {
-        return new InterleavingGatherer<>(other);
+        mustNotBeNull(other, "Other stream must not be null");
+        return new InterleavingGatherer<>(Arrays.spliterator(other), false, false);
     }
 
     /// Intersperse the given `intersperseElement` between each element of the input stream.
