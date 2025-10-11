@@ -18,7 +18,6 @@ package com.ginsberg.gatherers4j.util;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
@@ -62,7 +61,7 @@ public final class GathererUtils {
 
     // Push all elements in the collection to the downstream, taking care to listen for a stop signal.
     public static <T extends @Nullable Object> void pushAll(
-            final Collection<T> elements,
+            final Iterable<T> elements,
             final Gatherer.Downstream<? super T> downstream
     ) {
         pushAll(elements.iterator(), downstream);

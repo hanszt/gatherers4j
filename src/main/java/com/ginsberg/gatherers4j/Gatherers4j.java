@@ -19,6 +19,7 @@ package com.ginsberg.gatherers4j;
 import module com.ginsberg.gatherers4j;
 import module java.base;
 import com.ginsberg.gatherers4j.util.CircularBuffer;
+import com.ginsberg.gatherers4j.util.GathererUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.util.stream.Gatherer.Downstream;
@@ -1035,7 +1036,13 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in the input stream
     /// @return A non-null `Gatherer`
     public static <T> Gatherer<T, ?, T> takeLast(final int count) {
-        return new LastGatherer<>(count);
+        require(count >= 0, "Last count must not be negative");
+        return Gatherer.ofSequential(
+                () -> new CircularBuffer<T>(count),
+                Integrator.ofGreedy((items, item, downstream) ->
+                        items.add(item) && !downstream.isRejecting()),
+                GathererUtils::pushAll
+        );
     }
 
     /// Take elements from the input stream until the `predicate` is met, including the first element that

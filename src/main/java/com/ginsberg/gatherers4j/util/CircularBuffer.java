@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class CircularBuffer<T extends @Nullable Object> implements Iterable<T> {
+public final class CircularBuffer<T extends @Nullable Object> implements Iterable<T> {
     private final T[] buffer;
     private int size = 0;
     private int head = 0;
@@ -38,7 +38,7 @@ public class CircularBuffer<T extends @Nullable Object> implements Iterable<T> {
         buffer = (T[]) new Object[capacity];
     }
 
-    public void add(final T element) {
+    public boolean add(final T element) {
         buffer[tail] = element;
         tail = (tail + 1) % buffer.length;
 
@@ -47,6 +47,7 @@ public class CircularBuffer<T extends @Nullable Object> implements Iterable<T> {
         } else {
             head = (head + 1) % buffer.length;
         }
+        return true;
     }
 
     public T removeFirst() {

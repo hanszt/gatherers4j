@@ -1,9 +1,11 @@
 package com.ginsberg.gatherers4j.util;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
@@ -30,9 +32,10 @@ class CircularBufferTest {
         final var cb = new CircularBuffer<String>(2);
 
         // Act
-        Stream.of("A", "B", "C").forEach(cb::add);
+        List.of("A", "B", "C").forEach(cb::add);
 
         // Assert
+        assertThat(cb).containsExactly("B", "C");
         assertThat(cb.toList()).containsExactly("B", "C");
     }
 
@@ -113,46 +116,63 @@ class CircularBufferTest {
         assertThat(cb.toList()).containsExactly("A", "B");
     }
 
-    @Test
-    void iterator() {
-        // Arrange
-        final var cb = new CircularBuffer<String>(5);
-        Stream.of("A", "B", "C", "D").forEach(cb::add);
+    @Nested
+    class Iterator {
 
-        // Act
-        final var iterator = cb.iterator();
+        @Test
+        void iterator() {
+            // Arrange
+            final var cb = new CircularBuffer<String>(5);
+            List.of("A", "B", "C", "D").forEach(cb::add);
 
-        // Assert
-        assertThat(iterator).toIterable().containsExactly("A", "B", "C", "D");
-    }
+            // Act
+            final var iterator = cb.iterator();
 
-    @Test
-    void iteratorDoesNotSupportRemove() {
-        final var cb = new CircularBuffer<String>(5);
-        Stream.of("A", "B", "C", "D").forEach(cb::add);
-        final var iterator = cb.iterator();
+            // Assert
+            assertThat(iterator).toIterable().containsExactly("A", "B", "C", "D");
+        }
 
-        assertThatThrownBy(iterator::remove)
-                .isExactlyInstanceOf(UnsupportedOperationException.class);
-    }
+        @Test
+        void iteratorWhenOverrides() {
+            // Arrange
+            final var cb = new CircularBuffer<String>(3);
+            List.of("A", "B", "C", "D", "E").forEach(cb::add);
 
-    @Test
-    void iteratorEmpty() {
-        // Arrange
-        final var cb = new CircularBuffer<String>(5);
+            // Act
+            final var iterator = cb.iterator();
 
-        // Act
-        final var iterator = cb.iterator();
+            // Assert
+            assertThat(iterator).toIterable().containsExactly("C", "D", "E");
+        }
 
-        // Assert
-        assertThat(iterator).toIterable().isEmpty();
-    }
+        @Test
+        void iteratorDoesNotSupportRemove() {
+            final var cb = new CircularBuffer<String>(5);
+            Stream.of("A", "B", "C", "D").forEach(cb::add);
+            final var iterator = cb.iterator();
 
-    @Test
-    void iteratorEmptyWhenNext() {
-        final var iterator = new CircularBuffer<>(1).iterator();
-        assertThatThrownBy(iterator::next)
-                .isExactlyInstanceOf(NoSuchElementException.class);
+            assertThatThrownBy(iterator::remove)
+                    .isExactlyInstanceOf(UnsupportedOperationException.class);
+        }
+
+        @Test
+        void iteratorEmpty() {
+            // Arrange
+            final var cb = new CircularBuffer<String>(5);
+
+            // Act
+            final var iterator = cb.iterator();
+
+            // Assert
+            assertThat(iterator).toIterable().isEmpty();
+        }
+
+        @Test
+        void iteratorEmptyWhenNext() {
+            final var iterator = new CircularBuffer<>(1).iterator();
+            assertThatThrownBy(iterator::next)
+                    .isExactlyInstanceOf(NoSuchElementException.class);
+        }
     }
 
     @Test
