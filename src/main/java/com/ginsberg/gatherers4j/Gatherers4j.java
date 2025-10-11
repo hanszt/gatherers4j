@@ -486,14 +486,14 @@ public final class Gatherers4j {
         mustNotBeNull(order, "Order must not be null");
         mustNotBeNull(comparator, "Comparator must not be null");
         class State {
-            List<T> items = new ArrayList<>();
+            final List<T> items = new ArrayList<>();
 
             boolean integrate(T item, Downstream<? super List<T>> downstream) {
                 if (!items.isEmpty()) {
                     final T previous = items.getLast();
                     if (!order.allows(comparator.compare(item, previous))) {
-                        downstream.push(Collections.unmodifiableList(items));
-                        items = new ArrayList<>();
+                        downstream.push(Collections.unmodifiableList(new ArrayList<>(items)));
+                        items.clear();
                     }
                 }
                 items.add(item);

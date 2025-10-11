@@ -21,13 +21,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.*;
+import static java.util.Comparator.comparingInt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressWarnings("DataFlowIssue")
 class GroupChangingGathererTest {
 
     @Nested
@@ -39,7 +41,7 @@ class GroupChangingGathererTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final var output = input.gather(Gatherers4j.group()).toList();
+            final var output = input.gather(group()).toList();
 
             // Assert
             assertThat(output).isEmpty();
@@ -52,7 +54,7 @@ class GroupChangingGathererTest {
             final var input = Stream.of("A", "A", "B", "B", "C", "C", "C");
 
             // Act
-            final var output = input.gather(Gatherers4j.group()).toList();
+            final var output = input.gather(group()).toList();
 
             // Assert
             assertThat(output).containsExactly(
@@ -69,7 +71,7 @@ class GroupChangingGathererTest {
 
             // Act
             final var output = input
-                    .gather(Gatherers4j.group()).toList();
+                    .gather(group()).toList();
 
             // Assert
             assertThat(output)
@@ -85,7 +87,7 @@ class GroupChangingGathererTest {
             final var input = Stream.of("A", "A", "B", "B", "C", "C", "C");
 
             // Act
-            final var output = input.gather(Gatherers4j.group()).toList();
+            final var output = input.gather(group()).toList();
 
             // Assert
             assertThat(output).hasSize(3);
@@ -182,7 +184,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.Descending))
+                        .gather(groupOrdered(Order.Descending))
                         .toList();
 
                 // Assert
@@ -201,7 +203,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.Descending))
+                        .gather(groupOrdered(Order.Descending))
                         .toList();
 
                 // Assert
@@ -214,7 +216,7 @@ class GroupChangingGathererTest {
                 final var input = Stream.of(4, 3, 2, 1);
 
                 // Act
-                final var output = input.gather(Gatherers4j.ensureOrdered(Order.Descending)).toList();
+                final var output = input.gather(ensureOrdered(Order.Descending)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(4, 3, 2, 1);
@@ -223,7 +225,7 @@ class GroupChangingGathererTest {
             @Test
             void ensureDescendingFailureCase() {
                 assertThatThrownBy(() ->
-                        Stream.of(1, 1).gather(Gatherers4j.ensureOrdered(Order.Descending)).toList()
+                        Stream.of(1, 1).gather(ensureOrdered(Order.Descending)).toList()
                 ).isExactlyInstanceOf(IllegalStateException.class);
             }
 
@@ -234,7 +236,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.Descending))
+                        .gather(groupOrdered(Order.Descending))
                         .toList();
 
                 // Assert
@@ -251,7 +253,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.Ascending))
+                        .gather(groupOrdered(Order.Ascending))
                         .toList();
 
                 // Assert
@@ -264,7 +266,7 @@ class GroupChangingGathererTest {
                 final var input = Stream.of(1, 2, 3, 4);
 
                 // Act
-                final var output = input.gather(Gatherers4j.ensureOrdered(Order.Ascending)).toList();
+                final var output = input.gather(ensureOrdered(Order.Ascending)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(1, 2, 3, 4);
@@ -273,7 +275,7 @@ class GroupChangingGathererTest {
             @Test
             void ensureAscendingFailureCase() {
                 assertThatThrownBy(() ->
-                        Stream.of(1, 1).gather(Gatherers4j.ensureOrdered(Order.Ascending)).toList()
+                        Stream.of(1, 1).gather(ensureOrdered(Order.Ascending)).toList()
                 ).isExactlyInstanceOf(IllegalStateException.class);
             }
 
@@ -284,7 +286,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.Ascending))
+                        .gather(groupOrdered(Order.Ascending))
                         .toList();
 
                 // Assert
@@ -303,7 +305,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.Ascending))
+                        .gather(groupOrdered(Order.Ascending))
                         .toList();
 
                 // Assert
@@ -320,7 +322,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.AscendingOrEqual))
+                        .gather(groupOrdered(Order.AscendingOrEqual))
                         .toList();
 
                 // Assert
@@ -333,7 +335,7 @@ class GroupChangingGathererTest {
                 final var input = Stream.of(4, 4, 5, 6);
 
                 // Act
-                final var output = input.gather(Gatherers4j.ensureOrdered(Order.AscendingOrEqual)).toList();
+                final var output = input.gather(ensureOrdered(Order.AscendingOrEqual)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(4, 4, 5, 6);
@@ -341,9 +343,8 @@ class GroupChangingGathererTest {
 
             @Test
             void ensureAscendingOrEqualFailureCase() {
-                assertThatThrownBy(() ->
-                        Stream.of(1, 0).gather(Gatherers4j.ensureOrdered(Order.AscendingOrEqual)).toList()
-                ).isExactlyInstanceOf(IllegalStateException.class);
+                final var stream = Stream.of(1, 0).gather(ensureOrdered(Order.AscendingOrEqual));
+                assertThatThrownBy(stream::toList).isExactlyInstanceOf(IllegalStateException.class);
             }
 
             @Test
@@ -353,7 +354,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.AscendingOrEqual))
+                        .gather(groupOrdered(Order.AscendingOrEqual))
                         .toList();
 
                 // Assert
@@ -371,7 +372,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.AscendingOrEqual))
+                        .gather(groupOrdered(Order.AscendingOrEqual))
                         .toList();
 
                 // Assert
@@ -388,7 +389,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.DescendingOrEqual))
+                        .gather(groupOrdered(Order.DescendingOrEqual))
                         .toList();
 
                 // Assert
@@ -401,7 +402,7 @@ class GroupChangingGathererTest {
                 final var input = Stream.of(4, 3, 2, 2);
 
                 // Act
-                final var output = input.gather(Gatherers4j.ensureOrdered(Order.DescendingOrEqual)).toList();
+                final var output = input.gather(ensureOrdered(Order.DescendingOrEqual)).toList();
 
                 // Assert
                 assertThat(output).containsExactly(4, 3, 2, 2);
@@ -410,7 +411,7 @@ class GroupChangingGathererTest {
             @Test
             void ensureDescendingOrEqualFailureCase() {
                 assertThatThrownBy(() ->
-                        Stream.of(1, 2).gather(Gatherers4j.ensureOrdered(Order.DescendingOrEqual)).toList()
+                        Stream.of(1, 2).gather(ensureOrdered(Order.DescendingOrEqual)).toList()
                 ).isExactlyInstanceOf(IllegalStateException.class);
             }
 
@@ -421,7 +422,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.DescendingOrEqual))
+                        .gather(groupOrdered(Order.DescendingOrEqual))
                         .toList();
 
                 // Assert
@@ -439,7 +440,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrdered(Order.DescendingOrEqual))
+                        .gather(groupOrdered(Order.DescendingOrEqual))
                         .toList();
 
                 // Assert
@@ -458,7 +459,7 @@ class GroupChangingGathererTest {
             @Test
             void comparatorMustNotBeNull() {
                 assertThatThrownBy(() ->
-                        Gatherers4j.groupOrderedBy(Order.Ascending, null)
+                        groupOrderedBy(Order.Ascending, null)
                 ).isExactlyInstanceOf(IllegalArgumentException.class);
             }
 
@@ -466,7 +467,7 @@ class GroupChangingGathererTest {
             @Test
             void operationMustNotBeNull() {
                 assertThatThrownBy(() ->
-                        Gatherers4j.groupOrderedBy(null, (_, _) -> 0)
+                        groupOrderedBy(null, (_, _) -> 0)
                 ).isExactlyInstanceOf(IllegalArgumentException.class);
             }
 
@@ -477,16 +478,15 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparing(String::length)))
+                        .gather(groupOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
-                assertThat(output).hasSize(3);
-                output.forEach(it ->
-                        assertThatThrownBy(() ->
-                                it.add("D")
-                        ).isInstanceOf(UnsupportedOperationException.class)
-                );
+                assertThat(output)
+                        .hasSize(3)
+                        .allSatisfy(it ->
+                                assertThatThrownBy(() -> it.add("D"))
+                                        .isInstanceOf(UnsupportedOperationException.class));
             }
         }
 
@@ -499,7 +499,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.Descending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -518,7 +518,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.Descending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -527,11 +527,9 @@ class GroupChangingGathererTest {
 
             @Test
             void ensureDecreasingFailureCase() {
-                assertThatThrownBy(() ->
-                        Stream.of("A", "AA")
-                                .gather(Gatherers4j.ensureOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
-                                .toList()
-                ).isExactlyInstanceOf(IllegalStateException.class);
+                final var stream = Stream.of("A", "AA")
+                        .gather(ensureOrderedBy(Order.Descending, comparingInt(String::length)));
+                assertThatThrownBy(stream::toList).isExactlyInstanceOf(IllegalStateException.class);
             }
 
             @Test
@@ -541,7 +539,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.ensureOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
+                        .gather(ensureOrderedBy(Order.Descending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -555,7 +553,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.Descending, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.Descending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -572,7 +570,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -586,7 +584,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.ensureOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
+                        .gather(ensureOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -595,11 +593,10 @@ class GroupChangingGathererTest {
 
             @Test
             void ensureAscendingFailureCase() {
-                assertThatThrownBy(() ->
-                        Stream.of("AA", "A")
-                                .gather(Gatherers4j.ensureOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
-                                .toList()
-                ).isExactlyInstanceOf(IllegalStateException.class);
+                final var stream = Stream.of("AA", "A")
+                        .gather(ensureOrderedBy(Order.Ascending, comparingInt(String::length)));
+                assertThatThrownBy(stream::toList)
+                        .isExactlyInstanceOf(IllegalStateException.class);
             }
 
             @Test
@@ -609,7 +606,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -628,7 +625,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.Ascending, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.Ascending, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -646,7 +643,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -660,7 +657,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.ensureOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(ensureOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -669,11 +666,9 @@ class GroupChangingGathererTest {
 
             @Test
             void ensureAscendingOrEqualFailureCase() {
-                assertThatThrownBy(() ->
-                        Stream.of("AA", "A")
-                                .gather(Gatherers4j.ensureOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
-                                .toList()
-                ).isExactlyInstanceOf(IllegalStateException.class);
+                final var stream = Stream.of("AA", "A")
+                        .gather(ensureOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)));
+                assertThatThrownBy(stream::toList).isExactlyInstanceOf(IllegalStateException.class);
             }
 
             @Test
@@ -683,7 +678,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -701,7 +696,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.AscendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.AscendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -718,7 +713,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -732,7 +727,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.ensureOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(ensureOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -741,11 +736,9 @@ class GroupChangingGathererTest {
 
             @Test
             void ensureDescendingOrEqualFailureCase() {
-                assertThatThrownBy(() ->
-                        Stream.of("AA", "AAA")
-                                .gather(Gatherers4j.ensureOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
-                                .toList()
-                ).isExactlyInstanceOf(IllegalStateException.class);
+                final var stream = Stream.of("AA", "AAA")
+                        .gather(ensureOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)));
+                assertThatThrownBy(stream::toList).isExactlyInstanceOf(IllegalStateException.class);
             }
 
             @Test
@@ -755,7 +748,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
@@ -773,7 +766,7 @@ class GroupChangingGathererTest {
 
                 // Act
                 final var output = input
-                        .gather(Gatherers4j.groupOrderedBy(Order.DescendingOrEqual, Comparator.comparingInt(String::length)))
+                        .gather(groupOrderedBy(Order.DescendingOrEqual, comparingInt(String::length)))
                         .toList();
 
                 // Assert
