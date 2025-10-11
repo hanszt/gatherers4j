@@ -278,7 +278,10 @@ public final class Gatherers4j {
     /// @param <T>    Type of elements in both the input and output streams
     /// @return A non-null `SizeGatherer`
     /// @throws IllegalStateException when the input stream is not exactly `size` elements long
-    public static <T extends @Nullable Object> SizeGatherer<T> ensureSize(final Size size, final long length) {
+    public static <T extends @Nullable Object> SizeGatherer<T> ensureSize(
+            final Size size,
+            final long length
+    ) {
         return new SizeGatherer<>(size, length);
     }
 

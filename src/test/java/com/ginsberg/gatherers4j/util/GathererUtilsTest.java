@@ -25,9 +25,7 @@ import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 
 class GathererUtilsTest {
@@ -133,7 +131,7 @@ class GathererUtilsTest {
             final var downstream = new CountingDownstream<String>(2);
 
             // Act
-            GathererUtils.pushWhileNotRejecting(elements.iterator(), downstream);
+            GathererUtils.pushWhileNotRejecting(elements, downstream);
 
             // Assert
             assertThat(downstream.pushes).isEqualTo(2);

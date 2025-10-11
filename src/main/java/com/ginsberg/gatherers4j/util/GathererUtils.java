@@ -19,7 +19,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Gatherer;
@@ -64,24 +63,22 @@ public final class GathererUtils {
             final Iterable<T> elements,
             final Gatherer.Downstream<? super T> downstream
     ) {
-        pushWhileNotRejecting(elements.iterator(), downstream);
+        final var iterator = elements.iterator();
+        while (iterator.hasNext() && !downstream.isRejecting()) {
+            downstream.push(iterator.next());
+        }
     }
 
-    // Push all elements in the collection to the downstream, taking care to listen for a stop signal.
+    // Push all elements in the stream to the downstream, taking care to listen for a stop signal and
+    // to make the stream sequential and to close the stream afterward.
     public static <T extends @Nullable Object> void pushWhileNotRejecting(
             final Stream<T> elements,
             final Gatherer.Downstream<? super T> downstream
     ) {
-        pushWhileNotRejecting(elements.iterator(), downstream);
-    }
-
-    // Push all elements in the collection to the downstream, taking care to listen for a stop signal.
-    public static <T extends @Nullable Object> void pushWhileNotRejecting(
-            final Iterator<T> iterator,
-            final Gatherer.Downstream<? super T> downstream
-    ) {
-        while (iterator.hasNext() && !downstream.isRejecting()) {
-            downstream.push(iterator.next());
+        try (elements) {
+            elements.sequential()
+                    .takeWhile(_ -> !downstream.isRejecting())
+                    .forEach(downstream::push);
         }
     }
 }

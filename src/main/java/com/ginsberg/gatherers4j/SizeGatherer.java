@@ -27,25 +27,27 @@ import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
-import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
-import static com.ginsberg.gatherers4j.util.GathererUtils.pushWhileNotRejecting;
+import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
-public class SizeGatherer<T extends @Nullable Object>
+public final class SizeGatherer<T extends @Nullable Object>
         implements Gatherer<T, SizeGatherer.State<T>, T> {
 
     private final long targetSize;
     private final Size operation;
-    private Supplier<Stream<T>> orElse;
+    private final Supplier<Stream<T>> orElse;
 
     SizeGatherer(final Size operation, final long targetSize) {
-        if (targetSize < 0) {
-            throw new IllegalArgumentException("Target size cannot be negative");
-        }
+        this(operation, targetSize, () -> {
+            throw new IllegalStateException("Invalid stream size: wanted " + operation.name() + " " + targetSize);
+        });
+    }
+
+    SizeGatherer(final Size operation, final long targetSize, final Supplier<Stream<T>> orElse) {
+        require(targetSize >= 0, "Target size cannot be negative");
         this.operation = operation;
         this.targetSize = targetSize;
-        this.orElse = () -> {
-            throw new IllegalStateException("Invalid stream size: wanted " + operation.name() + " " + targetSize);
-        };
+        this.orElse = mustNotBeNull(orElse, "The orElse function must not be null");
+
     }
 
     /// When the current stream does not have the correct length, call the given
@@ -57,8 +59,7 @@ public class SizeGatherer<T extends @Nullable Object>
     ///
     /// @param orElse - A non-null `Supplier`, the results of which will be used instead of the input stream.
     public SizeGatherer<T> orElse(final Supplier<Stream<T>> orElse) {
-        this.orElse = mustNotBeNull(orElse, "The orElse function must not be null");
-        return this;
+        return new SizeGatherer<>(this.operation, this.targetSize, orElse);
     }
 
     /// When the current stream does not have the correct length, produce an empty stream instead of throwing
@@ -69,8 +70,7 @@ public class SizeGatherer<T extends @Nullable Object>
     /// `source.gather(Gatherers4j.<String>ensureSizeExactly(2).orElseEmpty())`
     ///
     public SizeGatherer<T> orElseEmpty() {
-        this.orElse = Stream::empty;
-        return this;
+        return orElse(Stream::empty);
     }
 
     @Override
