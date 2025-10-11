@@ -19,19 +19,12 @@ package com.ginsberg.gatherers4j;
 import com.ginsberg.gatherers4j.dto.WithOriginal;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-public class WithOriginalGatherer<T extends @Nullable Object, A, R extends @Nullable Object>
+record WithOriginalGatherer<T extends @Nullable Object, A, R extends @Nullable Object>(Gatherer<T, A, R> delegate)
         implements Gatherer<T, A, WithOriginal<T, R>> {
-
-    private final Gatherer<T, A, R> delegate;
-
-    WithOriginalGatherer(final Gatherer<T, A, R> delegate) {
-        this.delegate = delegate;
-    }
 
     @Override
     public Supplier<A> initializer() {
@@ -40,26 +33,15 @@ public class WithOriginalGatherer<T extends @Nullable Object, A, R extends @Null
 
     @Override
     public Integrator<A, T, WithOriginal<T, R>> integrator() {
-        final var capturingDownstream = new CapturingDownstream<R>();
+        final var list = new ArrayList<R>();
         final var delegateIntegrator = delegate.integrator();
 
         return (state, element, downstream) -> {
-            final var response = delegateIntegrator.integrate(state, element, capturingDownstream);
-            while (!capturingDownstream.captured.isEmpty()) {
-                downstream.push(new WithOriginal<>(element, capturingDownstream.captured.poll()));
+            final var response = delegateIntegrator.integrate(state, element, list::add);
+            if (!list.isEmpty()) {
+                downstream.push(new WithOriginal<>(element, list.removeLast()));
             }
             return response;
         };
-    }
-
-    private static class CapturingDownstream<R> implements Downstream<R> {
-
-        private final Deque<R> captured = new ConcurrentLinkedDeque<>();
-
-        @Override
-        public boolean push(final R capturedElement) {
-            captured.push(capturedElement);
-            return true; // Unused
-        }
     }
 }

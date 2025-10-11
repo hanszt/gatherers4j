@@ -16,6 +16,7 @@
 
 package com.ginsberg.gatherers4j;
 
+import com.ginsberg.gatherers4j.dto.WithOriginal;
 import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
@@ -50,7 +51,7 @@ abstract public class BigDecimalGatherer<T extends @Nullable Object>
     }
 
     private @Nullable BigDecimal getMappedElement(final T element) {
-        if(element == null) {
+        if (element == null) {
             return nullReplacement;
         }
         final var mapped = mappingFunction.apply(element);
@@ -79,7 +80,7 @@ abstract public class BigDecimalGatherer<T extends @Nullable Object>
     }
 
     /// Include the original input value from the stream in addition to the calculated average.
-    public WithOriginalGatherer<T, BigDecimalGatherer.State, BigDecimal> withOriginal() {
+    public Gatherer<T, BigDecimalGatherer.State, WithOriginal<T, BigDecimal>> withOriginal() {
         return new WithOriginalGatherer<>(this);
     }
 
