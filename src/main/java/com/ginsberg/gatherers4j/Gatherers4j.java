@@ -895,7 +895,38 @@ public final class Gatherers4j {
     /// @param <T>        Type of elements in the input and output stream
     /// @return A non-null Gatherer
     public static <T extends @Nullable Object> Gatherer<T, ?, T> sampleFixedSize(final int sampleSize) {
-        return new SampleFixedSizeGatherer<>(sampleSize);
+        return sampleFixedSize(sampleSize, RandomGenerator.getDefault());
+    }
+
+    public static <T extends @Nullable Object> Gatherer<T, ?, T> sampleFixedSize(
+            final int sampleSize,
+            final RandomGenerator random
+    ) {
+        require(sampleSize > 0, "sampleSize must be at least 1");
+        class State {
+            private final List<T> elements = new ArrayList<>();
+            private int index = 0;
+
+            boolean take(final @Nullable T element, Downstream<? super T> downstream) {
+                if (index < sampleSize) {
+                    elements.add(element);
+                } else {
+                    final var n = random.nextInt(0, index);
+                    if (n < sampleSize) {
+                        // Not replacing element at n because we want to keep iteration order.
+                        elements.remove(n);
+                        elements.add(element);
+                    }
+                }
+                index++;
+                return !downstream.isRejecting();
+            }
+        }
+        return Gatherer.ofSequential(
+                State::new,
+                Integrator.<State, T, T>ofGreedy(State::take),
+                (state, downstream) -> pushWhileNotRejecting(state.elements, downstream)
+        );
     }
 
     /// Perform a percentage-based sampling over the input stream. This method uses Poisson sampling internally, so
@@ -906,13 +937,11 @@ public final class Gatherers4j {
     /// @param randomGenerator the random generator to use for sampling
     /// @param <T>             Type of elements in the input and output stream
     /// @return A non-null Gatherer
-    public static <T extends @Nullable Object> Gatherer<T, ?, T> samplePercentage(final double percentage, final RandomGenerator randomGenerator) {
-        if (percentage <= 0.0) {
-            throw new IllegalArgumentException("percentage must be greater than 0");
-        }
-        if (percentage > 1.0) {
-            throw new IllegalArgumentException("percentage must be less than 1.0");
-        }
+    public static <T extends @Nullable Object> Gatherer<T, ?, T> samplePercentage(
+            final double percentage,
+            final RandomGenerator randomGenerator
+    ) {
+        require(percentage > 0.0 && percentage <= 1.0, "percentage must be between 0.0 and 1.0");
         return Gatherer.ofSequential(
                 Integrator.ofGreedy((_, element, downstream) -> {
                     if (randomGenerator.nextDouble() < percentage) {

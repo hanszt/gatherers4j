@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.sampleFixedSize;
+import static com.ginsberg.gatherers4j.Gatherers4j.samplePercentage;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -41,7 +43,7 @@ class SampleGathererTest {
             final var input = Stream.of("A", "B", "C");
 
             // Act
-            final var output = input.gather(Gatherers4j.sampleFixedSize(4)).toList();
+            final var output = input.gather(sampleFixedSize(4)).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B", "C");
@@ -59,7 +61,7 @@ class SampleGathererTest {
 
             // Act
             for (var i = 0; i < samples; i++) {
-                input.stream().gather(Gatherers4j.sampleFixedSize(sampleSize)).forEach(it -> counts[it]++);
+                input.stream().gather(sampleFixedSize(sampleSize)).forEach(it -> counts[it]++);
             }
 
             // Assert
@@ -72,7 +74,7 @@ class SampleGathererTest {
         @ValueSource(ints = {-1, 0})
         void sampleSizeMustBeAtLeast1(final int size) {
             assertThatThrownBy(() ->
-                    Gatherers4j.sampleFixedSize(size)
+                    sampleFixedSize(size)
             ).isExactlyInstanceOf(IllegalArgumentException.class);
         }
 
@@ -82,7 +84,7 @@ class SampleGathererTest {
             final var input = Stream.of("A", "B", "C");
 
             // Act
-            final var output = input.gather(Gatherers4j.sampleFixedSize(2)).toList();
+            final var output = input.gather(sampleFixedSize(2)).toList();
 
             // Assert
             assertThat(output).hasSize(2);
@@ -96,7 +98,7 @@ class SampleGathererTest {
 
             // Act
             for (var i = 0; i < 100_000; i++) {
-                input.stream().gather(Gatherers4j.sampleFixedSize(4)).forEach(it -> counts[it]++);
+                input.stream().gather(sampleFixedSize(4)).forEach(it -> counts[it]++);
             }
 
             // Assert
@@ -120,7 +122,7 @@ class SampleGathererTest {
 
             // Act
             for (var i = 0; i < samples; i++) {
-                input.stream().gather(Gatherers4j.samplePercentage(samplePercentage, RandomGenerator.getDefault())).forEach(it -> counts[it]++);
+                input.stream().gather(samplePercentage(samplePercentage, RandomGenerator.getDefault())).forEach(it -> counts[it]++);
             }
 
             // Assert
@@ -132,9 +134,9 @@ class SampleGathererTest {
         @ParameterizedTest(name = "samplePercentage of {0}")
         @ValueSource(doubles = {0.0, 1.01, -0.1})
         void sampleSizeMustBeAtLeast1(final double percentage) {
-            assertThatThrownBy(() ->
-                    Gatherers4j.samplePercentage(percentage, RandomGenerator.getDefault())
-            ).isExactlyInstanceOf(IllegalArgumentException.class);
+            final var randomGenerator = RandomGenerator.getDefault();
+            assertThatThrownBy(() -> samplePercentage(percentage, randomGenerator))
+                    .isExactlyInstanceOf(IllegalArgumentException.class);
         }
     }
 
