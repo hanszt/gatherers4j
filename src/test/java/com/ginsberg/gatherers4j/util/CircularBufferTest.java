@@ -42,14 +42,18 @@ class CircularBufferTest {
     @Test
     void toList() {
         // Arrange
-        final var cb = new CircularBuffer<String>(5);
-        Stream.of("A", "B", "C", "D").forEach(cb::add);
+        final var cb = new CircularBuffer<String>(4);
+        List.of("A", "B", "C", "D").forEach(cb::add);
 
         // Act
         final var output = cb.toList();
+        cb.add("E");
 
         // Assert
         assertThat(output).containsExactly("A", "B", "C", "D");
+        //noinspection DataFlowIssue
+        assertThatThrownBy(() -> output.add("E")).isInstanceOf(UnsupportedOperationException.class);
+        assertThat(cb.toList()).containsExactly("B", "C", "D", "E");
     }
 
     @Test
