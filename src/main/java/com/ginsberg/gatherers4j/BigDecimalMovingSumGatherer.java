@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BigDecimalMovingSumGatherer<T extends @Nullable Object>
+public final class BigDecimalMovingSumGatherer<T extends @Nullable Object>
         extends BigDecimalGatherer<T> {
 
     private final int windowSize;

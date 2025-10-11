@@ -23,7 +23,7 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BigDecimalProductGatherer<T extends @Nullable Object> extends BigDecimalGatherer<T> {
+public final class BigDecimalProductGatherer<T extends @Nullable Object> extends BigDecimalGatherer<T> {
 
     BigDecimalProductGatherer(final Function<T, @Nullable BigDecimal> mappingFunction) {
         super(mappingFunction);

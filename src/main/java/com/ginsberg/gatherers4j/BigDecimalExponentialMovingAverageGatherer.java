@@ -7,7 +7,7 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Object>
+public final class BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Object>
         extends BigDecimalGatherer<T> {
 
     private final double alpha;
