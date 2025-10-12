@@ -17,9 +17,9 @@
 package com.ginsberg.gatherers4j;
 
 import com.ginsberg.gatherers4j.dto.WithOriginal;
+import com.ginsberg.gatherers4j.util.CircularBuffer;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
@@ -33,13 +33,13 @@ record WithOriginalGatherer<T extends @Nullable Object, A, R extends @Nullable O
 
     @Override
     public Integrator<A, T, WithOriginal<T, R>> integrator() {
-        final var list = new ArrayList<R>();
+        final var buffer = new CircularBuffer<R>(1);
         final var delegateIntegrator = delegate.integrator();
 
         return (state, element, downstream) -> {
-            final var response = delegateIntegrator.integrate(state, element, list::add);
-            if (!list.isEmpty()) {
-                downstream.push(new WithOriginal<>(element, list.removeLast()));
+            final var response = delegateIntegrator.integrate(state, element, buffer::add);
+            if (!buffer.isEmpty()) {
+                downstream.push(new WithOriginal<>(element, buffer.removeFirst()));
             }
             return response;
         };
