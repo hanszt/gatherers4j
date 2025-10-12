@@ -114,7 +114,7 @@ class BigDecimalMovingSumGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.movingSum(2).includePartialValues())
+                .gather(Gatherers4j.movingSum(2).withIncludedPartialValues())
                 .toList();
 
         // Assert
@@ -136,7 +136,7 @@ class BigDecimalMovingSumGathererTest {
         // Act
         final var output = input
                 .gather(Gatherers4j.movingSum(2)
-                        .includePartialValues()
+                        .withIncludedPartialValues()
                         .withOriginal())
                 .toList();
 

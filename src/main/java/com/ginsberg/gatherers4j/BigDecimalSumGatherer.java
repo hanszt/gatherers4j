@@ -23,15 +23,20 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public final class BigDecimalSumGatherer<T extends @Nullable Object> extends BigDecimalGatherer<T> {
-
-    BigDecimalSumGatherer(final Function<T, @Nullable BigDecimal> mappingFunction) {
-        super(mappingFunction);
-    }
+public record BigDecimalSumGatherer<T extends @Nullable Object>(
+        Function<T, @Nullable BigDecimal> mappingFunction,
+        @Nullable BigDecimal nullReplacement,
+        MathContext mathContext
+) implements BigDecimalGatherer<T> {
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
         return State::new;
+    }
+
+    @Override
+    public BigDecimalGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext) {
+        return new BigDecimalSumGatherer<>(mappingFunction, replacement, mathContext);
     }
 
     static class State implements BigDecimalGatherer.State {

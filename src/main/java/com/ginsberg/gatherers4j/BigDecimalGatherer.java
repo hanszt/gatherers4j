@@ -26,22 +26,19 @@ import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-abstract public class BigDecimalGatherer<T extends @Nullable Object>
-        implements Gatherer<T, BigDecimalGatherer.State, BigDecimal> {
-    private final Function<T, @Nullable BigDecimal> mappingFunction;
-    private MathContext mathContext = MathContext.DECIMAL64;
-    private @Nullable BigDecimal nullReplacement;
+public interface BigDecimalGatherer<T extends @Nullable Object>
+        extends Gatherer<T, BigDecimalGatherer.State, BigDecimal> {
 
-    BigDecimalGatherer(final Function<T, @Nullable BigDecimal> mappingFunction) {
-        this.mappingFunction = mustNotBeNull(mappingFunction, "Mapping function must not be null");
-    }
+    @Nullable BigDecimal nullReplacement();
+    Function<? super T, @Nullable BigDecimal> mappingFunction();
+    MathContext mathContext();
 
     @Override
-    public Integrator<BigDecimalGatherer.State, T, BigDecimal> integrator() {
+    default Integrator<BigDecimalGatherer.State, T, BigDecimal> integrator() {
         return Integrator.ofGreedy((state, element, downstream) -> {
             final var mappedElement = getMappedElement(element);
             if (mappedElement != null) {
-                state.update(mappedElement, mathContext);
+                state.update(mappedElement, mathContext());
                 if (state.canCalculate()) {
                     return downstream.push(state.calculate());
                 }
@@ -52,39 +49,40 @@ abstract public class BigDecimalGatherer<T extends @Nullable Object>
 
     private @Nullable BigDecimal getMappedElement(final T element) {
         if (element == null) {
-            return nullReplacement;
+            return nullReplacement();
         }
-        final var mapped = mappingFunction.apply(element);
-        return mapped == null ? nullReplacement : mapped;
-    }
-
-    /// When encountering a `null` value in a stream, treat it as `BigDecimal.ZERO` instead.
-    public BigDecimalGatherer<T> treatNullAsZero() {
-        return treatNullAs(BigDecimal.ZERO);
+        final var mapped = mappingFunction().apply(element);
+        return mapped == null ? nullReplacement() : mapped;
     }
 
     /// When encountering a `null` value in a stream, treat it as the given `replacement` value instead.
     ///
     /// @param replacement The value to replace `null` with
-    public BigDecimalGatherer<T> treatNullAs(@Nullable final BigDecimal replacement) {
-        this.nullReplacement = replacement;
-        return this;
+    default BigDecimalGatherer<T> treatNullAs(@Nullable final BigDecimal replacement) {
+        return copy(replacement, mathContext());
     }
 
     /// Replace the `MathContext` used for all mathematical operations in this class.
     ///
     /// @param mathContext A non-null `MathContext`
-    public BigDecimalGatherer<T> withMathContext(final MathContext mathContext) {
-        this.mathContext = mustNotBeNull(mathContext, "MathContext must not be null");
-        return this;
+    default BigDecimalGatherer<T> withMathContext(final MathContext mathContext) {
+        mustNotBeNull(mathContext, "MathContext must not be null");
+        return copy(nullReplacement(), mathContext);
+    }
+
+    BigDecimalGatherer<T> copy(@Nullable final BigDecimal replacement, final MathContext mathContext);
+
+    /// When encountering a `null` value in a stream, treat it as `BigDecimal.ZERO` instead.
+    default BigDecimalGatherer<T> treatNullAsZero() {
+        return treatNullAs(BigDecimal.ZERO);
     }
 
     /// Include the original input value from the stream in addition to the calculated average.
-    public Gatherer<T, BigDecimalGatherer.State, WithOriginal<T, BigDecimal>> withOriginal() {
+    default Gatherer<T, BigDecimalGatherer.State, WithOriginal<T, BigDecimal>> withOriginal() {
         return new WithOriginalGatherer<>(this);
     }
 
-    public interface State {
+    interface State {
         void update(final BigDecimal element, final MathContext mathContext);
 
         default boolean canCalculate() {
@@ -93,5 +91,4 @@ abstract public class BigDecimalGatherer<T extends @Nullable Object>
 
         BigDecimal calculate();
     }
-
 }

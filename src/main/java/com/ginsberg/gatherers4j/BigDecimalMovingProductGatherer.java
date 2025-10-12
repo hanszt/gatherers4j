@@ -26,19 +26,16 @@ import java.util.function.Supplier;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.require;
 
-public final class BigDecimalMovingProductGatherer<T extends @Nullable Object>
-        extends BigDecimalGatherer<T> {
+public record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
+        int windowSize,
+        boolean includePartialValues,
+        Function<T, @Nullable BigDecimal> mappingFunction,
+        @Nullable BigDecimal nullReplacement,
+        MathContext mathContext
+) implements BigDecimalGatherer<T> {
 
-    private final int windowSize;
-    private boolean includePartialValues = false;
-
-    BigDecimalMovingProductGatherer(
-            final int windowSize,
-            final Function<T, @Nullable BigDecimal> mappingFunction
-    ) {
-        super(mappingFunction);
+    public BigDecimalMovingProductGatherer {
         require(windowSize > 1, "Window size must be greater than 1");
-        this.windowSize = windowSize;
     }
 
     @Override
@@ -52,14 +49,18 @@ public final class BigDecimalMovingProductGatherer<T extends @Nullable Object>
     /// For example, if the trailing product is over 10 values, but the stream has only emitted two
     /// values, the gatherer should calculate the two values and emit the answer. The default is to not
     /// emit anything until the full size of the window has been seen.
-    public BigDecimalMovingProductGatherer<T> includePartialValues() {
-        includePartialValues = true;
-        return this;
+    public BigDecimalMovingProductGatherer<T> withIncludedPartialValues() {
+        return new BigDecimalMovingProductGatherer<>(windowSize, true, mappingFunction, nullReplacement, mathContext);
     }
 
     /// When encountering a `null` value in a stream, treat it as `BigDecimal.ONE` instead.
     public BigDecimalGatherer<T> treatNullAsOne() {
         return treatNullAs(BigDecimal.ONE);
+    }
+
+    @Override
+    public BigDecimalGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext) {
+        return new BigDecimalMovingProductGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
     static class State implements BigDecimalGatherer.State {

@@ -23,11 +23,11 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public final class BigDecimalProductGatherer<T extends @Nullable Object> extends BigDecimalGatherer<T> {
-
-    BigDecimalProductGatherer(final Function<T, @Nullable BigDecimal> mappingFunction) {
-        super(mappingFunction);
-    }
+public record BigDecimalProductGatherer<T extends @Nullable Object>(
+        Function<T, @Nullable BigDecimal> mappingFunction,
+        @Nullable BigDecimal nullReplacement,
+        MathContext mathContext
+) implements BigDecimalGatherer<T> {
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
@@ -37,6 +37,11 @@ public final class BigDecimalProductGatherer<T extends @Nullable Object> extends
     /// When encountering a `null` value in a stream, treat it as `BigDecimal.ONE` instead.
     public BigDecimalGatherer<T> treatNullAsOne() {
         return treatNullAs(BigDecimal.ONE);
+    }
+
+    @Override
+    public BigDecimalGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext) {
+        return new BigDecimalProductGatherer<>(mappingFunction, replacement, mathContext);
     }
 
     static class State implements BigDecimalGatherer.State {

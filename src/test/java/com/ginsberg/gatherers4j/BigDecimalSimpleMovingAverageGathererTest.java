@@ -214,7 +214,7 @@ class BigDecimalSimpleMovingAverageGathererTest {
         final var output = input
                 .gather(Gatherers4j
                         .simpleMovingAverage(2)
-                        .includePartialValues()
+                        .withIncludedPartialValues()
                         .withOriginal()
                 ).toList();
 

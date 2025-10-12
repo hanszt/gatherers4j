@@ -113,7 +113,7 @@ class BigDecimalMovingProductGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.movingProduct(2).includePartialValues())
+                .gather(Gatherers4j.movingProduct(2).withIncludedPartialValues())
                 .toList();
 
         // Assert
@@ -135,7 +135,7 @@ class BigDecimalMovingProductGathererTest {
         // Act
         final var output = input
                 .gather(Gatherers4j.movingProduct(2)
-                        .includePartialValues()
+                        .withIncludedPartialValues()
                         .withOriginal()
                 )
                 .toList();

@@ -26,19 +26,16 @@ import java.util.function.Supplier;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.require;
 
-public final class BigDecimalMovingSumGatherer<T extends @Nullable Object>
-        extends BigDecimalGatherer<T> {
+public record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
+        int windowSize,
+        boolean includePartialValues,
+        Function<T, @Nullable BigDecimal> mappingFunction,
+        @Nullable BigDecimal nullReplacement,
+        MathContext mathContext
+) implements BigDecimalGatherer<T> {
 
-    private final int windowSize;
-    private boolean includePartialValues = false;
-
-    BigDecimalMovingSumGatherer(
-            final int windowSize,
-            final Function<T, @Nullable BigDecimal> mappingFunction
-    ) {
-        super(mappingFunction);
+    public BigDecimalMovingSumGatherer {
         require(windowSize > 1, "Window size must be greater than 1");
-        this.windowSize = windowSize;
     }
 
     @Override
@@ -52,9 +49,13 @@ public final class BigDecimalMovingSumGatherer<T extends @Nullable Object>
     /// For example, if the trailing sum is over 10 values, but the stream has only emitted two
     /// values, the gatherer should calculate the two values and emit the answer. The default is to not
     /// emit anything until the full size of the window has been seen.
-    public BigDecimalMovingSumGatherer<T> includePartialValues() {
-        includePartialValues = true;
-        return this;
+    public BigDecimalMovingSumGatherer<T> withIncludedPartialValues() {
+        return new BigDecimalMovingSumGatherer<>(windowSize, true, mappingFunction, nullReplacement, mathContext);
+    }
+
+    @Override
+    public BigDecimalGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext) {
+        return new BigDecimalMovingSumGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
     static class State implements BigDecimalGatherer.State {
