@@ -32,7 +32,7 @@ public record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         Function<T, @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
-) implements BigDecimalGatherer<T> {
+) implements BigDecimalMovingGatherer<T> {
 
     public BigDecimalMovingProductGatherer {
         require(windowSize > 1, "Window size must be greater than 1");
@@ -43,23 +43,17 @@ public record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         return () -> new BigDecimalMovingProductGatherer.State(windowSize, includePartialValues);
     }
 
-    /// When creating a moving product and the full size of the window has not yet been reached, the
-    /// gatherer should emit the product for what it has.
-    ///
-    /// For example, if the trailing product is over 10 values, but the stream has only emitted two
-    /// values, the gatherer should calculate the two values and emit the answer. The default is to not
-    /// emit anything until the full size of the window has been seen.
-    public BigDecimalMovingProductGatherer<T> withIncludedPartialValues() {
-        return new BigDecimalMovingProductGatherer<>(windowSize, true, mappingFunction, nullReplacement, mathContext);
-    }
-
     /// When encountering a `null` value in a stream, treat it as `BigDecimal.ONE` instead.
     public BigDecimalGatherer<T> treatNullAsOne() {
         return treatNullAs(BigDecimal.ONE);
     }
 
     @Override
-    public BigDecimalGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext) {
+    public BigDecimalMovingGatherer<T> copy(
+            final @Nullable BigDecimal replacement,
+            final MathContext mathContext,
+            final boolean includePartialValues
+    ) {
         return new BigDecimalMovingProductGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 

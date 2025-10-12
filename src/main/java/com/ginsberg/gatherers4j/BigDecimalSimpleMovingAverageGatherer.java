@@ -32,7 +32,7 @@ public record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         Function<T, @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
-) implements BigDecimalGatherer<T> {
+) implements BigDecimalMovingGatherer<T> {
 
     public BigDecimalSimpleMovingAverageGatherer {
         require(!(windowSize <= 1), "Window size must be greater than 1");
@@ -43,18 +43,8 @@ public record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         return () -> new State(windowSize, includePartialValues);
     }
 
-    /// When creating a moving average and the full size of the window has not yet been reached, the
-    /// gatherer should emit averages for what it has.
-    ///
-    /// For example, if the trailing average is over 10 values, but the stream has only emitted two
-    /// values, the gatherer should calculate the two values and emit the answer. The default is to not
-    /// emit anything until the full size of the window has been seen.
-    public BigDecimalSimpleMovingAverageGatherer<T> withIncludedPartialValues() {
-        return new BigDecimalSimpleMovingAverageGatherer<>(windowSize, true, mappingFunction, nullReplacement, mathContext);
-    }
-
     @Override
-    public BigDecimalGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext) {
+    public BigDecimalMovingGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext, final boolean includePartialValues) {
         return new BigDecimalSimpleMovingAverageGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
