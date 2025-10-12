@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-public record BigDecimalStandardDeviationGatherer<T extends @Nullable Object>(
+record BigDecimalStandardDeviationGatherer<T extends @Nullable Object>(
         Mode mode,
         Function<T, @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
@@ -42,7 +42,7 @@ public record BigDecimalStandardDeviationGatherer<T extends @Nullable Object>(
         Sample
     }
 
-    public BigDecimalStandardDeviationGatherer {
+    BigDecimalStandardDeviationGatherer {
         mustNotBeNull(mappingFunction, "Mapping function must not be null");
         mustNotBeNull(mode, "Mode must not be null");
     }
@@ -62,9 +62,9 @@ public record BigDecimalStandardDeviationGatherer<T extends @Nullable Object>(
         }
 
         @Override
-        public void update(final BigDecimal element, final MathContext mathContext) {
+        public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
             final var previousAverage = average;
-            super.update(element, mathContext);
+            super.calculate(element, mathContext);
             dSquared = dSquared.add( element.subtract(average).multiply( element.subtract(previousAverage)));
             if (mode == Mode.Sample) {
                 if (count > 1) {
@@ -77,10 +77,6 @@ public record BigDecimalStandardDeviationGatherer<T extends @Nullable Object>(
                         .divide(BigDecimal.valueOf(count), mathContext)
                         .sqrt(mathContext);
             }
-        }
-
-        @Override
-        public BigDecimal calculate() {
             return stdDev;
         }
     }

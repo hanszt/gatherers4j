@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.require;
 
-public record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
+record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         int windowSize,
         boolean includePartialValues,
         Function<T, @Nullable BigDecimal> mappingFunction,
@@ -34,18 +34,13 @@ public record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         MathContext mathContext
 ) implements BigDecimalMovingGatherer<T> {
 
-    public BigDecimalMovingProductGatherer {
+    BigDecimalMovingProductGatherer {
         require(windowSize > 1, "Window size must be greater than 1");
     }
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
         return () -> new BigDecimalMovingProductGatherer.State(windowSize, includePartialValues);
-    }
-
-    /// When encountering a `null` value in a stream, treat it as `BigDecimal.ONE` instead.
-    public BigDecimalGatherer<T> treatNullAsOne() {
-        return treatNullAs(BigDecimal.ONE);
     }
 
     @Override
@@ -70,19 +65,15 @@ public record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         }
 
         @Override
-        public boolean canCalculate() {
+        public boolean shouldPush() {
             return includePartialValues || index >= series.length;
         }
 
         @Override
-        public void update(final BigDecimal element, final MathContext mathContext) {
+        public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
             product = product.divide(series[index % series.length], mathContext).multiply(element, mathContext);
             series[index % series.length] = element;
             index++;
-        }
-
-        @Override
-        public BigDecimal calculate() {
             return product;
         }
     }

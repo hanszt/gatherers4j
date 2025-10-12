@@ -38,9 +38,9 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
         return Integrator.ofGreedy((state, element, downstream) -> {
             final var mappedElement = getMappedElement(element);
             if (mappedElement != null) {
-                state.update(mappedElement, mathContext());
-                if (state.canCalculate()) {
-                    return downstream.push(state.calculate());
+                final var next = state.calculate(mappedElement, mathContext());
+                if (state.shouldPush()) {
+                    return downstream.push(next);
                 }
             }
             return !downstream.isRejecting();
@@ -60,6 +60,11 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
     /// @param replacement The value to replace `null` with
     default BigDecimalGatherer<T> treatNullAs(@Nullable final BigDecimal replacement) {
         return copy(replacement, mathContext());
+    }
+
+    /// When encountering a `null` value in a stream, treat it as `BigDecimal.ONE` instead.
+    default BigDecimalGatherer<T> treatNullAsOne() {
+        return treatNullAs(BigDecimal.ONE);
     }
 
     /// Replace the `MathContext` used for all mathematical operations in this class.
@@ -83,12 +88,10 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
     }
 
     interface State {
-        void update(final BigDecimal element, final MathContext mathContext);
+        BigDecimal calculate(final BigDecimal element, final MathContext mathContext);
 
-        default boolean canCalculate() {
+        default boolean shouldPush() {
             return true;
         }
-
-        BigDecimal calculate();
     }
 }

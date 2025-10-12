@@ -389,7 +389,8 @@ public final class Gatherers4j {
                     downstream.push(item);
                     previous = item;
                     first = false;
-                } else if (order.allows(comparator.compare(item, previous))) {
+                } else //noinspection DataFlowIssue
+                    if (order.allows(comparator.compare(item, previous))) {
                     downstream.push(item);
                     previous = item;
                 }
@@ -593,8 +594,8 @@ public final class Gatherers4j {
     /// back `windowSize` number of elements.
     ///
     /// @param windowSize The trailing number of elements to multiply, must be greater than 1.
-    /// @return A non-null `BigDecimalMovingProductGatherer`
-    public static BigDecimalMovingProductGatherer<@Nullable BigDecimal> movingProduct(final int windowSize) {
+    /// @return A non-null `BigDecimalMovingGatherer`
+    public static BigDecimalMovingGatherer<@Nullable BigDecimal> movingProduct(final int windowSize) {
         return movingProductBy(windowSize, Function.identity());
     }
 
@@ -604,20 +605,26 @@ public final class Gatherers4j {
     /// @param windowSize      The trailing number of elements to multiply, must be greater than 1.
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the moving product calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
-    /// @return A non-null `BigDecimalMovingProductGatherer`
-    public static <T extends @Nullable Object> BigDecimalMovingProductGatherer<T> movingProductBy(
+    /// @return A non-null `BigDecimalMovingGatherer`
+    public static <T extends @Nullable Object> BigDecimalMovingGatherer<T> movingProductBy(
             final int windowSize,
             final Function<T, BigDecimal> mappingFunction
     ) {
-        return new BigDecimalMovingProductGatherer<>(windowSize, false, mappingFunction, null, MathContext.DECIMAL64);
+        return new BigDecimalMovingProductGatherer<>(
+                windowSize,
+                false,
+                mappingFunction,
+                null,
+                MathContext.DECIMAL64
+        );
     }
 
     /// Create a Stream that represents the moving sum of a `Stream<BigDecimal>` looking
     /// back `windowSize` number of elements.
     ///
     /// @param windowSize The trailing number of elements to add, must be greater than 1.
-    /// @return A non-null `BigDecimalMovingSumGatherer`
-    public static BigDecimalMovingSumGatherer<@Nullable BigDecimal> movingSum(final int windowSize) {
+    /// @return A non-null `BigDecimalMovingGatherer`
+    public static BigDecimalMovingGatherer<@Nullable BigDecimal> movingSum(final int windowSize) {
         return movingSumBy(windowSize, Function.identity());
     }
 
@@ -627,8 +634,8 @@ public final class Gatherers4j {
     /// @param windowSize      The trailing number of elements to multiply, must be greater than 1.
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the moving sum calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
-    /// @return A non-null `BigDecimalMovingSumGatherer`
-    public static <T extends @Nullable Object> BigDecimalMovingSumGatherer<T> movingSumBy(
+    /// @return A non-null `BigDecimalMovingGatherer`
+    public static <T extends @Nullable Object> BigDecimalMovingGatherer<T> movingSumBy(
             final int windowSize,
             final Function<T, BigDecimal> mappingFunction
     ) {
@@ -799,8 +806,8 @@ public final class Gatherers4j {
     /// Create a `Stream<BigDecimal>` that represents the running population standard
     /// deviation of a `Stream<BigDecimal>`.
     ///
-    /// @return A non-null `BigDecimalStandardDeviationGatherer`
-    public static BigDecimalStandardDeviationGatherer<@Nullable BigDecimal> runningPopulationStandardDeviation() {
+    /// @return A non-null `BigDecimalGatherer`
+    public static BigDecimalGatherer<@Nullable BigDecimal> runningPopulationStandardDeviation() {
         return runningPopulationStandardDeviationBy(Function.identity());
     }
 
@@ -809,8 +816,8 @@ public final class Gatherers4j {
     ///
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the standard deviation calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
-    /// @return A non-null `BigDecimalStandardDeviationGatherer`
-    public static <T extends @Nullable Object> BigDecimalStandardDeviationGatherer<T> runningPopulationStandardDeviationBy(
+    /// @return A non-null `BigDecimalGatherer`
+    public static <T extends @Nullable Object> BigDecimalGatherer<T> runningPopulationStandardDeviationBy(
             final Function<T, BigDecimal> mappingFunction
     ) {
         return new BigDecimalStandardDeviationGatherer<>(
@@ -823,8 +830,8 @@ public final class Gatherers4j {
 
     /// Create a `Stream<BigDecimal>` that represents the running product of a `Stream<BigDecimal>`.
     ///
-    /// @return A non-null `BigDecimalProductGatherer`
-    public static BigDecimalProductGatherer<@Nullable BigDecimal> runningProduct() {
+    /// @return A non-null `BigDecimalMovingGatherer`
+    public static BigDecimalGatherer<@Nullable BigDecimal> runningProduct() {
         return runningProductBy(Function.identity());
     }
 
@@ -833,8 +840,8 @@ public final class Gatherers4j {
     ///
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the product calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
-    /// @return A non-null `BigDecimalProductGatherer`
-    public static <T extends @Nullable Object> BigDecimalProductGatherer<T> runningProductBy(
+    /// @return A non-null `BigDecimalMovingGatherer`
+    public static <T extends @Nullable Object> BigDecimalGatherer<T> runningProductBy(
             final Function<T, BigDecimal> mappingFunction
     ) {
         return new BigDecimalProductGatherer<>(mappingFunction, null, MathContext.DECIMAL64);
@@ -842,8 +849,8 @@ public final class Gatherers4j {
 
     /// Create a `Stream<BigDecimal>` that represents the running sample standard deviation of a `Stream<BigDecimal>`.
     ///
-    /// @return A non-null `BigDecimalStandardDeviationGatherer`
-    public static BigDecimalStandardDeviationGatherer<@Nullable BigDecimal> runningSampleStandardDeviation() {
+    /// @return A non-null `BigDecimalGatherer`
+    public static BigDecimalGatherer<@Nullable BigDecimal> runningSampleStandardDeviation() {
         return runningSampleStandardDeviationBy(Function.identity());
     }
 
@@ -852,8 +859,8 @@ public final class Gatherers4j {
     ///
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the standard deviation calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
-    /// @return A non-null `BigDecimalStandardDeviationGatherer`
-    public static <T extends @Nullable Object> BigDecimalStandardDeviationGatherer<T> runningSampleStandardDeviationBy(
+    /// @return A non-null `BigDecimalGatherer`
+    public static <T extends @Nullable Object> BigDecimalGatherer<T> runningSampleStandardDeviationBy(
             final Function<T, BigDecimal> mappingFunction
     ) {
         return new BigDecimalStandardDeviationGatherer<>(
@@ -866,8 +873,8 @@ public final class Gatherers4j {
 
     /// Create a `Stream<BigDecimal>` that represents the running sum of a `Stream<BigDecimal>`.
     ///
-    /// @return A non-null `BigDecimalSumGatherer`
-    public static BigDecimalSumGatherer<@Nullable BigDecimal> runningSum() {
+    /// @return A non-null `BigDecimalGatherer`
+    public static BigDecimalGatherer<@Nullable BigDecimal> runningSum() {
         return runningSumBy(Function.identity());
     }
 
@@ -876,8 +883,8 @@ public final class Gatherers4j {
     ///
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the running sum calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
-    /// @return A non-null `BigDecimalSumGatherer`
-    public static <T extends @Nullable Object> BigDecimalSumGatherer<T> runningSumBy(
+    /// @return A non-null `BigDecimalGatherer`
+    public static <T extends @Nullable Object> BigDecimalGatherer<T> runningSumBy(
             final Function<T, BigDecimal> mappingFunction
     ) {
         return new BigDecimalSumGatherer<>(mappingFunction, null, MathContext.DECIMAL64);
@@ -1007,7 +1014,7 @@ public final class Gatherers4j {
     ///
     /// @param windowSize The number of elements to average, must be greater than 1.
     /// @return A non-null `BigDecimalSimpleMovingAverageGatherer`
-    public static BigDecimalSimpleMovingAverageGatherer<@Nullable BigDecimal> simpleMovingAverage(final int windowSize) {
+    public static BigDecimalMovingGatherer<@Nullable BigDecimal> simpleMovingAverage(final int windowSize) {
         return simpleMovingAverageBy(windowSize, Function.identity());
     }
 
@@ -1018,7 +1025,7 @@ public final class Gatherers4j {
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the moving average calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
     /// @return A non-null `BigDecimalSimpleMovingAverageGatherer`
-    public static <T extends @Nullable Object> BigDecimalSimpleMovingAverageGatherer<T> simpleMovingAverageBy(
+    public static <T extends @Nullable Object> BigDecimalMovingGatherer<T> simpleMovingAverageBy(
             final int windowSize,
             final Function<T, BigDecimal> mappingFunction
     ) {
@@ -1027,8 +1034,8 @@ public final class Gatherers4j {
 
     /// Create a Stream that is the running average of `Stream<BigDecimal>`
     ///
-    /// @return BigDecimalSimpleAverageGatherer
-    public static BigDecimalSimpleAverageGatherer<@Nullable BigDecimal> simpleRunningAverage() {
+    /// @return BigDecimalGatherer
+    public static BigDecimalGatherer<@Nullable BigDecimal> simpleRunningAverage() {
         return simpleRunningAverageBy(Function.identity());
     }
 
@@ -1037,8 +1044,8 @@ public final class Gatherers4j {
     ///
     /// @param mappingFunction A function to map `<T>` objects to `BigDecimal`, the results of which will be used in the running average calculation
     /// @param <T>             Type of elements in the input stream, to be remapped to `BigDecimal` by the `mappingFunction`
-    /// @return A non-null `BigDecimalSimpleAverageGatherer`
-    public static <T extends @Nullable Object> BigDecimalSimpleAverageGatherer<T> simpleRunningAverageBy(
+    /// @return A non-null `BigDecimalGatherer`
+    public static <T extends @Nullable Object> BigDecimalGatherer<T> simpleRunningAverageBy(
             final Function<T, BigDecimal> mappingFunction
     ) {
         return new BigDecimalSimpleAverageGatherer<>(mappingFunction, null, MathContext.DECIMAL64);

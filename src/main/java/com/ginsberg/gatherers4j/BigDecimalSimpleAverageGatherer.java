@@ -23,7 +23,7 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public record BigDecimalSimpleAverageGatherer<T extends @Nullable Object>(
+record BigDecimalSimpleAverageGatherer<T extends @Nullable Object>(
         Function<T, @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
@@ -44,13 +44,9 @@ public record BigDecimalSimpleAverageGatherer<T extends @Nullable Object>(
         BigDecimal average = BigDecimal.ZERO;
 
         @Override
-        public void update(final BigDecimal element, final MathContext mathContext) {
+        public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
             count++;
             average = average.add(element.subtract(average).divide(BigDecimal.valueOf(count), mathContext));
-        }
-
-        @Override
-        public BigDecimal calculate() {
             return average;
         }
     }

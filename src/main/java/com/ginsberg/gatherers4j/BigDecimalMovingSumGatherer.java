@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.require;
 
-public record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
+record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
         int windowSize,
         boolean includePartialValues,
         Function<T, @Nullable BigDecimal> mappingFunction,
@@ -34,7 +34,7 @@ public record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
         MathContext mathContext
 ) implements BigDecimalMovingGatherer<T> {
 
-    public BigDecimalMovingSumGatherer {
+    BigDecimalMovingSumGatherer {
         require(windowSize > 1, "Window size must be greater than 1");
     }
 
@@ -61,19 +61,15 @@ public record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
         }
 
         @Override
-        public boolean canCalculate() {
+        public boolean shouldPush() {
             return includePartialValues || index >= series.length;
         }
 
         @Override
-        public void update(final BigDecimal element, final MathContext mathContext) {
+        public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
             sum = sum.subtract(series[index % series.length]).add(element, mathContext);
             series[index % series.length] = element;
             index++;
-        }
-
-        @Override
-        public BigDecimal calculate() {
             return sum;
         }
     }

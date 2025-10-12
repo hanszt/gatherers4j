@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.require;
 
-public record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
+record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         int windowSize,
         boolean includePartialValues,
         Function<T, @Nullable BigDecimal> mappingFunction,
@@ -53,7 +53,6 @@ public record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         final BigDecimal[] series;
         BigDecimal sum = BigDecimal.ZERO;
         BigDecimal count = BigDecimal.ZERO;
-        BigDecimal average = BigDecimal.ZERO;
         int index = 0;
 
         private State(final int lookBack, final boolean includePartialValues) {
@@ -63,24 +62,19 @@ public record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         }
 
         @Override
-        public boolean canCalculate() {
+        public boolean shouldPush() {
             return includePartialValues || count.intValue() >= series.length;
         }
 
         @Override
-        public void update(final BigDecimal element, final MathContext mathContext) {
+        public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
             sum = sum.subtract(series[index]).add(element, mathContext);
             series[index % series.length] = element;
             index = (index + 1) % series.length;
             if (count.intValue() < series.length) {
                 count = count.add(BigDecimal.ONE);
             }
-            average = sum.divide(count, mathContext);
-        }
-
-        @Override
-        public BigDecimal calculate() {
-            return average;
+            return sum.divide(count, mathContext);
         }
     }
 }

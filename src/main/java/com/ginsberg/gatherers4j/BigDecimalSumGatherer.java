@@ -23,7 +23,7 @@ import java.math.MathContext;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public record BigDecimalSumGatherer<T extends @Nullable Object>(
+record BigDecimalSumGatherer<T extends @Nullable Object>(
         Function<T, @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
@@ -43,12 +43,8 @@ public record BigDecimalSumGatherer<T extends @Nullable Object>(
         BigDecimal sum = BigDecimal.ZERO;
 
         @Override
-        public void update(final BigDecimal element, final MathContext mathContext) {
+        public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
             sum = sum.add(element, mathContext);
-        }
-
-        @Override
-        public BigDecimal calculate() {
             return sum;
         }
     }

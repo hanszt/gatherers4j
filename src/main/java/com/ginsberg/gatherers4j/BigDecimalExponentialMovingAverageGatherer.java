@@ -58,17 +58,13 @@ public record BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Obj
         }
 
         @Override
-        public void update(final BigDecimal element, final MathContext mathContext) {
+        public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
             if (first) {
                 first = false;
                 ema = element;
             } else {
                 ema = element.multiply(alpha).add(ema.multiply(oneMinusAlpha));
             }
-        }
-
-        @Override
-        public BigDecimal calculate() {
             return ema;
         }
     }
