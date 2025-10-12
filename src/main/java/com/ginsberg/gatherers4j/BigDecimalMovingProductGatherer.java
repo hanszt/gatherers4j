@@ -52,21 +52,12 @@ record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         return new BigDecimalMovingProductGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
-    static class State implements BigDecimalGatherer.State {
-        final boolean includePartialValues;
-        final BigDecimal[] series;
+    static class State extends BigDecimalMovingGatherer.State {
         BigDecimal product = BigDecimal.ONE;
-        int index = 0;
 
         private State(final int lookBack, final boolean includePartialValues) {
-            this.includePartialValues = includePartialValues;
-            this.series = new BigDecimal[lookBack];
+            super(includePartialValues, new BigDecimal[lookBack]);
             Arrays.fill(series, BigDecimal.ONE);
-        }
-
-        @Override
-        public boolean shouldPush() {
-            return includePartialValues || index >= series.length;
         }
 
         @Override

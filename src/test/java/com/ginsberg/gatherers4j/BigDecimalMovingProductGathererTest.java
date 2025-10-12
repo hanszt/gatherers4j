@@ -26,6 +26,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.movingProduct;
+import static com.ginsberg.gatherers4j.Gatherers4j.movingProductBy;
 import static com.ginsberg.gatherers4j.util.TestUtils.BIG_DECIMAL_RECURSIVE_COMPARISON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,7 +41,7 @@ class BigDecimalMovingProductGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.movingProduct(2))
+                .gather(movingProduct(2))
                 .toList();
 
         // Assert
@@ -54,19 +56,18 @@ class BigDecimalMovingProductGathererTest {
     @Test
     @SuppressWarnings("DataFlowIssue")
     void mathContextCannotBeNull() {
-        assertThatThrownBy(() ->
-                Stream.of(BigDecimal.ONE).gather(Gatherers4j.movingProduct(2).withMathContext(null))
-        ).isExactlyInstanceOf(IllegalArgumentException.class);
+        final var gatherer = movingProduct(2);
+        assertThatThrownBy(() -> gatherer.withMathContext(null)).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void movingProduct() {
+    void testMovingProduct() {
         // Arrange
         final var input = Stream.of("1", "2", "3", "4").map(BigDecimal::new);
 
         // Act
         final var output = input
-                .gather(Gatherers4j.movingProduct(2))
+                .gather(movingProduct(2))
                 .toList();
 
         // Assert
@@ -80,7 +81,7 @@ class BigDecimalMovingProductGathererTest {
     }
 
     @Test
-    void movingProductBy() {
+    void testMovingProductBy() {
         // Arrange
         final var input = List.of(
                 new TestValueHolder(1, new BigDecimal("1")),
@@ -92,7 +93,7 @@ class BigDecimalMovingProductGathererTest {
 
         // Act
         final var output = input.stream()
-                .gather(Gatherers4j.movingProductBy(2, TestValueHolder::value))
+                .gather(movingProductBy(2, TestValueHolder::value))
                 .toList();
 
         // Assert
@@ -113,7 +114,7 @@ class BigDecimalMovingProductGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.movingProduct(2).withIncludedPartialValues())
+                .gather(movingProduct(2).withIncludedPartialValues())
                 .toList();
 
         // Assert
@@ -134,7 +135,7 @@ class BigDecimalMovingProductGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.movingProduct(2)
+                .gather(movingProduct(2)
                         .withIncludedPartialValues()
                         .withOriginal()
                 )
@@ -163,7 +164,7 @@ class BigDecimalMovingProductGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.movingProduct(2).treatNullAsOne())
+                .gather(movingProduct(2).treatNullAsOne())
                 .toList();
 
         // Assert
@@ -179,8 +180,6 @@ class BigDecimalMovingProductGathererTest {
     @ParameterizedTest(name = "windowSize of {0}")
     @ValueSource(ints = {-1, 0, 1})
     void windowSizeMustBeGreaterThanOne(final int windowSize) {
-        assertThatThrownBy(() ->
-                Stream.of(BigDecimal.ONE).gather(Gatherers4j.movingProduct(windowSize))
-        ).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> movingProduct(windowSize)).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

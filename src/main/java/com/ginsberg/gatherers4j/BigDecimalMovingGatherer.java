@@ -29,4 +29,19 @@ public interface BigDecimalMovingGatherer<T> extends BigDecimalGatherer<T> {
     default BigDecimalMovingGatherer<T> copy(final @Nullable BigDecimal replacement, final MathContext mathContext) {
         return copy(replacement, mathContext, includePartialValues());
     }
+
+    abstract class State implements BigDecimalGatherer.State {
+        final boolean includePartialValues;
+        final BigDecimal[] series;
+        int index = 0;
+
+        protected State(final boolean includePartialValues, final BigDecimal[] series) {
+            this.includePartialValues = includePartialValues;
+            this.series = series;
+        }
+
+        public boolean shouldPush() {
+            return includePartialValues || index >= series.length;
+        }
+    }
 }

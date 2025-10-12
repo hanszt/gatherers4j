@@ -48,16 +48,12 @@ record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         return new BigDecimalSimpleMovingAverageGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
-    static class State implements BigDecimalGatherer.State {
-        final boolean includePartialValues;
-        final BigDecimal[] series;
+    static class State extends BigDecimalMovingGatherer.State {
         BigDecimal sum = BigDecimal.ZERO;
         BigDecimal count = BigDecimal.ZERO;
-        int index = 0;
 
-        private State(final int lookBack, final boolean includePartialValues) {
-            this.includePartialValues = includePartialValues;
-            this.series = new BigDecimal[lookBack];
+        State(final int lookBack, final boolean includePartialValues) {
+            super(includePartialValues, new BigDecimal[lookBack]);
             Arrays.fill(series, BigDecimal.ZERO);
         }
 

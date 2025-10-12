@@ -48,21 +48,12 @@ record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
         return new BigDecimalMovingSumGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
-    static class State implements BigDecimalGatherer.State {
-        final boolean includePartialValues;
-        final BigDecimal[] series;
+    static class State extends BigDecimalMovingGatherer.State {
         BigDecimal sum = BigDecimal.ZERO;
-        int index = 0;
 
         private State(final int lookBack, final boolean includePartialValues) {
-            this.includePartialValues = includePartialValues;
-            this.series = new BigDecimal[lookBack];
+            super(includePartialValues, new BigDecimal[lookBack]);
             Arrays.fill(series, BigDecimal.ZERO);
-        }
-
-        @Override
-        public boolean shouldPush() {
-            return includePartialValues || index >= series.length;
         }
 
         @Override
