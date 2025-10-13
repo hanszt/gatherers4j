@@ -22,15 +22,13 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
 public final class SizeGatherer<T extends @Nullable Object>
-        implements Gatherer<T, SizeGatherer.State<T>, T> {
+        extends Gatherer4J.StatefulWithFinisher<T, SizeGatherer.State<T>, T> {
 
     private final long targetSize;
     private final Size operation;
@@ -43,6 +41,7 @@ public final class SizeGatherer<T extends @Nullable Object>
     }
 
     SizeGatherer(final Size operation, final long targetSize, final Supplier<Stream<T>> orElse) {
+        super(IntegrationMode.DEFAULT, State::new);
         require(targetSize >= 0, "Target size cannot be negative");
         this.operation = operation;
         this.targetSize = targetSize;
@@ -74,31 +73,22 @@ public final class SizeGatherer<T extends @Nullable Object>
     }
 
     @Override
-    public BiConsumer<State<T>, Downstream<? super T>> finisher() {
-        return (state, downstream) -> {
-            if (!state.failed && operation.accept(state.elements.size(), targetSize)) {
-                GathererUtils.pushWhileNotRejecting(state.elements, downstream);
-            } else {
-                pushWhileNotRejecting(orElse.get(), downstream);
-            }
-        };
+    public boolean integrate(final State<T> state, final T item, final Downstream<? super T> downstream) {
+        if (operation.tryAccept(state.elements.size() + 1, targetSize)) {
+            state.elements.add(item);
+        } else {
+            state.failed = true;
+        }
+        return !state.failed || !downstream.isRejecting();
     }
 
     @Override
-    public Supplier<State<T>> initializer() {
-        return State::new;
-    }
-
-    @Override
-    public Integrator<State<T>, T, T> integrator() {
-        return (state, element, downstream) -> {
-            if (operation.tryAccept(state.elements.size() + 1, targetSize)) {
-                state.elements.add(element);
-            } else {
-                state.failed = true;
-            }
-            return !state.failed || !downstream.isRejecting();
-        };
+    public void finish(final State<T> state, final Downstream<? super T> downstream) {
+        if (!state.failed && operation.accept(state.elements.size(), targetSize)) {
+            GathererUtils.pushWhileNotRejecting(state.elements, downstream);
+        } else {
+            pushWhileNotRejecting(orElse.get(), downstream);
+        }
     }
 
     public static class State<T> {

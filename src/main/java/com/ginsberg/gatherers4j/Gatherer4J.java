@@ -16,7 +16,7 @@ public abstract class Gatherer4J<T, A, R> implements Gatherer<T, A, R> {
 
     @Override
     public Integrator<A, T, R> integrator() {
-        return switch(integrationMode) {
+        return switch (integrationMode) {
             case DEFAULT -> this::integrate;
             case GREEDY -> Integrator.<A, T, R>ofGreedy(this::integrate);
         };
@@ -36,27 +36,32 @@ public abstract class Gatherer4J<T, A, R> implements Gatherer<T, A, R> {
         }
     }
 
-    public abstract static class StatefulWithFinisher<T, A, R> extends WithFinisher<T, A, R> {
+    public abstract static class StatefulWithFinisher<T, A, R> extends Stateful<T, A, R> {
 
-        public StatefulWithFinisher(final IntegrationMode integrationMode) {
-            super(integrationMode);
+        public StatefulWithFinisher(final IntegrationMode integrationMode, final Supplier<A> initializer) {
+            super(integrationMode, initializer);
         }
 
-        public abstract A initialize();
+        public abstract void finish(A state, Downstream<? super R> downstream);
 
         @Override
-        public Supplier<A> initializer() {
-            return this::initialize;
+        public BiConsumer<A, Downstream<? super R>> finisher() {
+            return this::finish;
         }
     }
 
     public abstract static class Stateful<T, A, R> extends Gatherer4J<T, A, R> {
 
-        public Stateful(final IntegrationMode integrationMode) {
+        private final Supplier<A> initializer;
+
+        public Stateful(final IntegrationMode integrationMode, final Supplier<A> initializer) {
             super(integrationMode);
+            this.initializer = initializer;
         }
 
-        public abstract A initialize();
+        public A initialize() {
+            return this.initializer.get();
+        }
 
         @Override
         public Supplier<A> initializer() {
