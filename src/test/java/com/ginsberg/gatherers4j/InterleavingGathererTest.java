@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.interleaveWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -33,10 +34,9 @@ class InterleavingGathererTest {
 
         @Test
         void argumentIterableMustNotBeNull() {
-            assertThatThrownBy(() -> Stream.of("A")
-                    .gather(Gatherers4j.interleaveWith((Iterable<String>) null))
-                    .toList()
-            ).isInstanceOf(IllegalArgumentException.class);
+            //noinspection DataFlowIssue
+            assertThatThrownBy(() -> interleaveWith((Iterable<String>) null))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -47,7 +47,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right))
+                    .gather(interleaveWith(right))
                     .toList();
 
             // Assert
@@ -62,10 +62,9 @@ class InterleavingGathererTest {
 
         @Test
         void argumentIteratorMustNotBeNull() {
-            assertThatThrownBy(() -> Stream.of("A")
-                    .gather(Gatherers4j.interleaveWith((Iterator<String>) null))
-                    .toList()
-            ).isInstanceOf(IllegalArgumentException.class);
+            //noinspection DataFlowIssue
+            assertThatThrownBy(() -> interleaveWith((Iterator<String>) null))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -76,7 +75,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right))
+                    .gather(interleaveWith(right))
                     .toList();
 
             // Assert
@@ -90,10 +89,9 @@ class InterleavingGathererTest {
     class FromStream {
         @Test
         void argumentStreamMustNotBeNull() {
-            assertThatThrownBy(() -> Stream.of("A")
-                    .gather(Gatherers4j.interleaveWith((Stream<String>) null))
-                    .toList()
-            ).isInstanceOf(IllegalArgumentException.class);
+            //noinspection DataFlowIssue
+            assertThatThrownBy(() -> interleaveWith((Stream<String>) null))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -103,7 +101,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right).appendArgumentIfLonger())
+                    .gather(interleaveWith(right).appendArgumentIfLonger())
                     .toList();
 
             // Assert
@@ -118,7 +116,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right).appendLonger())
+                    .gather(interleaveWith(right).appendLonger())
                     .toList();
 
             // Assert
@@ -133,7 +131,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right).appendSourceIfLonger())
+                    .gather(interleaveWith(right).appendSourceIfLonger())
                     .toList();
 
             // Assert
@@ -149,7 +147,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right))
+                    .gather(interleaveWith(right))
                     .toList();
 
             // Assert
@@ -165,7 +163,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right))
+                    .gather(interleaveWith(right))
                     .toList();
 
             // Assert
@@ -181,7 +179,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith(right))
+                    .gather(interleaveWith(right))
                     .toList();
 
             // Assert
@@ -195,10 +193,9 @@ class InterleavingGathererTest {
 
         @Test
         void argumentMustNotBeNull() {
-            assertThatThrownBy(() -> Stream.of("A")
-                    .gather(Gatherers4j.interleaveWith((String[]) null))
-                    .toList()
-            ).isInstanceOf(IllegalArgumentException.class);
+            //noinspection DataFlowIssue
+            assertThatThrownBy(() -> interleaveWith((String[]) null))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -208,7 +205,7 @@ class InterleavingGathererTest {
 
             // Act
             final var output = left
-                    .gather(Gatherers4j.interleaveWith("D", "E", "F"))
+                    .gather(interleaveWith("D", "E", "F"))
                     .toList();
 
             // Assert
