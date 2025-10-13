@@ -1,56 +1,70 @@
 package com.ginsberg.gatherers4j;
 
-import org.jspecify.annotations.Nullable;
-
 import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-@FunctionalInterface
-public interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
+public abstract class Gatherer4J<T, A, R> implements Gatherer<T, A, R> {
 
-    @Nullable
-    default A supply() {
-        return null;
+    private final IntegrationMode integrationMode;
+
+    protected Gatherer4J(final IntegrationMode integrationMode) {
+        this.integrationMode = integrationMode;
     }
 
-    boolean integrate(A state, T item, Downstream<? super R> downstream);
-
-    default A combine(A a1, A a2) {
-        throw new UnsupportedOperationException("This combiner cannot be used!");
-    }
-
-    default void finish(A state, Downstream<? super R> downstream) {
-
-    }
+    public abstract boolean integrate(A state, T item, Downstream<? super R> downstream);
 
     @Override
-    default Supplier<@Nullable A> initializer() {
-        return this::supply;
+    public Integrator<A, T, R> integrator() {
+        return switch(integrationMode) {
+            case DEFAULT -> this::integrate;
+            case GREEDY -> Integrator.<A, T, R>ofGreedy(this::integrate);
+        };
     }
 
-    @Override
-    default Integrator<A, T, R> integrator() {
-        return this::integrate;
-    }
+    public abstract static class WithFinisher<T, A, R> extends Gatherer4J<T, A, R> {
 
-    @Override
-    default BinaryOperator<A> combiner() {
-        return this::combine;
-    }
+        public WithFinisher(final IntegrationMode integrationMode) {
+            super(integrationMode);
+        }
 
-    @Override
-    default BiConsumer<A, Downstream<? super R>> finisher() {
-        return this::finish;
-    }
-
-    @FunctionalInterface
-    interface OfGreedy<T, A, R> extends Gatherer4J<T, A, R> {
+        public abstract void finish(A state, Downstream<? super R> downstream);
 
         @Override
-        default Integrator<A, T, R> integrator() {
-            return Integrator.<A, T, R>ofGreedy(this::integrate);
+        public BiConsumer<A, Downstream<? super R>> finisher() {
+            return this::finish;
         }
+    }
+
+    public abstract static class StatefulWithFinisher<T, A, R> extends WithFinisher<T, A, R> {
+
+        public StatefulWithFinisher(final IntegrationMode integrationMode) {
+            super(integrationMode);
+        }
+
+        public abstract A initialize();
+
+        @Override
+        public Supplier<A> initializer() {
+            return this::initialize;
+        }
+    }
+
+    public abstract static class Stateful<T, A, R> extends Gatherer4J<T, A, R> {
+
+        public Stateful(final IntegrationMode integrationMode) {
+            super(integrationMode);
+        }
+
+        public abstract A initialize();
+
+        @Override
+        public Supplier<A> initializer() {
+            return this::initialize;
+        }
+    }
+
+    public enum IntegrationMode {
+        GREEDY, DEFAULT
     }
 }
