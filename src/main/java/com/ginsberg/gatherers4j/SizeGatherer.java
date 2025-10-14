@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
 public final class SizeGatherer<T extends @Nullable Object>
-        extends Gatherer4J.StatefulWithFinisher<T, SizeGatherer.State<T>, T> {
+        implements Gatherer4J.StatefulWithFinisher<T, SizeGatherer.State<T>, T> {
 
     private final long targetSize;
     private final Size operation;
@@ -41,7 +41,6 @@ public final class SizeGatherer<T extends @Nullable Object>
     }
 
     SizeGatherer(final Size operation, final long targetSize, final Supplier<Stream<T>> orElse) {
-        super(IntegrationMode.DEFAULT, State::new);
         require(targetSize >= 0, "Target size cannot be negative");
         this.operation = operation;
         this.targetSize = targetSize;
@@ -91,8 +90,13 @@ public final class SizeGatherer<T extends @Nullable Object>
         }
     }
 
+    @Override
+    public State<T> initialize() {
+        return new State<>();
+    }
+
     public static class State<T> {
         boolean failed = false;
-        final List<T> elements = new ArrayList<>();
+        final List<@Nullable T> elements = new ArrayList<>();
     }
 }
