@@ -1,11 +1,40 @@
 package com.ginsberg.gatherers4j;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
+/// A Gatherer interface extension that provides a fluent api for building a gatherer.
+/// @param <T> The type of the input elements
+/// @param <A> The type of the State
+/// @param <R> The type of the elements in the downstream
 public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
+
+    static <T, R> Gatherer4J.Stateless<T, R> ofSequential(
+            BiPredicate<T, Downstream<? super R>> integrator
+    ) {
+        return integrator::test;
+    }
+
+    static <T, R> Gatherer4J.Stateless<T, R> of(
+            BiPredicate<T, Downstream<? super R>> integrator
+    ) {
+        return new Gatherer4J.Stateless<>() {
+
+            @Override
+            public boolean integrate(final T item, final Downstream<? super R> downstream) {
+                return integrator.test(item, downstream);
+            }
+
+            @Override
+            public BinaryOperator<Void> combiner() {
+                //noinspection DataFlowIssue
+                return (_, _) -> null;
+            }
+        };
+    }
 
     IntegrationMode integrationMode();
 
@@ -19,6 +48,7 @@ public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
         };
     }
 
+    @FunctionalInterface
     non-sealed interface Stateless<T, R> extends Gatherer4J<T, Void, R> {
 
         boolean integrate(T item, Downstream<? super R> downstream);

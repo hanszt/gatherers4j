@@ -54,7 +54,7 @@ public final class Gatherers4j {
     ) {
         mustNotBeNull(source, "source must not be null");
         mustNotBeNull(crossFunction, "crossFunction must not be null");
-        return Gatherer.of((_, element, downstream) -> {
+        return Gatherer4J.ofSequential((element, downstream) -> {
             for (final var cross : source) {
                 downstream.push(crossFunction.apply(element, cross));
             }
@@ -352,7 +352,7 @@ public final class Gatherers4j {
     ) {
         mustNotBeNull(validTypes, "validTypes must not be null");
         require(validTypes.length != 0, "Must provide at least one type");
-        return Gatherer.of((_, element, downstream) -> {
+        return Gatherer4J.of((element, downstream) -> {
             for (final var type : validTypes) {
                 if (type.isInstance(element)) {
                     return downstream.push(type.cast(element));
@@ -391,9 +391,9 @@ public final class Gatherers4j {
                     first = false;
                 } else //noinspection DataFlowIssue
                     if (order.allows(comparator.compare(item, previous))) {
-                    downstream.push(item);
-                    previous = item;
-                }
+                        downstream.push(item);
+                        previous = item;
+                    }
                 return !downstream.isRejecting();
             }
         }
@@ -946,13 +946,12 @@ public final class Gatherers4j {
             final RandomGenerator randomGenerator
     ) {
         require(percentage > 0.0 && percentage <= 1.0, "percentage must be between 0.0 and 1.0");
-        return Gatherer.ofSequential(
-                Integrator.ofGreedy((_, element, downstream) -> {
+        return Gatherer4J.of((element, downstream) -> {
                     if (randomGenerator.nextDouble() < percentage) {
                         return downstream.push(element);
                     }
                     return !downstream.isRejecting();
-                })
+                }
         );
     }
 
