@@ -5,11 +5,9 @@ import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 
-public interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
+public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
 
-    default IntegrationMode integrationMode() {
-        return IntegrationMode.DEFAULT;
-    }
+    IntegrationMode integrationMode();
 
     boolean integrate(A state, T item, Downstream<? super R> downstream);
 
@@ -21,7 +19,7 @@ public interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
         };
     }
 
-    interface Stateless<T, R> extends Gatherer4J<T, Void, R> {
+    non-sealed interface Stateless<T, R> extends Gatherer4J<T, Void, R> {
 
         boolean integrate(T item, Downstream<? super R> downstream);
 
@@ -35,13 +33,18 @@ public interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
         }
     }
 
-    interface Stateful<T, A, R> extends Gatherer4J<T, A, R> {
+    non-sealed interface Stateful<T, A, R> extends Gatherer4J<T, A, R> {
 
         A initialize();
 
         @Override
         default Supplier<A> initializer() {
             return this::initialize;
+        }
+
+        @Override
+        default IntegrationMode integrationMode() {
+            return IntegrationMode.DEFAULT;
         }
 
         interface WithFinisher<T, A, R> extends Stateful<T, A, R> {
