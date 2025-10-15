@@ -21,8 +21,6 @@ import org.jspecify.annotations.Nullable;
 import java.time.Duration;
 import java.time.InstantSource;
 import java.util.concurrent.locks.LockSupport;
-import java.util.function.Supplier;
-import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
@@ -31,7 +29,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         int allowedPerPeriod,
         Duration duration,
         InstantSource instantSource
-) implements Gatherer<T, ThrottlingGatherer<T>.State, T> {
+) implements Gatherer4j2.Greedy.Stateful<T, ThrottlingGatherer<T>.State, T> {
 
     enum LimitRule {
         Drop,
@@ -51,16 +49,11 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
     }
 
     @Override
-    public Supplier<State> initializer() {
-        return State::new;
+    public State initialize() {
+        return new State();
     }
 
-    @Override
-    public Integrator<State, T, T> integrator() {
-        return Integrator.<State, T, T>ofGreedy(State::integrate);
-    }
-
-    public final class State {
+    public final class State implements Gatherer4j2.Stateful.State<T, T> {
         final long periodDurationMillis = duration.toMillis();
         long thisPeriodEnd;
         int remainingPermits;
@@ -69,7 +62,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
             resetPeriod();
         }
 
-        boolean integrate(T element, Downstream<? super T> downstream) {
+        public boolean integrate(T element, Downstream<? super T> downstream) {
             if (!downstream.isRejecting() && attempt()) {
                 downstream.push(element);
             }
