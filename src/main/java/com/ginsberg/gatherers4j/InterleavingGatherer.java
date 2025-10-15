@@ -21,18 +21,18 @@ import org.jspecify.annotations.Nullable;
 import java.util.Spliterator;
 
 public final class InterleavingGatherer<T extends @Nullable Object>
-        implements Gatherer4J.WithFinisher<T, Void, T> {
+        implements Gatherer4J.Stateful.WithFinisher<T, Spliterator<T>, T> {
 
-    private final Spliterator<T> otherSpliterator;
+    private final Iterable<T> other;
     private final boolean appendArgumentIfLonger;
     private final boolean appendSourceIfLonger;
 
     InterleavingGatherer(
-            final Spliterator<T> other,
+            final Iterable<T> other,
             final boolean appendArgumentIfLonger,
             final boolean appendSourceIfLonger
     ) {
-        otherSpliterator = other;
+        this.other = other;
         this.appendArgumentIfLonger = appendArgumentIfLonger;
         this.appendSourceIfLonger = appendSourceIfLonger;
     }
@@ -40,23 +40,28 @@ public final class InterleavingGatherer<T extends @Nullable Object>
     /// If the source stream and the argument stream/iterator/iterable/varargs provide a different
     /// number of elements, append all the remaining elements from either one to the output stream.
     public InterleavingGatherer<T> appendLonger() {
-        return new InterleavingGatherer<>(otherSpliterator, true, true);
+        return new InterleavingGatherer<>(other, true, true);
     }
 
     /// If the argument stream/iterator/iterable/varargs provides more elements than the source stream,
     /// append all remaining elements from the argument stream/iterator/iterable/varargs to the output stream.
     public InterleavingGatherer<T> appendArgumentIfLonger() {
-        return new InterleavingGatherer<>(otherSpliterator, true, false);
+        return new InterleavingGatherer<>(other, true, false);
     }
 
     /// If the source stream provides more elements than the argument stream/iterator/iterable/varargs,
     /// append all the remaining elements to the output stream.
     public InterleavingGatherer<T> appendSourceIfLonger() {
-        return new InterleavingGatherer<>(otherSpliterator, false, true);
+        return new InterleavingGatherer<>(other, false, true);
     }
 
     @Override
-    public boolean integrate(final Void state, final T item, final Downstream<? super T> downstream) {
+    public Spliterator<T> initialize() {
+        return other.spliterator();
+    }
+
+    @Override
+    public boolean integrate(final Spliterator<T> otherSpliterator, final T item, final Downstream<? super T> downstream) {
         downstream.push(item);
         if (appendSourceIfLonger) {
             otherSpliterator.tryAdvance(downstream::push);
@@ -68,7 +73,7 @@ public final class InterleavingGatherer<T extends @Nullable Object>
     }
 
     @Override
-    public void finish(Void state, Downstream<? super T> downstream) {
+    public void finish(Spliterator<T> otherSpliterator, Downstream<? super T> downstream) {
         var downstreamRejecting = downstream.isRejecting();
         while (appendArgumentIfLonger && !downstreamRejecting) {
             downstreamRejecting = !otherSpliterator.tryAdvance(downstream::push);

@@ -19,31 +19,29 @@ package com.ginsberg.gatherers4j;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Spliterator;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Gatherer;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
 public final class ZipWithGatherer<T extends @Nullable Object, S extends @Nullable Object, R extends @Nullable Object>
-        implements Gatherer<T, Void, R> {
+        implements Gatherer4J.Stateful.WithFinisher<T, Spliterator<S>, R> {
 
-    private final Spliterator<S> otherSpliterator;
+    private final Iterable<S> other;
     private final BiFunction<? super T, ? super S, ? extends R> mapper;
 
     private final @Nullable Function<? super S, ? extends T> sourceWhenArgumentLonger;
     private final @Nullable Function<? super T, ? extends S> argumentWhenSourceLonger;
 
     ZipWithGatherer(
-            final Spliterator<S> other,
+            final Iterable<S> other,
             final BiFunction<? super T, ? super S, ? extends R> mapper,
             final @Nullable Function<? super S, ? extends T> sourceWhenArgumentLonger,
             final @Nullable Function<? super T, ? extends S> argumentWhenSourceLonger
     ) {
         mustNotBeNull(other, "Other spliterator must not be null");
         mustNotBeNull(mapper, "Mapper must not be null");
-        this.otherSpliterator = other;
+        this.other = other;
         this.mapper = mapper;
         this.sourceWhenArgumentLonger = sourceWhenArgumentLonger;
         this.argumentWhenSourceLonger = argumentWhenSourceLonger;
@@ -62,7 +60,7 @@ public final class ZipWithGatherer<T extends @Nullable Object, S extends @Nullab
     public ZipWithGatherer<T, S, R> argumentWhenSourceLonger(final Function<? super T, ? extends S> mappingFunction) {
         mustNotBeNull(mappingFunction, "Mapping function must not be null, use nullArgumentWhenSourceLonger() to insert nulls");
         return new ZipWithGatherer<>(
-                otherSpliterator,
+                other,
                 mapper,
                 sourceWhenArgumentLonger,
                 mappingFunction
@@ -82,7 +80,7 @@ public final class ZipWithGatherer<T extends @Nullable Object, S extends @Nullab
     public ZipWithGatherer<T, S, R> sourceWhenArgumentLonger(final Function<? super S, ? extends T> mappingFunction) {
         mustNotBeNull(mappingFunction, "Mapping function must not be null, use nullSourceWhenArgumentLonger() to insert nulls");
         return new ZipWithGatherer<>(
-                otherSpliterator,
+                other,
                 mapper,
                 mappingFunction,
                 argumentWhenSourceLonger
@@ -111,28 +109,29 @@ public final class ZipWithGatherer<T extends @Nullable Object, S extends @Nullab
     }
 
     @Override
-    public Integrator<Void, T, R> integrator() {
-        return (_, element, downstream) -> {
-            final var advanced = otherSpliterator.tryAdvance(it -> downstream.push(mapper.apply(element, it)));
-            if (!advanced && argumentWhenSourceLonger != null) {
-                return downstream.push(mapper.apply(element, argumentWhenSourceLonger.apply(element)));
-            }
-            return advanced && !downstream.isRejecting();
-        };
+    public Spliterator<S> initialize() {
+        return other.spliterator();
     }
 
     @Override
-    @SuppressWarnings("NullAway")
-    public BiConsumer<Void, Downstream<? super R>> finisher() {
-        return (_, downstream) -> {
-            if (sourceWhenArgumentLonger != null) {
-                var downstreamIsRejecting = downstream.isRejecting();
-                while (!downstreamIsRejecting) {
-                    downstreamIsRejecting = !otherSpliterator.tryAdvance(arg ->
-                            downstream.push(mapper.apply(sourceWhenArgumentLonger.apply(arg), arg))
-                    );
-                }
+    public boolean integrate(final Spliterator<S> otherSpliterator, final T item, final Downstream<? super R> downstream) {
+        final var advanced = otherSpliterator.tryAdvance(it -> downstream.push(mapper.apply(item, it)));
+        if (!advanced && argumentWhenSourceLonger != null) {
+            return downstream.push(mapper.apply(item, argumentWhenSourceLonger.apply(item)));
+        }
+        return advanced && !downstream.isRejecting();
+
+    }
+
+    @Override
+    public void finish(final Spliterator<S> otherSpliterator, final Downstream<? super R> downstream) {
+        if (sourceWhenArgumentLonger != null) {
+            var downstreamIsRejecting = downstream.isRejecting();
+            while (!downstreamIsRejecting) {
+                downstreamIsRejecting = !otherSpliterator.tryAdvance(arg ->
+                        downstream.push(mapper.apply(sourceWhenArgumentLonger.apply(arg), arg))
+                );
             }
-        };
+        }
     }
 }

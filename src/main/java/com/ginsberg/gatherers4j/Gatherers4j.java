@@ -518,7 +518,7 @@ public final class Gatherers4j {
     /// @return A non-null `InterleavingGatherer`
     public static <T extends @Nullable Object> InterleavingGatherer<T> interleaveWith(final Iterable<T> other) {
         mustNotBeNull(other, "Other iterable must not be null");
-        return new InterleavingGatherer<>(other.spliterator(), false, false);
+        return new InterleavingGatherer<>(other, false, false);
     }
 
     /// Creates a stream of alternating objects from the input stream and the argument iterator
@@ -538,7 +538,7 @@ public final class Gatherers4j {
     /// @return A non-null `InterleavingGatherer`
     public static <T extends @Nullable Object> InterleavingGatherer<T> interleaveWith(final Stream<T> other) {
         mustNotBeNull(other, "Other stream must not be null");
-        return new InterleavingGatherer<>(other.spliterator(), false, false);
+        return new InterleavingGatherer<>(other.toList(), false, false);
     }
 
     /// Creates a stream of alternating objects from the input stream and the provided elements
@@ -549,7 +549,7 @@ public final class Gatherers4j {
     @SafeVarargs
     public static <T extends @Nullable Object> InterleavingGatherer<T> interleaveWith(final T... other) {
         mustNotBeNull(other, "Other stream must not be null");
-        return new InterleavingGatherer<>(Arrays.spliterator(other), false, false);
+        return new InterleavingGatherer<>(Arrays.asList(other), false, false);
     }
 
     /// Intersperse the given `intersperseElement` between each element of the input stream.
@@ -1240,7 +1240,7 @@ public final class Gatherers4j {
             final BiFunction<? super T, ? super S, ? extends R> mapper
     ) {
         mustNotBeNull(other, "Other iterable must not be null");
-        return new ZipWithGatherer<>(other.spliterator(), mapper, null, null);
+        return new ZipWithGatherer<>(other, mapper, null, null);
     }
 
     /// Creates a stream of `Pair<T,S>` objects whose values come from the stream this is called on
@@ -1275,7 +1275,7 @@ public final class Gatherers4j {
             final BiFunction<? super T, ? super S, ? extends R> mapper
     ) {
         mustNotBeNull(other, "Other stream must not be null");
-        return new ZipWithGatherer<>(other.spliterator(), mapper, null, null);
+        return new ZipWithGatherer<>(other.toList(), mapper, null, null);
     }
 
     /// Creates a stream of `Pair<T,S>` objects whose values come from the stream this is called on
