@@ -17,6 +17,7 @@
 package com.ginsberg.gatherers4j;
 
 import com.ginsberg.gatherers4j.dto.Pair;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
@@ -31,16 +32,14 @@ class ZipWithGathererTest {
 
     @Test
     void argumentIterableMustNotBeNull() {
-        assertThatThrownBy(() -> Stream.of("A")
-                .gather(zipWith((Iterable<String>) null)).toList()
-        ).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() ->zipWith((Iterable<String>) null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void argumentIteratorMustNotBeNull() {
-        assertThatThrownBy(() -> Stream.of("A")
-                .gather(zipWith((Iterator<String>) null)).toList()
-        ).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> zipWith((Iterator<String>) null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -251,16 +250,22 @@ class ZipWithGathererTest {
     @Test
     void zipWithTransform() {
         // Arrange
-        final var left = Stream.of("A", "B", "C");
+        final var left = List.of("A", "B", "C");
         final var right = List.of(1, 2, 3);
 
         // Act
-        final var output = left
-                .gather(zipWith(right, (s, n) -> s + n))
+        final ZipWithGatherer<String, ?, String> zipWith = zipWith(right, (s, n) -> s + n);
+        final var output1 = left.stream()
+                .gather(zipWith)
+                .toList();
+
+        final var output2 = left.stream()
+                .gather(zipWith)
                 .toList();
 
         // Assert
-        assertThat(output).containsExactly("A1", "B2", "C3");
+        assertThat(output1).containsExactly("A1", "B2", "C3");
+        assertThat(output2).containsExactly("A1", "B2", "C3");
     }
 
     @Test

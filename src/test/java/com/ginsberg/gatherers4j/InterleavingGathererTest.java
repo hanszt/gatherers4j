@@ -42,17 +42,21 @@ class InterleavingGathererTest {
         @Test
         void interleavingGathererIterable() {
             // Arrange
-            final var left = Stream.of("A", "B", "C");
+            final var left = List.of("A", "B", "C");
             final Iterable<String> right = List.of("D", "E", "F", "G");
 
             // Act
-            final var output = left
-                    .gather(interleaveWith(right))
+            final var interleaveWith = interleaveWith(right);
+            final var output1 = left.stream()
+                    .gather(interleaveWith)
+                    .toList();
+            final var output2 = left.stream()
+                    .gather(interleaveWith)
                     .toList();
 
             // Assert
-            assertThat(output)
-                    .containsExactly("A", "D", "B", "E", "C", "F");
+            assertThat(output1).containsExactly("A", "D", "B", "E", "C", "F");
+            assertThat(output2).containsExactly("A", "D", "B", "E", "C", "F");
         }
 
     }
