@@ -49,17 +49,12 @@ record BigDecimalStandardDeviationGatherer<T extends @Nullable Object>(
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
-        return () -> new State(mode);
+        return State::new;
     }
 
-    static class State extends BigDecimalSimpleAverageGatherer.State {
-        private final Mode mode;
+    class State extends BigDecimalSimpleAverageGatherer.State {
         private BigDecimal dSquared = BigDecimal.ZERO;
         private BigDecimal stdDev = BigDecimal.ZERO;
-
-        State(final Mode mode) {
-            this.mode = mode;
-        }
 
         @Override
         public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {
