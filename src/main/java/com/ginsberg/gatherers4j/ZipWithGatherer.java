@@ -24,27 +24,15 @@ import java.util.function.Function;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
-public final class ZipWithGatherer<T extends @Nullable Object, S extends @Nullable Object, R extends @Nullable Object>
+public record ZipWithGatherer<T extends @Nullable Object, S extends @Nullable Object, R extends @Nullable Object>(
+        Iterable<S> other, BiFunction<? super T, ? super S, ? extends R> mapper,
+        @Nullable Function<? super S, ? extends T> sourceWhenArgumentLonger,
+        @Nullable Function<? super T, ? extends S> argumentWhenSourceLonger)
         implements Gatherer4J.Stateful.WithFinisher<T, Spliterator<S>, R> {
 
-    private final Iterable<S> other;
-    private final BiFunction<? super T, ? super S, ? extends R> mapper;
-
-    private final @Nullable Function<? super S, ? extends T> sourceWhenArgumentLonger;
-    private final @Nullable Function<? super T, ? extends S> argumentWhenSourceLonger;
-
-    ZipWithGatherer(
-            final Iterable<S> other,
-            final BiFunction<? super T, ? super S, ? extends R> mapper,
-            final @Nullable Function<? super S, ? extends T> sourceWhenArgumentLonger,
-            final @Nullable Function<? super T, ? extends S> argumentWhenSourceLonger
-    ) {
+    public ZipWithGatherer {
         mustNotBeNull(other, "Other spliterator must not be null");
         mustNotBeNull(mapper, "Mapper must not be null");
-        this.other = other;
-        this.mapper = mapper;
-        this.sourceWhenArgumentLonger = sourceWhenArgumentLonger;
-        this.argumentWhenSourceLonger = argumentWhenSourceLonger;
     }
 
     /// When the argument `Iterable`, `Iterator` or `Stream` runs out of elements before the source stream does,
@@ -56,7 +44,7 @@ public final class ZipWithGatherer<T extends @Nullable Object, S extends @Nullab
     /// `source.gather(Gatherers4j.<String, Integer>zipWith(right).argumentWhenSourceLonger(String::length))`
     ///
     /// @param mappingFunction A non-null function which takes a possibly null `<T>`
-    ///                                               and emits a possibly null `<S>`
+    ///                                                                      and emits a possibly null `<S>`
     public ZipWithGatherer<T, S, R> argumentWhenSourceLonger(final Function<? super T, ? extends S> mappingFunction) {
         mustNotBeNull(mappingFunction, "Mapping function must not be null, use nullArgumentWhenSourceLonger() to insert nulls");
         return new ZipWithGatherer<>(
@@ -76,7 +64,7 @@ public final class ZipWithGatherer<T extends @Nullable Object, S extends @Nullab
     /// `source.gather(Gatherers4j.<String, Integer>zipWith(right).sourceWhenArgumentLonger(String::valueOf))`
     ///
     /// @param mappingFunction A non-null function which takes a possibly null `<S>`
-    ///                                               and emits a possibly null `<T>`
+    ///                                                                      and emits a possibly null `<T>`
     public ZipWithGatherer<T, S, R> sourceWhenArgumentLonger(final Function<? super S, ? extends T> mappingFunction) {
         mustNotBeNull(mappingFunction, "Mapping function must not be null, use nullSourceWhenArgumentLonger() to insert nulls");
         return new ZipWithGatherer<>(
