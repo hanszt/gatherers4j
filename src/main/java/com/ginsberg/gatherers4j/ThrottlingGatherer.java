@@ -28,10 +28,10 @@ import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
 public record ThrottlingGatherer<T extends @Nullable Object>(
         ThrottlingGatherer.LimitRule limitRule,
-        int allowed,
+        int allowedPerPeriod,
         Duration duration,
         InstantSource instantSource
-) implements Gatherer<T, ThrottlingGatherer.State, T> {
+) implements Gatherer<T, ThrottlingGatherer<T>.State, T> {
 
     enum LimitRule {
         Drop,
@@ -43,42 +43,37 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         mustNotBeNull(duration, "Duration must not be null");
         mustNotBeNull(limitRule, "LimitRule must not be null");
         require(duration.toMillis() >= 1, "Minimum duration is 1ms");
-        require(allowed > 0, "Allowed must be positive");
+        require(allowedPerPeriod > 0, "Allowed must be positive");
     }
 
     public ThrottlingGatherer<T> withInstantSource(final InstantSource instantSource) {
-        return new ThrottlingGatherer<>(limitRule, allowed, duration, instantSource);
+        return new ThrottlingGatherer<>(limitRule, allowedPerPeriod, duration, instantSource);
     }
 
     @Override
     public Supplier<State> initializer() {
-        return () -> new State(limitRule, duration, allowed, instantSource);
+        return State::new;
     }
 
     @Override
     public Integrator<State, T, T> integrator() {
-        return Integrator.ofGreedy((state, element, downstream) -> {
-            if (!downstream.isRejecting() && state.attempt()) {
-                downstream.push(element);
-            }
-            return !downstream.isRejecting();
-        });
+        return Integrator.<State, T, T>ofGreedy(State::integrate);
     }
 
-    public static class State {
-        final int allowedPerPeriod;
-        final long periodDurationMillis;
-        final LimitRule limitRule;
-        final InstantSource instantSource;
+    public class State {
+        final long periodDurationMillis = duration.toMillis();
         long thisPeriodEnd;
         int remainingPermits;
 
-        State(final LimitRule limitRule, final Duration duration, final int allowed, final InstantSource instantSource) {
-            this.limitRule = limitRule;
-            this.allowedPerPeriod = allowed;
-            this.periodDurationMillis = duration.toMillis();
-            this.instantSource = instantSource;
+        State() {
             resetPeriod();
+        }
+
+        boolean integrate(T element, Downstream<? super T> downstream) {
+            if (!downstream.isRejecting() && attempt()) {
+                downstream.push(element);
+            }
+            return !downstream.isRejecting();
         }
 
         private void resetPeriod() {
