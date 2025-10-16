@@ -40,7 +40,7 @@ record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
-        return () -> new State(windowSize, includePartialValues);
+        return State::new;
     }
 
     @Override
@@ -48,12 +48,12 @@ record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         return new BigDecimalSimpleMovingAverageGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
-    static class State extends BigDecimalMovingGatherer.State {
+    class State extends BigDecimalMovingGatherer.State {
         BigDecimal sum = BigDecimal.ZERO;
         BigDecimal count = BigDecimal.ZERO;
 
-        State(final int lookBack, final boolean includePartialValues) {
-            super(includePartialValues, new BigDecimal[lookBack]);
+        State() {
+            super(BigDecimalSimpleMovingAverageGatherer.this.includePartialValues, new BigDecimal[windowSize]);
             Arrays.fill(series, BigDecimal.ZERO);
         }
 

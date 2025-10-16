@@ -38,7 +38,7 @@ public record BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Obj
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
-        return () -> new BigDecimalExponentialMovingAverageGatherer.State(alpha);
+        return State::new;
     }
 
     @Override
@@ -46,16 +46,11 @@ public record BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Obj
         return new BigDecimalExponentialMovingAverageGatherer<>(alpha, mappingFunction, replacement, mathContext);
     }
 
-    static final class State implements BigDecimalGatherer.State {
-        final BigDecimal alpha;
-        final BigDecimal oneMinusAlpha;
+    final class State implements BigDecimalGatherer.State {
+        final BigDecimal alpha =  BigDecimal.valueOf(BigDecimalExponentialMovingAverageGatherer.this.alpha);
+        final BigDecimal oneMinusAlpha = BigDecimal.ONE.subtract(this.alpha);
         boolean first = true;
         BigDecimal ema = BigDecimal.ZERO;
-
-        State(final double alpha) {
-            this.alpha = BigDecimal.valueOf(alpha);
-            this.oneMinusAlpha = BigDecimal.ONE.subtract(this.alpha);
-        }
 
         @Override
         public BigDecimal calculate(final BigDecimal element, final MathContext mathContext) {

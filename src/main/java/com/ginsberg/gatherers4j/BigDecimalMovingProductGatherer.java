@@ -40,7 +40,7 @@ record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
-        return () -> new BigDecimalMovingProductGatherer.State(windowSize, includePartialValues);
+        return State::new;
     }
 
     @Override
@@ -52,11 +52,11 @@ record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         return new BigDecimalMovingProductGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
-    static class State extends BigDecimalMovingGatherer.State {
+    class State extends BigDecimalMovingGatherer.State {
         BigDecimal product = BigDecimal.ONE;
 
-        private State(final int lookBack, final boolean includePartialValues) {
-            super(includePartialValues, new BigDecimal[lookBack]);
+        private State() {
+            super(BigDecimalMovingProductGatherer.this.includePartialValues, new BigDecimal[windowSize]);
             Arrays.fill(series, BigDecimal.ONE);
         }
 

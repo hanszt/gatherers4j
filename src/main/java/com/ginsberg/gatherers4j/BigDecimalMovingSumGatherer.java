@@ -40,7 +40,7 @@ record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
 
     @Override
     public Supplier<BigDecimalGatherer.State> initializer() {
-        return () -> new BigDecimalMovingSumGatherer.State(windowSize, includePartialValues);
+        return State::new;
     }
 
     @Override
@@ -48,11 +48,11 @@ record BigDecimalMovingSumGatherer<T extends @Nullable Object>(
         return new BigDecimalMovingSumGatherer<>(windowSize, includePartialValues, mappingFunction, replacement, mathContext);
     }
 
-    static class State extends BigDecimalMovingGatherer.State {
+    class State extends BigDecimalMovingGatherer.State {
         BigDecimal sum = BigDecimal.ZERO;
 
-        private State(final int lookBack, final boolean includePartialValues) {
-            super(includePartialValues, new BigDecimal[lookBack]);
+        private State() {
+            super(BigDecimalMovingSumGatherer.this.includePartialValues, new BigDecimal[windowSize]);
             Arrays.fill(series, BigDecimal.ZERO);
         }
 
