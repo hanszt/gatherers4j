@@ -11,21 +11,21 @@ import static com.ginsberg.gatherers4j.util.GathererUtils.require;
 
 public record BigDecimalExponentialMovingAverageGatherer<T extends @Nullable Object>(
         double alpha,
-        Function<T, @Nullable BigDecimal> mappingFunction,
+        Function<? super T, ? extends @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
 ) implements BigDecimalGatherer<T> {
 
     public static <T extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<T> withAlpha(
             final double alpha,
-            final Function<T, @Nullable BigDecimal> mappingFunction
+            final Function<? super T, ? extends @Nullable BigDecimal> mappingFunction
     ) {
         return new BigDecimalExponentialMovingAverageGatherer<>(alpha, mappingFunction, null, MathContext.DECIMAL64);
     }
 
     public static <T extends @Nullable Object> BigDecimalExponentialMovingAverageGatherer<T> withPeriod(
             final int periods,
-            final Function<T, @Nullable BigDecimal> mappingFunction
+            final Function<? super T, ? extends @Nullable BigDecimal> mappingFunction
     ) {
         require(periods > 1, "periods must be greater than 1");
         final var alpha = 2.0 / (((long) periods) + 1);

@@ -27,7 +27,7 @@ import static com.ginsberg.gatherers4j.util.GathererUtils.mustNotBeNull;
 
 record BigDecimalStandardDeviationGatherer<T extends @Nullable Object>(
         Mode mode,
-        Function<T, @Nullable BigDecimal> mappingFunction,
+        Function<? super T, ? extends @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
 ) implements BigDecimalGatherer<T> {

@@ -29,7 +29,7 @@ import static com.ginsberg.gatherers4j.util.GathererUtils.require;
 record BigDecimalMovingProductGatherer<T extends @Nullable Object>(
         int windowSize,
         boolean includePartialValues,
-        Function<T, @Nullable BigDecimal> mappingFunction,
+        Function<? super T, ? extends @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
 ) implements BigDecimalMovingGatherer<T> {

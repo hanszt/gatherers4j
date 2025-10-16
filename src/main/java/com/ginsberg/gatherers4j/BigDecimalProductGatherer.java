@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 record BigDecimalProductGatherer<T extends @Nullable Object>(
-        Function<T, @Nullable BigDecimal> mappingFunction,
+        Function<? super T, ? extends @Nullable BigDecimal> mappingFunction,
         @Nullable BigDecimal nullReplacement,
         MathContext mathContext
 ) implements BigDecimalGatherer<T> {

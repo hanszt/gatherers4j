@@ -31,7 +31,7 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
 
     @Nullable BigDecimal nullReplacement();
 
-    Function<? super T, @Nullable BigDecimal> mappingFunction();
+    Function<? super T, ? extends @Nullable BigDecimal> mappingFunction();
 
     MathContext mathContext();
 
