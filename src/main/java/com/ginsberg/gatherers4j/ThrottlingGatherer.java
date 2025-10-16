@@ -60,7 +60,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         return Integrator.<State, T, T>ofGreedy(State::integrate);
     }
 
-    public class State {
+    public final class State {
         final long periodDurationMillis = duration.toMillis();
         long thisPeriodEnd;
         int remainingPermits;
@@ -84,10 +84,10 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         // Assuming this is not run in parallel. Gate with a lock if that assumption fails/changes.
         boolean attempt() {
             final var now = instantSource.millis();
-            if(now < thisPeriodEnd) {
+            if (now < thisPeriodEnd) {
                 // The current period has not ended
-                if(remainingPermits == 0) {
-                    if(limitRule == LimitRule.Drop) {
+                if (remainingPermits == 0) {
+                    if (limitRule == LimitRule.Drop) {
                         return false;
                     }
                     // Wait until next period, reset counters, fall through to take permit.
