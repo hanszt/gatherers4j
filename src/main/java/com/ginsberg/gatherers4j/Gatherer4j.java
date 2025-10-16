@@ -11,18 +11,18 @@ import java.util.stream.Gatherer;
 /// @param <T> The type of the input elements
 /// @param <A> The type of the State
 /// @param <R> The type of the elements in the downstream
-public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
+public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
 
-    static <T, R> Gatherer4J.Stateless<T, R> ofSequential(
+    static <T, R> Gatherer4j.Stateless<T, R> ofSequential(
             BiPredicate<T, Downstream<? super R>> integrator
     ) {
         return integrator::test;
     }
 
-    static <T, R> Gatherer4J.Stateless<T, R> of(
+    static <T, R> Gatherer4j.Stateless<T, R> of(
             BiPredicate<T, Downstream<? super R>> integrator
     ) {
-        return new Gatherer4J.Stateless<>() {
+        return new Gatherer4j.Stateless<>() {
 
             @Override
             public boolean integrate(final T item, final Downstream<? super R> downstream) {
@@ -45,7 +45,7 @@ public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
     }
 
     @FunctionalInterface
-    non-sealed interface Stateless<T, R> extends Gatherer4J<T, Void, R> {
+    non-sealed interface Stateless<T, R> extends Gatherer4j<T, Void, R> {
 
         boolean integrate(T item, Downstream<? super R> downstream);
 
@@ -55,7 +55,7 @@ public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
         }
     }
 
-    non-sealed interface Stateful<T, A, R> extends Gatherer4J<T, A, R> {
+    non-sealed interface Stateful<T, A, R> extends Gatherer4j<T, A, R> {
 
         A initialize();
 
@@ -85,7 +85,7 @@ public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
         }
     }
 
-    sealed interface Greedy<T, A, R> extends Gatherer4J<T, A, R> {
+    sealed interface Greedy<T, A, R> extends Gatherer4j<T, A, R> {
 
         boolean greedyIntegrate(A state, T item, Downstream<? super R> downstream);
 
@@ -109,9 +109,9 @@ public sealed interface Gatherer4J<T, A, R> extends Gatherer<T, A, R> {
             boolean greedyIntegrate(T item, Downstream<? super R> downstream);
         }
 
-        non-sealed interface Stateful<T, A, R> extends Greedy<T, A, R>, Gatherer4J.Stateful<T, A, R> {
-            interface WithFinisher<T, A, R> extends Greedy.Stateful<T, A, R>, Gatherer4J.Stateful.WithFinisher<T, A, R> {
-                interface WithCombiner<T, A, R> extends Greedy.Stateful.WithFinisher<T, A, R>, Gatherer4J.Stateful.WithFinisher.WithCombiner<T, A, R> {
+        non-sealed interface Stateful<T, A, R> extends Greedy<T, A, R>, Gatherer4j.Stateful<T, A, R> {
+            interface WithFinisher<T, A, R> extends Greedy.Stateful<T, A, R>, Gatherer4j.Stateful.WithFinisher<T, A, R> {
+                interface WithCombiner<T, A, R> extends Greedy.Stateful.WithFinisher<T, A, R>, Gatherer4j.Stateful.WithFinisher.WithCombiner<T, A, R> {
                 }
             }
         }

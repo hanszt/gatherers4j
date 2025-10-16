@@ -21,7 +21,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Spliterator;
 
 public final class InterleavingGatherer<T extends @Nullable Object>
-        implements Gatherer4J.Stateful.WithFinisher<T, Spliterator<T>, T> {
+        implements Gatherer4j.Stateful.WithFinisher<T, Spliterator<T>, T> {
 
     private final Iterable<T> other;
     private final boolean appendArgumentIfLonger;
