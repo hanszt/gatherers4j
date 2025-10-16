@@ -131,7 +131,7 @@ public final class Gatherers4j {
             final int amount,
             final Duration duration
     ) {
-        return throttle(ThrottlingGatherer.LimitRule.Drop, amount, duration, Clock.systemUTC());
+        return new ThrottlingGatherer<>(ThrottlingGatherer.LimitRule.Drop, amount, duration, InstantSource.system());
     }
 
     /// Remove consecutive duplicate elements from a stream as measured by `Object.equals(Object)`
@@ -226,7 +226,7 @@ public final class Gatherers4j {
     /// @param <T>   Type of elements in the input stream
     /// @param order The non-null order the stream must be in.
     /// @return A non-null Gatherer
-    public static <T extends Comparable<T>> Gatherer<T, ?, T> ensureOrdered(final Order order) {
+    public static <T extends Comparable<? super T>> Gatherer<T, ?, T> ensureOrdered(final Order order) {
         final Gatherer<T, ?, List<T>> groupOrderedBy = groupOrdered(order);
         return groupOrderedBy.andThen(flattenSingleOrFail("Elements not in proper order: " + order.name()));
     }
@@ -367,7 +367,7 @@ public final class Gatherers4j {
     ///
     /// @param <T> Type of elements in the input and output stream
     /// @return A non-null gatherer
-    public static <T extends Comparable<T>> Gatherer<T, ?, T> filterOrdered(final Order order) {
+    public static <T extends Comparable<? super T>> Gatherer<T, ?, T> filterOrdered(final Order order) {
         return filterOrderedBy(order, Comparable::compareTo);
     }
 
@@ -470,8 +470,8 @@ public final class Gatherers4j {
     ///
     /// @param <T> Type of elements in the input stream, implementing `Comparable`
     /// @return A non-null `Gatherer`
-    public static <T extends @Nullable Comparable<T>> Gatherer<T, ?, List<T>> groupOrdered(final Order order) {
-        return groupOrderedBy(order, Comparable::compareTo);
+    public static <T extends @Nullable Comparable<? super T>> Gatherer<T, ?, List<T>> groupOrdered(final Order order) {
+        return groupOrderedBy(order, (t, o) -> t != null && o != null ? t.compareTo(o) : 0);
     }
 
     /// Turn a `Stream<T>` into a `Stream<List<T>>` where adjacent equal elements are in the same `List`
@@ -487,14 +487,14 @@ public final class Gatherers4j {
         mustNotBeNull(order, "Order must not be null");
         mustNotBeNull(comparator, "Comparator must not be null");
         class State {
-            final List<T> items = new ArrayList<>();
+            List<T> items = new ArrayList<>();
 
             boolean integrate(T item, Downstream<? super List<T>> downstream) {
                 if (!items.isEmpty()) {
                     final T previous = items.getLast();
                     if (!order.allows(comparator.compare(item, previous))) {
                         downstream.push(Collections.unmodifiableList(new ArrayList<>(items)));
-                        items.clear();
+                        items = new ArrayList<>();
                     }
                 }
                 items.add(item);
@@ -1326,14 +1326,5 @@ public final class Gatherers4j {
             }
         }
         return Gatherer.ofSequential(State::new, Integrator.<State, T, R>ofGreedy(State::zipNext));
-    }
-
-    private static <T extends @Nullable Object> ThrottlingGatherer<T> throttle(
-            final ThrottlingGatherer.LimitRule limitRule,
-            final int allowed,
-            final Duration duration,
-            final Clock clock
-    ) {
-        return new ThrottlingGatherer<>(limitRule, allowed, duration, clock);
     }
 }

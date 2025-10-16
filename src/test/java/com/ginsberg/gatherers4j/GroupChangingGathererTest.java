@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.Gatherers4j.*;
+import static com.ginsberg.gatherers4j.Gatherers4j.groupBy;
 import static java.util.Comparator.comparingInt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -109,7 +110,7 @@ class GroupChangingGathererTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final var output = input.gather(Gatherers4j.groupBy(String::length)).toList();
+            final var output = input.gather(groupBy(String::length)).toList();
 
             // Assert
             assertThat(output).isEmpty();
@@ -121,7 +122,7 @@ class GroupChangingGathererTest {
             final var input = Stream.of("A", "B", "AA", "BB", "CCC", "A", "BB", "CCC");
 
             // Act
-            final var output = input.gather(Gatherers4j.groupBy(String::length)).toList();
+            final var output = input.gather(groupBy(String::length)).toList();
 
             // Assert
             assertThat(output).containsExactly(
@@ -137,7 +138,7 @@ class GroupChangingGathererTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void mappingFunctionMustNotBeNull() {
-            assertThatThrownBy(() -> Gatherers4j.groupBy(null)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> groupBy(null)).isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -147,7 +148,8 @@ class GroupChangingGathererTest {
 
             // Act
             final var output = input
-                    .gather(Gatherers4j.groupBy(it -> it == null ? null : it.length())).toList();
+                    .gather(groupBy(it -> it == null ? null : it.length()))
+                    .toList();
 
             // Assert
             assertThat(output)
@@ -163,7 +165,7 @@ class GroupChangingGathererTest {
             final var input = Stream.of("A");
 
             // Act
-            final var output = input.gather(Gatherers4j.groupBy(String::length)).toList();
+            final var output = input.gather(groupBy(String::length)).toList();
 
             // Assert
             assertThat(output).containsExactly(
