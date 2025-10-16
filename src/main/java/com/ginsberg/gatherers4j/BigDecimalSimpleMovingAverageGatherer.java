@@ -58,7 +58,7 @@ record BigDecimalSimpleMovingAverageGatherer<T extends @Nullable Object>(
         }
 
         @Override
-        public boolean shouldPush() {
+        public boolean include() {
             return includePartialValues || count.intValue() >= series.length;
         }
 

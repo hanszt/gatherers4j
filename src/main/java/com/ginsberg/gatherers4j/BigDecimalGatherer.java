@@ -30,7 +30,9 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
         extends Gatherer<T, BigDecimalGatherer.State, BigDecimal> {
 
     @Nullable BigDecimal nullReplacement();
+
     Function<? super T, @Nullable BigDecimal> mappingFunction();
+
     MathContext mathContext();
 
     @Override
@@ -39,7 +41,7 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
             final var mappedElement = getMappedElement(element);
             if (mappedElement != null) {
                 final var next = state.calculate(mappedElement, mathContext());
-                if (state.shouldPush()) {
+                if (state.include()) {
                     return downstream.push(next);
                 }
             }
@@ -90,7 +92,7 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
     interface State {
         BigDecimal calculate(final BigDecimal element, final MathContext mathContext);
 
-        default boolean shouldPush() {
+        default boolean include() {
             return true;
         }
     }
