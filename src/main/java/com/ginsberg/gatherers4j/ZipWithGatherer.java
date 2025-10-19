@@ -28,7 +28,7 @@ public record ZipWithGatherer<T extends @Nullable Object, S extends @Nullable Ob
         Iterable<S> other, BiFunction<? super T, ? super S, ? extends R> mapper,
         @Nullable Function<? super S, ? extends T> sourceWhenArgumentLonger,
         @Nullable Function<? super T, ? extends S> argumentWhenSourceLonger)
-        implements Gatherer4j.Stateful.WithFinisher<T, Spliterator<S>, R> {
+        implements Gatherer4j2.Stateful.WithFinisher<T, ZipWithGatherer<T, S, R>.State, R> {
 
     public ZipWithGatherer {
         mustNotBeNull(other, "Other spliterator must not be null");
@@ -97,28 +97,31 @@ public record ZipWithGatherer<T extends @Nullable Object, S extends @Nullable Ob
     }
 
     @Override
-    public Spliterator<S> initialize() {
-        return other.spliterator();
+    public State initialize() {
+        return new State();
     }
 
-    @Override
-    public boolean integrate(final Spliterator<S> otherSpliterator, final T item, final Downstream<? super R> downstream) {
-        final var advanced = otherSpliterator.tryAdvance(it -> downstream.push(mapper.apply(item, it)));
-        if (!advanced && argumentWhenSourceLonger != null) {
-            return downstream.push(mapper.apply(item, argumentWhenSourceLonger.apply(item)));
+    public final class State implements Gatherer4j2.Stateful.WithFinisher.State<T, R> {
+        final Spliterator<S> otherSpliterator = other.spliterator();
+
+        @Override
+        public boolean integrate(final T item, final Downstream<? super R> downstream) {
+            final var advanced = otherSpliterator.tryAdvance(it -> downstream.push(mapper.apply(item, it)));
+            if (!advanced && argumentWhenSourceLonger != null) {
+                return downstream.push(mapper.apply(item, argumentWhenSourceLonger.apply(item)));
+            }
+            return advanced && !downstream.isRejecting();
         }
-        return advanced && !downstream.isRejecting();
 
-    }
-
-    @Override
-    public void finish(final Spliterator<S> otherSpliterator, final Downstream<? super R> downstream) {
-        if (sourceWhenArgumentLonger != null) {
-            var downstreamIsRejecting = downstream.isRejecting();
-            while (!downstreamIsRejecting) {
-                downstreamIsRejecting = !otherSpliterator.tryAdvance(arg ->
-                        downstream.push(mapper.apply(sourceWhenArgumentLonger.apply(arg), arg))
-                );
+        @Override
+        public void finish(final Downstream<? super R> downstream) {
+            if (sourceWhenArgumentLonger != null) {
+                var downstreamIsRejecting = downstream.isRejecting();
+                while (!downstreamIsRejecting) {
+                    downstreamIsRejecting = !otherSpliterator.tryAdvance(arg ->
+                            downstream.push(mapper.apply(sourceWhenArgumentLonger.apply(arg), arg))
+                    );
+                }
             }
         }
     }

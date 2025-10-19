@@ -14,9 +14,16 @@ public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
 
     boolean integrate(A state, T item, Downstream<? super R> downstream);
 
+    default IntegrationMode integrationMode() {
+        return IntegrationMode.DEFAULT;
+    }
+
     @Override
     default Integrator<A, T, R> integrator() {
-        return this::integrate;
+        return switch (integrationMode()) {
+            case DEFAULT -> this::integrate;
+            case GREEDY -> Integrator.<A, T, R>ofGreedy(this::integrate);
+        };
     }
 
     @FunctionalInterface
@@ -52,7 +59,7 @@ public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
                 return State::finish;
             }
 
-            interface WithCombiner<T, A extends WithFinisher.WithCombiner.State<T, R>, R> extends WithFinisher<T, A, R> {
+            interface WithCombiner<T, A extends WithCombiner.State<T, R>, R> extends WithFinisher<T, A, R> {
 
                 @Override
                 default BinaryOperator<A> combiner() {
@@ -60,7 +67,7 @@ public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
                     return (state1, state2) -> (A) state1.combine(state2);
                 }
 
-                interface State<T, R> extends Stateful.WithFinisher.State<T, R> {
+                interface State<T, R> extends WithFinisher.State<T, R> {
 
                     State<T, R> combine(State<T, R> other);
                 }
@@ -78,49 +85,7 @@ public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
         }
     }
 
-    sealed interface Greedy<T, A, R> extends Gatherer4j2<T, A, R> {
-
-        boolean greedyIntegrate(A state, T item, Downstream<? super R> downstream);
-
-        @Override
-        default boolean integrate(A state, T item, Downstream<? super R> downstream) {
-            return greedyIntegrate(state, item, downstream);
-        }
-
-        @Override
-        default Integrator<A, T, R> integrator() {
-            return Integrator.<A, T, R>ofGreedy(this::greedyIntegrate);
-        }
-
-        @FunctionalInterface
-        non-sealed interface Stateless<T, R> extends Greedy<T, Void, R> {
-
-            default boolean greedyIntegrate(Void state, T item, Downstream<? super R> downstream) {
-                return Greedy.super.integrate(state, item, downstream);
-            }
-
-            boolean greedyIntegrate(T item, Downstream<? super R> downstream);
-        }
-
-        @FunctionalInterface
-        non-sealed interface Stateful<T, A extends Gatherer4j2.Stateful.State<T, R>, R> extends Greedy<T, A, R>, Gatherer4j2.Stateful<T, A, R> {
-
-            @Override
-            default boolean greedyIntegrate(A state, T item, Downstream<? super R> downstream) {
-                return state.integrate(item, downstream);
-            }
-
-            @Override
-            default boolean integrate(A state, T item, Downstream<? super R> downstream) {
-                return greedyIntegrate(state, item, downstream);
-            }
-
-            interface WithFinisher<T, A extends Gatherer4j2.Stateful.WithFinisher.State<T, R>, R> extends Greedy.Stateful<T, A, R>, Gatherer4j2.Stateful.WithFinisher<T, A, R> {
-                interface WithCombiner<T, A extends
-                        Gatherer4j2.Stateful.WithFinisher.WithCombiner.State<T, R>, R> extends Greedy.Stateful.WithFinisher<T, A, R>,
-                        Gatherer4j2.Stateful.WithFinisher.WithCombiner<T, A, R> {
-                }
-            }
-        }
+    enum IntegrationMode {
+        DEFAULT, GREEDY
     }
 }

@@ -25,6 +25,7 @@ import java.time.InstantSource;
 import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.throttle;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -33,21 +34,21 @@ class ThrottlingGathererTest {
     @Test
     void amountIsNegative() {
         final var duration = Duration.ofSeconds(1);
-        assertThatThrownBy(() -> Gatherers4j.throttle(-1, duration))
+        assertThatThrownBy(() -> throttle(-1, duration))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void amountIsZero() {
         final var duration = Duration.ofSeconds(1);
-        assertThatThrownBy(() -> Gatherers4j.throttle(-1, duration))
+        assertThatThrownBy(() -> throttle(-1, duration))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Test
     void clockMustNotBeNull() {
-        final var throttle = Gatherers4j.throttle(1, Duration.ofSeconds(1));
+        final var throttle = throttle(1, Duration.ofSeconds(1));
         assertThatThrownBy(() -> throttle.withInstantSource(null))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
@@ -55,20 +56,20 @@ class ThrottlingGathererTest {
     @Test
     void durationIsNegative() {
         final var duration = Duration.ofSeconds(-1);
-        assertThatThrownBy(() -> Gatherers4j.throttle(1, duration))
+        assertThatThrownBy(() -> throttle(1, duration))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Test
     void durationIsNull() {
-        assertThatThrownBy(() -> Gatherers4j.throttle(1, null))
+        assertThatThrownBy(() -> throttle(1, null))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void durationIsZero() {
-        assertThatThrownBy(() -> Gatherers4j.throttle(1, Duration.ZERO))
+        assertThatThrownBy(() -> throttle(1, Duration.ZERO))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
@@ -90,7 +91,7 @@ class ThrottlingGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.throttle(2, duration).withInstantSource(instantSource))
+                .gather(throttle(2, duration).withInstantSource(instantSource))
                 .map(_ -> System.currentTimeMillis())
                 .toList();
 
@@ -123,7 +124,7 @@ class ThrottlingGathererTest {
 
         // Act
         final var output = input
-                .gather(Gatherers4j.throttle(2, duration))
+                .gather(throttle(2, duration))
                 .map(_ -> System.currentTimeMillis())
                 .toList();
 

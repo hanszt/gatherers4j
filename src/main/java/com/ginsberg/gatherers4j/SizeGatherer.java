@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
 public final class SizeGatherer<T extends @Nullable Object>
-        implements Gatherer4j.Stateful.WithFinisher<T, SizeGatherer<T>.State, T> {
+        implements Gatherer4j2.Stateful.WithFinisher<T, SizeGatherer<T>.State, T> {
 
     private final long targetSize;
     private final Size operation;
@@ -76,27 +76,27 @@ public final class SizeGatherer<T extends @Nullable Object>
         return new State();
     }
 
-    @Override
-    public boolean integrate(final State state, final T item, final Downstream<? super T> downstream) {
-        if (operation.tryAccept(state.elements.size() + 1, targetSize)) {
-            state.elements.add(item);
-        } else {
-            state.failed = true;
-        }
-        return !state.failed || !downstream.isRejecting();
-    }
-
-    @Override
-    public void finish(final State state, final Downstream<? super T> downstream) {
-        if (!state.failed && operation.accept(state.elements.size(), targetSize)) {
-            GathererUtils.pushWhileNotRejecting(state.elements, downstream);
-        } else {
-            pushWhileNotRejecting(orElse.get(), downstream);
-        }
-    }
-
-    public class State {
+    public final class State implements Gatherer4j2.Stateful.WithFinisher.State<T, T> {
         boolean failed = false;
         final List<@Nullable T> elements = new ArrayList<>();
+
+        @Override
+        public boolean integrate(final T item, final Downstream<? super T> downstream) {
+            if (operation.tryAccept(elements.size() + 1, targetSize)) {
+                elements.add(item);
+            } else {
+                failed = true;
+            }
+            return !failed || !downstream.isRejecting();
+        }
+
+        @Override
+        public void finish(final Downstream<? super T> downstream) {
+            if (!failed && operation.accept(elements.size(), targetSize)) {
+                GathererUtils.pushWhileNotRejecting(elements, downstream);
+            } else {
+                pushWhileNotRejecting(orElse.get(), downstream);
+            }
+        }
     }
 }
