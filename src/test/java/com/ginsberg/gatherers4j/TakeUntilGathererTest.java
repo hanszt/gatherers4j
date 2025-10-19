@@ -19,8 +19,8 @@ package com.ginsberg.gatherers4j;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.takeUntil;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -28,18 +28,21 @@ class TakeUntilGathererTest {
 
     @Test
     void predicateMustNotBeNull() {
-        assertThatThrownBy(() -> Gatherers4j.takeUntil(null)).isInstanceOf(IllegalArgumentException.class);
+        //noinspection DataFlowIssue
+        assertThatThrownBy(() -> takeUntil(null)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void takeUntilIncludesTriggeringElement() {
         // Arrange
-        final var input = Stream.of("A", "BB", "CCC", "DDDD", "EEEEE");
+        final var input = List.of("A", "BB", "CCC", "DDDD", "EEEEE");
 
         // Act
-        final var output = input.gather(Gatherers4j.takeUntil(it -> it.equals("CCC"))).toList();
+        final var output = input.stream().gather(takeUntil(it -> it.equals("CCC"))).toList();
+        final var reference = input.stream().takeWhile(it -> !it.equals("CCC")).toList();
 
         // Assert
         assertThat(output).containsExactly("A", "BB", "CCC");
+        assertThat(reference).containsExactly("A", "BB");
     }
 }

@@ -86,9 +86,8 @@ class SizeGathererTest {
 
         @Test
         void doesNotEmitUnderTarget() {
-            assertThatThrownBy(() ->
-                    Stream.of("A").gather(Gatherers4j.ensureSize(Size.Equals, 2)).toList()
-            ).isInstanceOf(IllegalStateException.class);
+            final var stream = Stream.of("A").gather(Gatherers4j.ensureSize(Size.Equals, 2));
+            assertThatThrownBy(stream::toList).isInstanceOf(IllegalStateException.class);
         }
 
         @Test
@@ -116,9 +115,8 @@ class SizeGathererTest {
 
         @Test
         void doesNotEmitUnderTarget() {
-            assertThatThrownBy(() ->
-                    Stream.of("A").gather(Gatherers4j.ensureSize(Size.GreaterThan, 2)).toList()
-            ).isInstanceOf(IllegalStateException.class);
+            final var stream = Stream.of("A").gather(Gatherers4j.ensureSize(Size.GreaterThan, 2));
+            assertThatThrownBy(stream::toList).isInstanceOf(IllegalStateException.class);
         }
 
         @Test
@@ -139,9 +137,8 @@ class SizeGathererTest {
 
         @Test
         void doesNotEmitUnderTarget() {
-            assertThatThrownBy(() ->
-                    Stream.of("A").gather(Gatherers4j.ensureSize(Size.GreaterThanOrEqualTo, 2)).toList()
-            ).isInstanceOf(IllegalStateException.class);
+            final var stream = Stream.of("A").gather(Gatherers4j.ensureSize(Size.GreaterThanOrEqualTo, 2));
+            assertThatThrownBy(stream::toList).isInstanceOf(IllegalStateException.class);
         }
 
         @Test

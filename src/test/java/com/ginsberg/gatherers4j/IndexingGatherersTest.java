@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.ginsberg.gatherers4j.Gatherers4j.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -39,8 +40,8 @@ class IndexingGatherersTest {
 
             // Act
             final var output = input
-                    .gather(Gatherers4j.filterIndexed((index, element) ->
-                            index % 2 == 0 || element.equals("D"))
+                    .gather(filterIndexed((index, element) ->
+                            index % 2 == 0 || "D".equals(element))
                     )
                     .toList();
 
@@ -51,8 +52,7 @@ class IndexingGatherersTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void predicateMustNotBeNull() {
-            assertThatThrownBy(() -> Stream.of("A").gather(Gatherers4j.filterIndexed(null)))
-                    .isExactlyInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> filterIndexed(null)).isExactlyInstanceOf(IllegalArgumentException.class);
         }
     }
 
@@ -61,9 +61,8 @@ class IndexingGatherersTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void mappingFunctionMustNotBeNull() {
-            assertThatThrownBy(() ->
-                    Gatherers4j.mapIndexed(null)
-            ).isExactlyInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> mapIndexed(null))
+                    .isExactlyInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -72,19 +71,19 @@ class IndexingGatherersTest {
             final Stream<String> input = Stream.empty();
 
             // Act
-            final var output = input.gather(Gatherers4j.mapIndexed((_, element) -> element)).toList();
+            final var output = input.gather(mapIndexed((_, element) -> element)).toList();
 
             // Assert
             assertThat(output).isEmpty();
         }
 
         @Test
-        void mapIndexed() {
+        void testMapIndexed() {
             // Arrange
             final var input = Stream.of("A", "B", "C");
 
             // Act
-            final var output = input.gather(Gatherers4j.mapIndexed((index, element) -> element + index)).toList();
+            final var output = input.gather(mapIndexed((index, element) -> element + index)).toList();
 
             // Assert
             assertThat(output).containsExactly("A0", "B1", "C2");
@@ -97,9 +96,8 @@ class IndexingGatherersTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void peekingFunctionMustNotBeNull() {
-            assertThatThrownBy(() ->
-                    Gatherers4j.peekIndexed(null)
-            ).isExactlyInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> peekIndexed(null))
+                    .isExactlyInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -109,7 +107,7 @@ class IndexingGatherersTest {
             final List<String> peeked = new ArrayList<>();
 
             // Act
-            final var output = input.gather(Gatherers4j.peekIndexed((index, element) -> peeked.add(element + index))).toList();
+            final var output = input.gather(peekIndexed((index, element) -> peeked.add(element + index))).toList();
 
             // Assert
             assertThat(output).isEmpty();
@@ -117,13 +115,13 @@ class IndexingGatherersTest {
         }
 
         @Test
-        void peekIndexed() {
+        void testPeekIndexed() {
             // Arrange
             final var input = Stream.of("A", "B", "C");
             final List<String> peeked = new ArrayList<>();
 
             // Act
-            final var output = input.gather(Gatherers4j.peekIndexed((index, element) -> peeked.add(element + index))).toList();
+            final var output = input.gather(peekIndexed((index, element) -> peeked.add(element + index))).toList();
 
             // Assert
             assertThat(output).containsExactly("A", "B", "C");
@@ -141,7 +139,7 @@ class IndexingGatherersTest {
 
             // Act
             final var output = input
-                    .gather(Gatherers4j.withIndex())
+                    .gather(withIndex())
                     .toList();
 
             // Assert
@@ -160,7 +158,7 @@ class IndexingGatherersTest {
 
             // Act
             final var output = input
-                    .gather(Gatherers4j.withIndex())
+                    .gather(withIndex())
                     .toList();
 
             // Assert
