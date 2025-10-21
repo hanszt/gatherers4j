@@ -29,7 +29,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         int allowedPerPeriod,
         Duration duration,
         InstantSource instantSource
-) implements Gatherer4j2.Stateful<T, ThrottlingGatherer<T>.State, T> {
+) implements Gatherer4j2.Stateful<T, T> {
 
     enum LimitRule {
         Drop,
@@ -49,7 +49,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
     }
 
     @Override
-    public State initialize() {
+    public Stateful.State<T, T> initialize() {
         return new State();
     }
 
@@ -58,7 +58,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         return IntegrationMode.GREEDY;
     }
 
-    public final class State implements Gatherer4j2.Stateful.State<T, T> {
+    private final class State implements Stateful.State<T, T> {
         final long periodDurationMillis = duration.toMillis();
         long thisPeriodEnd;
         int remainingPermits;
@@ -67,6 +67,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
             resetPeriod();
         }
 
+        @Override
         public boolean integrate(T element, Downstream<? super T> downstream) {
             if (!downstream.isRejecting() && attempt()) {
                 downstream.push(element);

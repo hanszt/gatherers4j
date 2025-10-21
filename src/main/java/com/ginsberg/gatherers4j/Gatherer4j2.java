@@ -37,8 +37,7 @@ public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
         }
     }
 
-    @FunctionalInterface
-    non-sealed interface Stateful<T, A extends Stateful.State<T, R>, R> extends Gatherer4j2<T, A, R> {
+    sealed interface StatefulBase<T, A extends Stateful.State<T, R>, R> extends Gatherer4j2<T, A, R> {
 
         A initialize();
 
@@ -51,36 +50,38 @@ public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
         default boolean integrate(A state, T item, Downstream<? super R> downstream) {
             return state.integrate(item, downstream);
         }
+    }
 
-        interface WithFinisher<T, A extends WithFinisher.State<T, R>, R> extends Stateful<T, A, R> {
+    @FunctionalInterface
+    non-sealed interface Stateful<T, R> extends StatefulBase<T, Stateful.State<T, R>, R> {
+
+        @FunctionalInterface
+        non-sealed interface WithFinisher<T, R> extends StatefulBase<T, WithFinisher.State<T, R>, R> {
 
             @Override
-            default BiConsumer<A, Downstream<? super R>> finisher() {
-                return State::finish;
+            default BiConsumer<WithFinisher.State<T, R>, Downstream<? super R>> finisher() {
+                return WithFinisher.State::finish;
             }
 
-            interface WithCombiner<T, A extends WithCombiner.State<T, R>, R> extends WithFinisher<T, A, R> {
+            @FunctionalInterface
+            non-sealed interface WithCombiner<T, R> extends StatefulBase<T, WithCombiner.State<T, R>, R> {
 
                 @Override
-                default BinaryOperator<A> combiner() {
-                    //noinspection unchecked
-                    return (state1, state2) -> (A) state1.combine(state2);
+                default BinaryOperator<WithCombiner.State<T, R>> combiner() {
+                    return WithCombiner.State::combine;
                 }
 
                 interface State<T, R> extends WithFinisher.State<T, R> {
-
                     State<T, R> combine(State<T, R> other);
                 }
             }
 
             interface State<T, R> extends Stateful.State<T, R> {
-
                 void finish(Downstream<? super R> downstream);
             }
         }
 
         interface State<T, R> {
-
             boolean integrate(T item, Downstream<? super R> downstream);
         }
     }

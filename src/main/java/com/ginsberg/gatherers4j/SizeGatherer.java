@@ -27,8 +27,7 @@ import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
-public final class SizeGatherer<T extends @Nullable Object>
-        implements Gatherer4j2.Stateful.WithFinisher<T, SizeGatherer<T>.State, T> {
+public final class SizeGatherer<T extends @Nullable Object> implements Gatherer4j2.Stateful.WithFinisher<T, T> {
 
     private final long targetSize;
     private final Size operation;
@@ -72,17 +71,17 @@ public final class SizeGatherer<T extends @Nullable Object>
     }
 
     @Override
-    public State initialize() {
+    public Stateful.WithFinisher.State<T, T> initialize() {
         return new State();
     }
 
-    public final class State implements Gatherer4j2.Stateful.WithFinisher.State<T, T> {
+    private final class State implements Stateful.WithFinisher.State<T, T> {
         boolean failed = false;
         final List<@Nullable T> elements = new ArrayList<>();
 
         @Override
         public boolean integrate(final T item, final Downstream<? super T> downstream) {
-            if (operation.tryAccept(elements.size() + 1, targetSize)) {
+            if (operation.tryAccept(elements.size() + 1L, targetSize)) {
                 elements.add(item);
             } else {
                 failed = true;

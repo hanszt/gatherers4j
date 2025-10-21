@@ -675,8 +675,8 @@ public final class Gatherers4j {
 
             Comparator<WithCount<T>> comparator() {
                 return order == Frequency.Descending ?
-                        ((o1, o2) -> (int) (o2.count() - o1.count())) :
-                        ((o1, o2) -> (int) (o1.count() - o2.count()));
+                        (o1, o2) -> (int) (o2.count() - o1.count()) :
+                        (o1, o2) -> (int) (o1.count() - o2.count());
             }
         }
         final Integrator.Greedy<State, T, WithCount<T>> integrator = State::integrate;
