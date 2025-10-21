@@ -40,6 +40,7 @@ public interface BigDecimalMovingGatherer<T> extends BigDecimalGatherer<T> {
             this.series = series;
         }
 
+        @Override
         public boolean include() {
             return includePartialValues || index >= series.length;
         }

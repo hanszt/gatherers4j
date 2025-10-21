@@ -102,6 +102,7 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
         @FunctionalInterface
         non-sealed interface Stateless<T, R> extends Greedy<T, Void, R> {
 
+            @Override
             default boolean greedyIntegrate(Void state, T item, Downstream<? super R> downstream) {
                 return Greedy.super.integrate(state, item, downstream);
             }

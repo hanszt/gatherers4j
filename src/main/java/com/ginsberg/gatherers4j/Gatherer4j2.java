@@ -1,5 +1,8 @@
 package com.ginsberg.gatherers4j;
 
+import com.ginsberg.gatherers4j.Gatherer4j2.Stateful.WithFinisher.WithCombiner;
+
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
@@ -11,6 +14,74 @@ import java.util.stream.Gatherer;
 /// @param <A> The type of the State
 /// @param <R> The type of the elements in the downstream
 public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
+
+    static <T, R> Stateful<T, R> ofSequential(Stateful<T, R> initializer, IntegrationMode integrationMode) {
+        Objects.requireNonNull(initializer, "Initializer must not be null");
+        Objects.requireNonNull(integrationMode, "Integration mode must not be null");
+        return new Stateful<>() {
+            @Override
+            public Stateful.State<T, R> initialize() {
+                return initializer.initialize();
+            }
+
+            @Override
+            public IntegrationMode integrationMode() {
+                return integrationMode;
+            }
+        };
+    }
+
+    static <T, R> Stateful<T, R> ofSequential(Stateful<T, R> initialize) {
+        return ofSequential(initialize, IntegrationMode.DEFAULT);
+    }
+
+    static <T, R> Stateful.WithFinisher<T, R> ofSequential(
+            final Stateful.WithFinisher<T, R> initializer,
+            final IntegrationMode integrationMode
+    ) {
+        Objects.requireNonNull(initializer, "Initializer must not be null");
+        Objects.requireNonNull(integrationMode, "Integration mode must not be null");
+        return new Stateful.WithFinisher<>() {
+
+            @Override
+            public Stateful.WithFinisher.State<T, R> initialize() {
+                return initializer.initialize();
+            }
+
+            @Override
+            public IntegrationMode integrationMode() {
+                return integrationMode;
+            }
+        };
+    }
+
+    static <T, R> Stateful.WithFinisher<T, R> ofSequential(Stateful.WithFinisher<T, R> initializer) {
+        return ofSequential(initializer, IntegrationMode.DEFAULT);
+    }
+
+    static <T, A extends WithCombiner.State<T, A, R>, R> WithCombiner<T, A, R> of(
+            final WithCombiner<T, A, R> initializer,
+            final IntegrationMode integrationMode
+    ) {
+        Objects.requireNonNull(initializer, "Initializer must not be null");
+        Objects.requireNonNull(integrationMode, "Integration mode must not be null");
+        return new WithCombiner<>() {
+
+            @Override
+            public A initialize() {
+                return initializer.initialize();
+            }
+
+            @Override
+            public IntegrationMode integrationMode() {
+                return integrationMode;
+            }
+        };
+    }
+
+    static <T, A extends WithCombiner.State<T, A, R>, R> WithCombiner<T, A, R> of(WithCombiner<T, A, R> initializer) {
+        return of(initializer, IntegrationMode.DEFAULT);
+    }
 
     boolean integrate(A state, T item, Downstream<? super R> downstream);
 
@@ -64,15 +135,20 @@ public sealed interface Gatherer4j2<T, A, R> extends Gatherer<T, A, R> {
             }
 
             @FunctionalInterface
-            non-sealed interface WithCombiner<T, R> extends StatefulBase<T, WithCombiner.State<T, R>, R> {
+            non-sealed interface WithCombiner<T, A extends WithCombiner.State<T, A, R>, R> extends StatefulBase<T, A, R> {
 
                 @Override
-                default BinaryOperator<WithCombiner.State<T, R>> combiner() {
+                default BinaryOperator<A> combiner() {
                     return WithCombiner.State::combine;
                 }
 
-                interface State<T, R> extends WithFinisher.State<T, R> {
-                    State<T, R> combine(State<T, R> other);
+                @Override
+                default BiConsumer<A, Downstream<? super R>> finisher() {
+                    return WithCombiner.State::finish;
+                }
+
+                interface State<T, A extends WithCombiner.State<T, A, R>, R> extends WithFinisher.State<T, R> {
+                    A combine(A other);
                 }
             }
 
