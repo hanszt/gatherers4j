@@ -28,7 +28,7 @@ public record ZipWithGatherer<T extends @Nullable Object, S extends @Nullable Ob
         Iterable<S> other, BiFunction<? super T, ? super S, ? extends R> mapper,
         @Nullable Function<? super S, ? extends T> sourceWhenArgumentLonger,
         @Nullable Function<? super T, ? extends S> argumentWhenSourceLonger)
-        implements Gatherer4j2.Stateful.WithFinisher<T, R> {
+        implements Gatherer4j.Stateful.WithFinisher<T, R> {
 
     public ZipWithGatherer {
         mustNotBeNull(other, "Other spliterator must not be null");

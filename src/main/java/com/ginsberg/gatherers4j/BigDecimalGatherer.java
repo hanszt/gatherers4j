@@ -17,6 +17,7 @@
 package com.ginsberg.gatherers4j;
 
 import com.ginsberg.gatherers4j.dto.WithOriginal;
+import com.ginsberg.gatherers4j.util.CircularBuffer;
 import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
@@ -85,8 +86,26 @@ public interface BigDecimalGatherer<T extends @Nullable Object>
     }
 
     /// Include the original input value from the stream in addition to the calculated average.
-    default Gatherer<T, BigDecimalGatherer.State, WithOriginal<T, BigDecimal>> withOriginal() {
-        return new WithOriginalGatherer<>(this);
+    default Gatherer<T, ?, WithOriginal<T, BigDecimal>> withOriginal() {
+        return withOriginal(this);
+    }
+
+    private static <T, A, R> Gatherer<T, ?, WithOriginal<T, R>> withOriginal(Gatherer<T, A, R> gatherer) {
+        class State implements Gatherer4j.Stateful.State<T, WithOriginal<T, R>> {
+            final A delegateState = gatherer.initializer().get();
+            final CircularBuffer<R> buffer = new CircularBuffer<>(1);
+            final Integrator<A, T, R> delegateIntegrator = gatherer.integrator();
+
+            @Override
+            public boolean integrate(final T item, final Downstream<? super WithOriginal<T, R>> downstream) {
+                final var response = delegateIntegrator.integrate(delegateState, item, buffer::add);
+                if (!buffer.isEmpty()) {
+                    downstream.push(new WithOriginal<>(item, buffer.removeFirst()));
+                }
+                return response;
+            }
+        }
+        return Gatherer4j.ofSequential(State::new);
     }
 
     interface State {

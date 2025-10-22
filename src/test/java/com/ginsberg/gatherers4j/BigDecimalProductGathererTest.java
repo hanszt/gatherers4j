@@ -21,7 +21,6 @@ import com.ginsberg.gatherers4j.util.TestValueHolder;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;

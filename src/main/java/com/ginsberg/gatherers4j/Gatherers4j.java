@@ -18,7 +18,7 @@ package com.ginsberg.gatherers4j;
 
 import module com.ginsberg.gatherers4j;
 import module java.base;
-import com.ginsberg.gatherers4j.Gatherer4j2.IntegrationMode;
+import com.ginsberg.gatherers4j.Gatherer4j.IntegrationMode;
 import com.ginsberg.gatherers4j.util.CircularBuffer;
 import com.ginsberg.gatherers4j.util.GathererUtils;
 import org.jspecify.annotations.Nullable;
@@ -381,7 +381,7 @@ public final class Gatherers4j {
     public static <T> Gatherer<T, ?, T> filterOrderedBy(final Order order, final Comparator<T> comparator) {
         mustNotBeNull(order, "Order must not be null");
         mustNotBeNull(comparator, "Comparator must not be null");
-        class State implements Gatherer4j2.Stateful.State<T, T> {
+        class State implements Gatherer4j.Stateful.State<T, T> {
             boolean first = true;
             @Nullable T previous = null;
 
@@ -398,7 +398,7 @@ public final class Gatherers4j {
                 return !downstream.isRejecting();
             }
         }
-        return Gatherer4j2.ofSequential(State::new, IntegrationMode.GREEDY);
+        return Gatherer4j.ofSequential(State::new, IntegrationMode.GREEDY);
     }
 
     ///  Perform a fold over every element in the input stream along with its index
@@ -422,7 +422,7 @@ public final class Gatherers4j {
     ) {
         mustNotBeNull(accumulatorFunction, "Accumulator function must not be null");
         mustNotBeNull(initialValue, "Initial value supplier must not be null");
-        class State implements Gatherer4j2.Stateful.WithFinisher.State<T, R> {
+        class State implements Gatherer4j.Stateful.WithFinisher.State<T, R> {
             @Nullable R carriedValue = initialValue.get();
             int index = 0;
 
@@ -442,7 +442,7 @@ public final class Gatherers4j {
                 }
             }
         }
-        return Gatherer4j2.ofSequential(State::new, IntegrationMode.GREEDY);
+        return Gatherer4j.ofSequential(State::new, IntegrationMode.GREEDY);
     }
 
     /// Turn a `Stream<T>` into a `Stream<List<T>>` where adjacent equal elements are in the same `List`
@@ -654,7 +654,7 @@ public final class Gatherers4j {
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, WithCount<T>> orderByFrequency(final Frequency order) {
         mustNotBeNull(order, "Order must be specified");
-        class State implements Gatherer4j2.Stateful.WithFinisher.WithCombiner.State<T, State, WithCount<T>> {
+        class State implements Gatherer4j.Stateful.WithFinisher.WithCombiner.State<T, State, WithCount<T>> {
             final Map<T, Long> counts = new HashMap<>();
 
             public boolean integrate(T element, Downstream<? super WithCount<T>> downstream) {
@@ -681,7 +681,7 @@ public final class Gatherers4j {
                         (o1, o2) -> (int) (o1.count() - o2.count());
             }
         }
-        return Gatherer4j2.of(State::new, IntegrationMode.GREEDY);
+        return Gatherer4j.of(State::new, IntegrationMode.GREEDY);
     }
 
     /// Peek at each element along with its zero-based index.

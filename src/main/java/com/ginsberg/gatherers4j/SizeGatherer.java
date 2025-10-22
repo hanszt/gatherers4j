@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
 
-public final class SizeGatherer<T extends @Nullable Object> implements Gatherer4j2.Stateful.WithFinisher<T, T> {
+public final class SizeGatherer<T extends @Nullable Object> implements Gatherer4j.Stateful.WithFinisher<T, T> {
 
     private final long targetSize;
     private final Size operation;

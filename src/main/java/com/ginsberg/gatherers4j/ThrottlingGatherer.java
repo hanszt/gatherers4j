@@ -29,7 +29,7 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
         int allowedPerPeriod,
         Duration duration,
         InstantSource instantSource
-) implements Gatherer4j2.Stateful<T, T> {
+) implements Gatherer4j.Stateful<T, T> {
 
     enum LimitRule {
         Drop,
