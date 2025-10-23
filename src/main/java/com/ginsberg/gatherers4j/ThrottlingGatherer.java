@@ -49,57 +49,51 @@ public record ThrottlingGatherer<T extends @Nullable Object>(
     }
 
     @Override
-    public Stateful.State<T, T> initialize() {
-        return new State();
+    public State<T, T> initialize() {
+        return new State<T, T>() {
+            final long periodDurationMillis = duration.toMillis();
+            long thisPeriodEnd = instantSource.millis() + periodDurationMillis;
+            int remainingPermits = allowedPerPeriod;
+
+            @Override
+            public boolean integrate(T element, Downstream<? super T> downstream) {
+                if (!downstream.isRejecting() && attempt()) {
+                    downstream.push(element);
+                }
+                return !downstream.isRejecting();
+            }
+
+            private void resetPeriod() {
+                thisPeriodEnd = instantSource.millis() + periodDurationMillis;
+                remainingPermits = allowedPerPeriod;
+            }
+
+            // Assuming this is not run in parallel. Gate with a lock if that assumption fails/changes.
+            boolean attempt() {
+                final var now = instantSource.millis();
+                if (now < thisPeriodEnd) {
+                    // The current period has not ended
+                    if (remainingPermits == 0) {
+                        if (limitRule == LimitRule.Drop) {
+                            return false;
+                        }
+                        // Wait until next period, reset counters, fall through to take permit.
+                        LockSupport.parkNanos((thisPeriodEnd - now) * NANOS_PER_MILLIS);
+                        resetPeriod();
+                    }
+                } else {
+                    // We're in a new period, reset the counters
+                    // and fall through to take permit.
+                    resetPeriod();
+                }
+                remainingPermits--;
+                return true;
+            }
+        };
     }
 
     @Override
     public IntegrationMode integrationMode() {
         return IntegrationMode.GREEDY;
-    }
-
-    private final class State implements Stateful.State<T, T> {
-        final long periodDurationMillis = duration.toMillis();
-        long thisPeriodEnd;
-        int remainingPermits;
-
-        State() {
-            resetPeriod();
-        }
-
-        @Override
-        public boolean integrate(T element, Downstream<? super T> downstream) {
-            if (!downstream.isRejecting() && attempt()) {
-                downstream.push(element);
-            }
-            return !downstream.isRejecting();
-        }
-
-        private void resetPeriod() {
-            thisPeriodEnd = instantSource.millis() + periodDurationMillis;
-            remainingPermits = allowedPerPeriod;
-        }
-
-        // Assuming this is not run in parallel. Gate with a lock if that assumption fails/changes.
-        boolean attempt() {
-            final var now = instantSource.millis();
-            if (now < thisPeriodEnd) {
-                // The current period has not ended
-                if (remainingPermits == 0) {
-                    if (limitRule == LimitRule.Drop) {
-                        return false;
-                    }
-                    // Wait until next period, reset counters, fall through to take permit.
-                    LockSupport.parkNanos((thisPeriodEnd - now) * NANOS_PER_MILLIS);
-                    resetPeriod();
-                }
-            } else {
-                // We're in a new period, reset the counters
-                // and fall through to take permit.
-                resetPeriod();
-            }
-            remainingPermits--;
-            return true;
-        }
     }
 }

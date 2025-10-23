@@ -17,11 +17,12 @@ import java.util.stream.Gatherer;
 public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
 
     static <T, R> Stateless<T, R> ofSequential(BiPredicate<? super T, ? super Downstream<? super R>> integrate) {
-        return ofSequential(integrate, IntegrationMode.DEFAULT);
+        return ofSequential(IntegrationMode.DEFAULT, integrate);
     }
 
-    static <T, R> Stateless<T, R> ofSequential(BiPredicate<? super T, ? super Downstream<? super R>> integrate, IntegrationMode integrationMode) {
-        return new Stateless<T, R>() {
+    static <T, R> Stateless<T, R> ofSequential(IntegrationMode integrationMode, BiPredicate<? super T, ? super Downstream<? super R>> integrate) {
+        validate(integrationMode, integrate);
+        return new Stateless<>() {
             @Override
             public boolean integrate(final T t, final Downstream<? super R> u) {
                 return integrate.test(t, u);
@@ -35,10 +36,11 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
     }
 
     static <T, R> Stateless<T, R> of(BiPredicate<? super T, ? super Downstream<? super R>> integrate) {
-        return of(integrate, IntegrationMode.DEFAULT);
+        return of(IntegrationMode.DEFAULT, integrate);
     }
 
-    static <T, R> Stateless<T, R> of(BiPredicate<? super T, ? super Downstream<? super R>> integrate, IntegrationMode integrationMode) {
+    static <T, R> Stateless<T, R> of(IntegrationMode integrationMode, BiPredicate<? super T, ? super Downstream<? super R>> integrate) {
+        validate(integrationMode, integrate);
         return new Stateless<>() {
 
             @Override
@@ -58,9 +60,8 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
         };
     }
 
-    static <T, R> Stateful<T, R> ofSequential(Stateful<T, R> initializer, IntegrationMode integrationMode) {
-        Objects.requireNonNull(initializer, "Initializer must not be null");
-        Objects.requireNonNull(integrationMode, "Integration mode must not be null");
+    static <T, R> Stateful<T, R> ofSequential(IntegrationMode integrationMode, Stateful<T, R> initializer) {
+        validate(integrationMode, initializer);
         return new Stateful<>() {
             @Override
             public Stateful.State<T, R> initialize() {
@@ -75,19 +76,18 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
     }
 
     static <T, R> Stateful<T, R> ofSequential(Stateful<T, R> initialize) {
-        return ofSequential(initialize, IntegrationMode.DEFAULT);
+        return ofSequential(IntegrationMode.DEFAULT, initialize);
     }
 
     static <T, R> Stateful.WithFinisher<T, R> ofSequential(
-            final Stateful.WithFinisher<T, R> initializer,
-            final IntegrationMode integrationMode
+            final IntegrationMode integrationMode,
+            final Stateful.WithFinisher<T, R> initializer
     ) {
-        Objects.requireNonNull(initializer, "Initializer must not be null");
-        Objects.requireNonNull(integrationMode, "Integration mode must not be null");
+        validate(integrationMode, initializer);
         return new Stateful.WithFinisher<>() {
 
             @Override
-            public Stateful.WithFinisher.State<T, R> initialize() {
+            public State.WithFinisher<T, R> initialize() {
                 return initializer.initialize();
             }
 
@@ -99,15 +99,14 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
     }
 
     static <T, R> Stateful.WithFinisher<T, R> ofSequential(Stateful.WithFinisher<T, R> initializer) {
-        return ofSequential(initializer, IntegrationMode.DEFAULT);
+        return ofSequential(IntegrationMode.DEFAULT, initializer);
     }
 
-    static <T, A extends WithCombiner.State<T, A, R>, R> WithCombiner<T, A, R> of(
-            final WithCombiner<T, A, R> initializer,
-            final IntegrationMode integrationMode
+    static <T, A extends State.WithFinisher.WithCombiner<T, A, R>, R> WithCombiner<T, A, R> of(
+            final IntegrationMode integrationMode,
+            final WithCombiner<T, A, R> initializer
     ) {
-        Objects.requireNonNull(initializer, "Initializer must not be null");
-        Objects.requireNonNull(integrationMode, "Integration mode must not be null");
+        validate(integrationMode, initializer);
         return new WithCombiner<>() {
 
             @Override
@@ -122,8 +121,8 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
         };
     }
 
-    static <T, A extends WithCombiner.State<T, A, R>, R> WithCombiner<T, A, R> of(WithCombiner<T, A, R> initializer) {
-        return of(initializer, IntegrationMode.DEFAULT);
+    static <T, A extends State.WithFinisher.WithCombiner<T, A, R>, R> WithCombiner<T, A, R> of(WithCombiner<T, A, R> initializer) {
+        return of(IntegrationMode.DEFAULT, initializer);
     }
 
     boolean integrate(A state, T item, Downstream<? super R> downstream);
@@ -151,7 +150,7 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
         }
     }
 
-    sealed interface StatefulBase<T, A extends Stateful.State<T, R>, R> extends Gatherer4j<T, A, R> {
+    sealed interface StatefulBase<T, A extends State<T, R>, R> extends Gatherer4j<T, A, R> {
 
         A initialize();
 
@@ -170,39 +169,44 @@ public sealed interface Gatherer4j<T, A, R> extends Gatherer<T, A, R> {
     non-sealed interface Stateful<T, R> extends StatefulBase<T, Stateful.State<T, R>, R> {
 
         @FunctionalInterface
-        non-sealed interface WithFinisher<T, R> extends StatefulBase<T, WithFinisher.State<T, R>, R> {
+        non-sealed interface WithFinisher<T, R> extends StatefulBase<T, State.WithFinisher<T, R>, R> {
 
             @Override
-            default BiConsumer<WithFinisher.State<T, R>, Downstream<? super R>> finisher() {
-                return WithFinisher.State::finish;
+            default BiConsumer<State.WithFinisher<T, R>, Downstream<? super R>> finisher() {
+                return State.WithFinisher::finish;
             }
 
             @FunctionalInterface
-            non-sealed interface WithCombiner<T, A extends WithCombiner.State<T, A, R>, R> extends StatefulBase<T, A, R> {
+            non-sealed interface WithCombiner<T, A extends State.WithFinisher.WithCombiner<T, A, R>, R> extends StatefulBase<T, A, R> {
 
                 @Override
                 default BinaryOperator<A> combiner() {
-                    return WithCombiner.State::combine;
+                    return State.WithFinisher.WithCombiner::combine;
                 }
 
                 @Override
                 default BiConsumer<A, Downstream<? super R>> finisher() {
-                    return WithCombiner.State::finish;
-                }
-
-                interface State<T, A extends WithCombiner.State<T, A, R>, R> extends WithFinisher.State<T, R> {
-                    A combine(A other);
+                    return State.WithFinisher::finish;
                 }
             }
+        }
+    }
 
-            interface State<T, R> extends Stateful.State<T, R> {
-                void finish(Downstream<? super R> downstream);
+    interface State<T, R> {
+        boolean integrate(T item, Downstream<? super R> downstream);
+
+        interface WithFinisher<T, R> extends Stateful.State<T, R> {
+            void finish(Downstream<? super R> downstream);
+
+            interface WithCombiner<T, A extends WithCombiner<T, A, R>, R> extends WithFinisher<T, R> {
+                A combine(A other);
             }
         }
+    }
 
-        interface State<T, R> {
-            boolean integrate(T item, Downstream<? super R> downstream);
-        }
+    private static void validate(final IntegrationMode integrationMode, final Object initializer) {
+        Objects.requireNonNull(initializer, "Initializer/Integrator must not be null");
+        Objects.requireNonNull(integrationMode, "Integration mode must not be null");
     }
 
     enum IntegrationMode {

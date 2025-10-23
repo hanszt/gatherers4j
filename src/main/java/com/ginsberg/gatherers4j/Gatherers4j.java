@@ -27,6 +27,7 @@ import java.util.stream.Gatherer.Downstream;
 import java.util.stream.Gatherer.Integrator;
 
 import static com.ginsberg.gatherers4j.util.GathererUtils.*;
+import static java.util.Comparator.comparingLong;
 
 /// This is the main entry-point for the Gatherers4j library. All available gatherers
 /// are created from static methods on this class.
@@ -239,7 +240,7 @@ public final class Gatherers4j {
             boolean isFirst = true;
             @Nullable I firstIterable = null;
 
-            private boolean integrate(I iterable, Downstream<? super T> downstream) {
+            boolean integrate(I iterable, Downstream<? super T> downstream) {
                 if (isFirst) {
                     firstIterable = iterable;
                     isFirst = false;
@@ -249,7 +250,7 @@ public final class Gatherers4j {
                 }
             }
 
-            private void finish(Downstream<? super T> downstream) {
+            void finish(Downstream<? super T> downstream) {
                 if (firstIterable != null) {
                     pushWhileNotRejecting(firstIterable, downstream);
                 }
@@ -381,10 +382,11 @@ public final class Gatherers4j {
     public static <T> Gatherer<T, ?, T> filterOrderedBy(final Order order, final Comparator<T> comparator) {
         mustNotBeNull(order, "Order must not be null");
         mustNotBeNull(comparator, "Comparator must not be null");
-        class State implements Gatherer4j.Stateful.State<T, T> {
+        return Gatherer4j.ofSequential(IntegrationMode.GREEDY, () -> new Gatherer4j.State<>() {
             boolean first = true;
             @Nullable T previous = null;
 
+            @Override
             public boolean integrate(T item, Downstream<? super T> downstream) {
                 if (first) {
                     downstream.push(item);
@@ -397,8 +399,7 @@ public final class Gatherers4j {
                     }
                 return !downstream.isRejecting();
             }
-        }
-        return Gatherer4j.ofSequential(State::new, IntegrationMode.GREEDY);
+        });
     }
 
     ///  Perform a fold over every element in the input stream along with its index
@@ -422,7 +423,7 @@ public final class Gatherers4j {
     ) {
         mustNotBeNull(accumulatorFunction, "Accumulator function must not be null");
         mustNotBeNull(initialValue, "Initial value supplier must not be null");
-        class State implements Gatherer4j.Stateful.WithFinisher.State<T, R> {
+        return Gatherer4j.ofSequential(IntegrationMode.GREEDY, () -> new Gatherer4j.State.WithFinisher<>() {
             @Nullable R carriedValue = initialValue.get();
             int index = 0;
 
@@ -441,8 +442,7 @@ public final class Gatherers4j {
                     downstream.push(carriedValue);
                 }
             }
-        }
-        return Gatherer4j.ofSequential(State::new, IntegrationMode.GREEDY);
+        });
     }
 
     /// Turn a `Stream<T>` into a `Stream<List<T>>` where adjacent equal elements are in the same `List`
@@ -654,34 +654,32 @@ public final class Gatherers4j {
     /// @return A non-null `Gatherer`
     public static <T extends @Nullable Object> Gatherer<T, ?, WithCount<T>> orderByFrequency(final Frequency order) {
         mustNotBeNull(order, "Order must be specified");
-        class State implements Gatherer4j.Stateful.WithFinisher.WithCombiner.State<T, State, WithCount<T>> {
+        final Comparator<WithCount<T>> compareByCount = comparingLong(WithCount::count);
+        class State implements Gatherer4j.State.WithFinisher.WithCombiner<T, State, WithCount<T>> {
             final Map<T, Long> counts = new HashMap<>();
 
+            @Override
             public boolean integrate(T element, Downstream<? super WithCount<T>> downstream) {
                 counts.merge(element, 1L, Long::sum);
                 return !downstream.isRejecting();
             }
 
+            @Override
             public State combine(State other) {
                 other.counts.forEach((key, value) -> counts.merge(key, value, Long::sum));
                 return this;
             }
 
+            @Override
             public void finish(Downstream<? super WithCount<T>> downstream) {
                 final var counts = this.counts
-                        .entrySet()
-                        .stream().map(it -> new WithCount<>(it.getKey(), it.getValue()))
-                        .sorted(comparator());
+                        .entrySet().stream()
+                        .map(it -> new WithCount<>(it.getKey(), it.getValue()))
+                        .sorted(order == Frequency.Ascending ? compareByCount : compareByCount.reversed());
                 pushWhileNotRejecting(counts, downstream);
             }
-
-            Comparator<WithCount<T>> comparator() {
-                return order == Frequency.Descending ?
-                        (o1, o2) -> (int) (o2.count() - o1.count()) :
-                        (o1, o2) -> (int) (o1.count() - o2.count());
-            }
         }
-        return Gatherer4j.of(State::new, IntegrationMode.GREEDY);
+        return Gatherer4j.of(IntegrationMode.GREEDY, State::new);
     }
 
     /// Peek at each element along with its zero-based index.
@@ -908,30 +906,32 @@ public final class Gatherers4j {
             final RandomGenerator random
     ) {
         require(sampleSize > 0, "sampleSize must be at least 1");
-        class State {
-            private final List<T> elements = new ArrayList<>();
-            private int index = 0;
+        mustNotBeNull(random, "Random must not be null");
+        return Gatherer4j.ofSequential(IntegrationMode.GREEDY, () -> new Gatherer4j.State.WithFinisher<>() {
+            final List<T> items = new ArrayList<>();
+            int index = 0;
 
-            boolean take(final @Nullable T element, Downstream<? super T> downstream) {
+            @Override
+            public boolean integrate(final T item, final Downstream<? super T> downstream) {
                 if (index < sampleSize) {
-                    elements.add(element);
+                    items.add(item);
                 } else {
                     final var n = random.nextInt(0, index);
                     if (n < sampleSize) {
-                        // Not replacing element at n because we want to keep iteration order.
-                        elements.remove(n);
-                        elements.add(element);
+                        // Not replacing item at n because we want to keep iteration order.
+                        items.remove(n);
+                        items.add(item);
                     }
                 }
                 index++;
                 return !downstream.isRejecting();
             }
-        }
-        return Gatherer.ofSequential(
-                State::new,
-                Integrator.<State, T, T>ofGreedy(State::take),
-                (state, downstream) -> pushWhileNotRejecting(state.elements, downstream)
-        );
+
+            @Override
+            public void finish(final Downstream<? super T> downstream) {
+                pushWhileNotRejecting(items, downstream);
+            }
+        });
     }
 
     /// Perform a percentage-based sampling over the input stream. This method uses Poisson sampling internally, so
@@ -992,9 +992,12 @@ public final class Gatherers4j {
     public static <T extends @Nullable Object> Gatherer<T, ?, T> shuffle(final RandomGenerator randomGenerator) {
         mustNotBeNull(randomGenerator, "RandomGenerator must not be null");
         return Gatherer.ofSequential(
+                // Initialize
                 ArrayList<T>::new,
+                // Integrate
                 Integrator.ofGreedy((items, item, downstream) ->
                         items.add(item) && !downstream.isRejecting()),
+                // Finish
                 (items, downstream) -> {
                     while (!items.isEmpty() && !downstream.isRejecting()) {
                         final var randomSlot = randomGenerator.nextInt(items.size());
@@ -1069,9 +1072,12 @@ public final class Gatherers4j {
     public static <T> Gatherer<T, ?, T> takeLast(final int count) {
         require(count >= 0, "Last count must not be negative");
         return Gatherer.ofSequential(
+                // Initialize
                 () -> new CircularBuffer<T>(count),
+                // Integrate
                 Integrator.ofGreedy((items, item, downstream) ->
                         items.add(item) && !downstream.isRejecting()),
+                // Finish
                 GathererUtils::pushWhileNotRejecting
         );
     }
@@ -1087,9 +1093,11 @@ public final class Gatherers4j {
     ) {
         mustNotBeNull(predicate, "Predicate must not be null");
         return Gatherer.ofSequential(
+                // Initialize
                 () -> new Object() {
                     boolean done = false;
                 },
+                // Integrate
                 (state, item, downstream) -> {
                     if (state.done) return false;
                     state.done = predicate.test(item);
@@ -1313,8 +1321,7 @@ public final class Gatherers4j {
         mustNotBeNull(zipper, "Zipper must not be null");
         class State {
             boolean first = true;
-            @Nullable
-            T previous = null;
+            @Nullable T previous = null;
 
             boolean zipNext(final T item, final Downstream<? super R> downstream) {
                 if (first) {

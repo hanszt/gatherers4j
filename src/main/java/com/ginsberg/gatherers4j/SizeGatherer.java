@@ -71,31 +71,29 @@ public final class SizeGatherer<T extends @Nullable Object> implements Gatherer4
     }
 
     @Override
-    public Stateful.WithFinisher.State<T, T> initialize() {
-        return new State();
-    }
+    public Gatherer4j.State.WithFinisher<T, T> initialize() {
+        return new Gatherer4j.State.WithFinisher<>() {
+            boolean failed = false;
+            final List<@Nullable T> elements = new ArrayList<>();
 
-    private final class State implements Stateful.WithFinisher.State<T, T> {
-        boolean failed = false;
-        final List<@Nullable T> elements = new ArrayList<>();
-
-        @Override
-        public boolean integrate(final T item, final Downstream<? super T> downstream) {
-            if (operation.tryAccept(elements.size() + 1L, targetSize)) {
-                elements.add(item);
-            } else {
-                failed = true;
+            @Override
+            public boolean integrate(final T item, final Downstream<? super T> downstream) {
+                if (operation.tryAccept(elements.size() + 1L, targetSize)) {
+                    elements.add(item);
+                } else {
+                    failed = true;
+                }
+                return !failed || !downstream.isRejecting();
             }
-            return !failed || !downstream.isRejecting();
-        }
 
-        @Override
-        public void finish(final Downstream<? super T> downstream) {
-            if (!failed && operation.accept(elements.size(), targetSize)) {
-                GathererUtils.pushWhileNotRejecting(elements, downstream);
-            } else {
-                pushWhileNotRejecting(orElse.get(), downstream);
+            @Override
+            public void finish(final Downstream<? super T> downstream) {
+                if (!failed && operation.accept(elements.size(), targetSize)) {
+                    GathererUtils.pushWhileNotRejecting(elements, downstream);
+                } else {
+                    pushWhileNotRejecting(orElse.get(), downstream);
+                }
             }
-        }
+        };
     }
 }

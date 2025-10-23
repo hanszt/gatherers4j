@@ -56,31 +56,29 @@ public final class InterleavingGatherer<T extends @Nullable Object>
     }
 
     @Override
-    public Stateful.WithFinisher.State<T, T> initialize() {
-        return new State();
-    }
+    public State.WithFinisher<T, T> initialize() {
+        return new State.WithFinisher<>() {
+            private final Spliterator<T> otherSpliterator = other.spliterator();
 
-    private final class State implements Stateful.WithFinisher.State<T, T> {
-        private final Spliterator<T> otherSpliterator = other.spliterator();
-
-        @Override
-        public boolean integrate(final T item, final Downstream<? super T> downstream) {
-            downstream.push(item);
-            if (appendSourceIfLonger) {
-                otherSpliterator.tryAdvance(downstream::push);
-                return !downstream.isRejecting();
-            } else {
-                // End immediately if we are not appending source if it is longer and other is finished
-                return otherSpliterator.tryAdvance(downstream::push) && !downstream.isRejecting();
+            @Override
+            public boolean integrate(final T item, final Downstream<? super T> downstream) {
+                downstream.push(item);
+                if (appendSourceIfLonger) {
+                    otherSpliterator.tryAdvance(downstream::push);
+                    return !downstream.isRejecting();
+                } else {
+                    // End immediately if we are not appending source if it is longer and other is finished
+                    return otherSpliterator.tryAdvance(downstream::push) && !downstream.isRejecting();
+                }
             }
-        }
 
-        @Override
-        public void finish(final Downstream<? super T> downstream) {
-            var downstreamRejecting = downstream.isRejecting();
-            while (appendArgumentIfLonger && !downstreamRejecting) {
-                downstreamRejecting = !otherSpliterator.tryAdvance(downstream::push);
+            @Override
+            public void finish(final Downstream<? super T> downstream) {
+                var downstreamRejecting = downstream.isRejecting();
+                while (appendArgumentIfLonger && !downstreamRejecting) {
+                    downstreamRejecting = !otherSpliterator.tryAdvance(downstream::push);
+                }
             }
-        }
+        };
     }
 }
